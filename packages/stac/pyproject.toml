@@ -1,0 +1,19 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "earthforge-stac"
+version = "0.1.0"
+description = "EarthForge STAC catalog interaction (search, info, validate)."
+readme = "README.md"
+requires-python = ">=3.11"
+license = "Apache-2.0"
+dependencies = [
+    "earthforge-core>=0.1.0",
+    "pystac-client>=0.8",
+    "pystac>=1.9",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/earthforge"]
