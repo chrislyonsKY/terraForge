@@ -4,7 +4,7 @@
 
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
-[![CI](https://img.shields.io/github/actions/workflow/status/terraforge/terraforge/ci.yml?branch=main&label=CI)](https://github.com/terraforge/terraforge/actions)
+[![CI](https://img.shields.io/github/actions/workflow/status/chrislyonsKY/terraforge/ci.yml?branch=main&label=CI)](https://github.com/chrislyonsKY/terraforge/actions)
 [![PyPI](https://img.shields.io/pypi/v/terraforge.svg)](https://pypi.org/project/terraforge/)
 [![Hatch](https://img.shields.io/badge/build-hatch-4051b5.svg)](https://hatch.pypa.io/)
 
