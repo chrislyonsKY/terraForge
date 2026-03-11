@@ -86,6 +86,7 @@ ignore = [
 [tool.ruff.lint.per-file-ignores]
 "tests/**/*.py" = ["S101", "T20"]
 "packages/cli/**/*.py" = ["T20", "B008"]
+"examples/**/*.py" = ["T20"]
 
 [tool.ruff.lint.isort]
 known-first-party = ["earthforge"]
@@ -102,10 +103,10 @@ disallow_untyped_defs = true
 disallow_incomplete_defs = true
 namespace_packages = true
 explicit_package_bases = true
-mypy_path = "packages/core/src:packages/cli/src:packages/raster/src:packages/vector/src"
+mypy_path = "packages/core/src:packages/cli/src:packages/raster/src:packages/vector/src:packages/stac/src"
 
 [[tool.mypy.overrides]]
-module = ["rasterio.*", "pyarrow.*", "obstore.*"]
+module = ["rasterio.*", "pyarrow.*", "obstore.*", "pystac.*", "pystac_client.*"]
 ignore_missing_imports = true
 follow_untyped_imports = true
 
@@ -113,7 +114,7 @@ follow_untyped_imports = true
 # Pytest
 # ---------------------------------------------------------------------------
 [tool.pytest.ini_options]
-testpaths = ["packages/core/tests", "packages/cli/tests", "packages/raster/tests", "packages/vector/tests"]
+testpaths = ["packages/core/tests", "packages/cli/tests", "packages/raster/tests", "packages/vector/tests", "packages/stac/tests"]
 asyncio_mode = "auto"
 markers = [
     "integration: marks tests requiring real network access (deselect with '-m not integration')",

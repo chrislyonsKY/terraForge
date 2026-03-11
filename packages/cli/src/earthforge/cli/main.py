@@ -158,6 +158,10 @@ def run_command(ctx: typer.Context, coro: object) -> object:
 
 from earthforge.cli.commands import config_cmd as _config_cmd  # noqa: E402
 from earthforge.cli.commands import info as _info_cmd  # noqa: E402
+from earthforge.cli.commands import raster_cmd as _raster_cmd  # noqa: E402
+from earthforge.cli.commands import stac_cmd as _stac_cmd  # noqa: E402
 
 app.command(name="info", help="Inspect a geospatial file (auto-detects format).")(_info_cmd.info)
 app.add_typer(_config_cmd.app)
+app.add_typer(_stac_cmd.app)
+app.add_typer(_raster_cmd.app)
