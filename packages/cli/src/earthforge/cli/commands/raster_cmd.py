@@ -71,6 +71,51 @@ def preview(
         render_to_console(result, state.output, no_color=state.no_color)
 
 
+def convert(
+    ctx: typer.Context,
+    source: str = typer.Argument(help="Path to a GeoTIFF file."),
+    output: str = typer.Option(
+        None,
+        "--out",
+        "-O",
+        help="Output COG file path. Defaults to <source_stem>_cog.tif.",
+    ),
+    compression: str = typer.Option(
+        "deflate",
+        "--compression",
+        help="Compression: deflate, lzw, zstd.",
+    ),
+    blocksize: int = typer.Option(
+        512,
+        "--blocksize",
+        help="Tile size in pixels.",
+    ),
+    resampling: str = typer.Option(
+        "nearest",
+        "--resampling",
+        help="Overview resampling: nearest, bilinear, cubic, average.",
+    ),
+) -> None:
+    """Convert a GeoTIFF to Cloud-Optimized GeoTIFF (COG)."""
+    from earthforge.cli.main import get_state, run_command
+    from earthforge.raster.convert import convert_to_cog
+
+    state = get_state(ctx)
+    result = run_command(
+        ctx,
+        convert_to_cog(
+            source,
+            output=output,
+            compression=compression,
+            blocksize=blocksize,
+            resampling=resampling,
+        ),
+    )
+    if isinstance(result, BaseModel):
+        render_to_console(result, state.output, no_color=state.no_color)
+
+
 app.command(name="info", help="Inspect raster metadata.")(info)
 app.command(name="validate", help="Validate COG compliance.")(validate)
 app.command(name="preview", help="Generate a PNG quicklook.")(preview)
+app.command(name="convert", help="Convert GeoTIFF to COG.")(convert)
