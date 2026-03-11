@@ -94,11 +94,9 @@ def _validate_cog_sync(source: str) -> CogValidationResult:
         ))
 
         # Check 2: Tiled layout
+        # Use the profile's tiled flag to avoid the deprecated is_tiled property.
         block_shapes = ds.block_shapes
-        is_tiled = all(
-            h < ds.height and w < ds.width
-            for h, w in block_shapes
-        ) if ds.height > 1 and ds.width > 1 else False
+        is_tiled = bool(ds.profile.get("tiled", False))
         checks.append(ValidationCheck(
             name="tiled",
             passed=is_tiled,
