@@ -117,3 +117,34 @@ class TestInfoCommand:
         """Nonexistent file should exit with error."""
         result = runner.invoke(app, ["info", "/nonexistent/path.tif"])
         assert result.exit_code != 0
+
+
+class TestConfigCommand:
+    """Tests for the config subcommand group."""
+
+    def test_config_help(self) -> None:
+        result = runner.invoke(app, ["config", "--help"])
+        assert result.exit_code == 0
+        assert "init" in result.output
+        assert "show" in result.output
+
+    def test_config_init(self, tmp_path: object, monkeypatch: object) -> None:
+        """config init creates a config file."""
+        from pathlib import Path
+
+
+        target = Path(str(tmp_path)) / ".earthforge" / "config.toml"
+        monkeypatch.setattr("earthforge.core.config._config_file", lambda: target)  # type: ignore[attr-defined]
+        result = runner.invoke(app, ["config", "init"])
+        assert result.exit_code == 0
+        assert target.exists()
+
+    def test_config_show(self, tmp_path: object, monkeypatch: object) -> None:
+        """config show displays the active profile."""
+        from pathlib import Path
+
+        fake = Path(str(tmp_path)) / "nonexistent.toml"
+        monkeypatch.setattr("earthforge.core.config._config_file", lambda: fake)  # type: ignore[attr-defined]
+        result = runner.invoke(app, ["config", "show"])
+        assert result.exit_code == 0
+        assert "default" in result.output.lower()

@@ -92,7 +92,7 @@ def _read_parquet_info(source: str) -> VectorInfo:
         raise VectorError(msg) from exc
 
     try:
-        pf = pq.ParquetFile(source)
+        pf = pq.ParquetFile(source)  # type: ignore[no-untyped-call]
     except Exception as exc:
         msg = f"Failed to read Parquet file '{source}': {exc}"
         raise VectorError(msg) from exc
@@ -192,7 +192,8 @@ def _parse_geo_metadata(metadata: dict[bytes, bytes]) -> dict[str, Any]:
     if geo_bytes is None:
         return {}
     try:
-        return json.loads(geo_bytes)
+        result: dict[str, Any] = json.loads(geo_bytes)
+        return result
     except (json.JSONDecodeError, UnicodeDecodeError):
         return {}
 

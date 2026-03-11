@@ -156,6 +156,8 @@ def run_command(ctx: typer.Context, coro: object) -> object:
 # Import and register subcommand modules. These are guarded imports so the CLI
 # can still show --help even if an optional domain package is not installed.
 
+from earthforge.cli.commands import config_cmd as _config_cmd  # noqa: E402
 from earthforge.cli.commands import info as _info_cmd  # noqa: E402
 
 app.command(name="info", help="Inspect a geospatial file (auto-detects format).")(_info_cmd.info)
+app.add_typer(_config_cmd.app)

@@ -117,10 +117,10 @@ def _convert_meta(raw: object) -> ObjectMeta:
         )
     # Fallback for future obstore versions that may return objects
     return ObjectMeta(
-        path=raw.path,  # type: ignore[union-attr]
-        size=raw.size,  # type: ignore[union-attr]
-        last_modified=raw.last_modified,  # type: ignore[union-attr]
-        e_tag=raw.e_tag or "",  # type: ignore[union-attr]
+        path=raw.path,  # type: ignore[attr-defined]
+        size=raw.size,  # type: ignore[attr-defined]
+        last_modified=raw.last_modified,  # type: ignore[attr-defined]
+        e_tag=raw.e_tag or "",  # type: ignore[attr-defined]
     )
 
 

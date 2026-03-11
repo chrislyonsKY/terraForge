@@ -104,6 +104,11 @@ namespace_packages = true
 explicit_package_bases = true
 mypy_path = "packages/core/src:packages/cli/src:packages/raster/src:packages/vector/src"
 
+[[tool.mypy.overrides]]
+module = ["rasterio.*", "pyarrow.*", "obstore.*"]
+ignore_missing_imports = true
+follow_untyped_imports = true
+
 # ---------------------------------------------------------------------------
 # Pytest
 # ---------------------------------------------------------------------------

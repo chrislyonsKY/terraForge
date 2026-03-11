@@ -67,6 +67,7 @@ def _render_json(data: BaseModel | Sequence[BaseModel]) -> str:
     Returns:
         A pretty-printed JSON string.
     """
+    raw: dict[str, object] | list[dict[str, object]]
     if isinstance(data, BaseModel):
         raw = data.model_dump(mode="json")
     else:
