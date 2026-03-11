@@ -1,4 +1,4 @@
-"""Tests for TerraForge format detection."""
+"""Tests for EarthForge format detection."""
 
 from __future__ import annotations
 
@@ -6,8 +6,8 @@ from pathlib import Path
 
 import pytest
 
-from terraforge.core.errors import FormatDetectionError
-from terraforge.core.formats import (
+from earthforge.core.errors import FormatDetectionError
+from earthforge.core.formats import (
     FormatType,
     _detect_by_extension,
     _inspect_json_for_stac,

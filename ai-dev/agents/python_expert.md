@@ -6,7 +6,7 @@
 
 ## Role
 
-Implement TerraForge library code: async business logic, data pipelines, format handlers, and domain module internals.
+Implement EarthForge library code: async business logic, data pipelines, format handlers, and domain module internals.
 
 ## Responsibilities
 
@@ -29,9 +29,9 @@ from __future__ import annotations
 import asyncio
 from dataclasses import dataclass
 
-from terraforge.core.config import TerraForgeProfile, load_profile
-from terraforge.core.errors import TerraForgeError
-from terraforge.core.http import get_client
+from earthforge.core.config import EarthForgeProfile, load_profile
+from earthforge.core.errors import EarthForgeError
+from earthforge.core.http import get_client
 
 
 @dataclass(frozen=True)
@@ -65,13 +65,13 @@ class RasterInfoResult:
     file_size_bytes: int | None
 
 
-class RasterInfoError(TerraForgeError):
+class RasterInfoError(EarthForgeError):
     """Raised when raster metadata cannot be read."""
 
 
 async def inspect_raster(
     source: str,
-    profile: TerraForgeProfile | None = None,
+    profile: EarthForgeProfile | None = None,
 ) -> RasterInfoResult:
     """Inspect metadata of a raster file (COG or GeoTIFF).
 
@@ -124,7 +124,7 @@ def _inspect_raster_sync(source: str) -> RasterInfoResult:
 
 def inspect_raster_sync(
     source: str,
-    profile: TerraForgeProfile | None = None,
+    profile: EarthForgeProfile | None = None,
 ) -> RasterInfoResult:
     """Synchronous wrapper for inspect_raster.
 
@@ -137,13 +137,13 @@ def inspect_raster_sync(
 
 ```python
 def _require_stac() -> None:
-    """Verify terraforge-stac is installed, raise helpful error if not."""
+    """Verify earthforge-stac is installed, raise helpful error if not."""
     try:
-        import terraforge.stac  # noqa: F401
+        import earthforge.stac  # noqa: F401
     except ImportError:
         msg = (
             "STAC commands require the stac extra. "
-            "Install with: pip install terraforge[stac]"
+            "Install with: pip install earthforge[stac]"
         )
         raise SystemExit(msg)
 ```
@@ -152,9 +152,9 @@ def _require_stac() -> None:
 
 ```python
 try:
-    from terraforge_rs import detect_format_fast
+    from earthforge_rs import detect_format_fast
 except ImportError:
-    from terraforge.core._formats_py import detect_format_fast
+    from earthforge.core._formats_py import detect_format_fast
 ```
 
 ## Anti-Patterns

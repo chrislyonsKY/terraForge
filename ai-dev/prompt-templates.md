@@ -7,7 +7,7 @@ Reusable prompts for Claude Code, Copilot, or chat-based AI tools. Copy and adap
 ```
 Read CLAUDE.md, then ai-dev/agents/python_expert.md, then ai-dev/guardrails/coding-standards.md.
 
-Implement [function name] in packages/[domain]/src/terraforge/[domain]/[module].py.
+Implement [function name] in packages/[domain]/src/earthforge/[domain]/[module].py.
 
 Requirements:
 - [specific requirement 1]
@@ -23,9 +23,9 @@ Show me the plan first. Do not write code until I type Engage.
 ```
 Read CLAUDE.md, then ai-dev/agents/cli_designer.md, then ai-dev/architecture.md (CLI Command Architecture section).
 
-Add the [command name] command to packages/cli/src/terraforge/cli/[domain].py.
+Add the [command name] command to packages/cli/src/earthforge/cli/[domain].py.
 
-The command should call [library function] from packages/[domain] and render the result via terraforge.core.output.
+The command should call [library function] from packages/[domain] and render the result via earthforge.core.output.
 
 Follow the teach-as-you-build protocol. Show me the plan first. Do not write code until I type Engage.
 ```

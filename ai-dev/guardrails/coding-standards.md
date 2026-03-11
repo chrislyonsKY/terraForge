@@ -14,7 +14,7 @@ These rules apply to ALL code generated for this project, regardless of which ag
 - No `eval()` or `exec()` anywhere — enforced by ruff S307 rule
 - No bare `except:` clauses — always catch specific exceptions
 - Logging via `structlog` or stdlib `logging` — never bare print for diagnostics
-- Import style: `from terraforge.{domain}.{module} import {name}` — no relative cross-package imports
+- Import style: `from earthforge.{domain}.{module} import {name}` — no relative cross-package imports
 
 ## Dependencies
 
@@ -22,13 +22,13 @@ These rules apply to ALL code generated for this project, regardless of which ag
 - All domain packages depend on core; core depends on no domain package
 - CLI imports domain packages via guarded try/except for optional dependency support
 - Third-party libraries are accessed through core wrappers, not imported directly by domain code:
-  - HTTP: `terraforge.core.http`, not `httpx` directly
-  - Storage: `terraforge.core.storage`, not `obstore` directly
-  - Output: `terraforge.core.output`, not `rich` directly
+  - HTTP: `earthforge.core.http`, not `httpx` directly
+  - Storage: `earthforge.core.storage`, not `obstore` directly
+  - Output: `earthforge.core.output`, not `rich` directly
 
 ## Packaging
 
-- Namespace packages: NO `__init__.py` at `terraforge/` level — only at `terraforge/{domain}/` level
+- Namespace packages: NO `__init__.py` at `earthforge/` level — only at `earthforge/{domain}/` level
 - Each package's `pyproject.toml` declares only its direct dependencies
 - `packages/rs/` uses maturin build backend — never hatchling
 - Version pinning: use `>=X.Y` minimum pins, not `==X.Y.Z` exact pins (leave exact pinning to lockfiles)
@@ -55,7 +55,7 @@ After implementing any command or library function that processes geospatial dat
 Validation reports are committed to the repo alongside the code they validate. A PR that adds a new command without a validation report will be sent back.
 
 This applies to:
-- Format detection (`terraforge info`) — must correctly identify real COGs, GeoParquet, Zarr, and non-cloud-native files
+- Format detection (`earthforge info`) — must correctly identify real COGs, GeoParquet, Zarr, and non-cloud-native files
 - STAC search — must return results from real STAC APIs (Element84 Earth Search, Planetary Computer)
 - Raster operations — must work against real COGs on S3, not just synthetic test files
 - Vector operations — must handle real GeoParquet with real geometries, not toy 3-row fixtures

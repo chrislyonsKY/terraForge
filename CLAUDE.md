@@ -1,4 +1,4 @@
-# CLAUDE.md — TerraForge
+# CLAUDE.md — EarthForge
 
 > Cloud-Native Geospatial Developer Toolkit
 > Python 3.11+ · Hatch · Typer · PyO3/maturin · httpx · obstore
@@ -58,14 +58,14 @@ When writing code:
 - Every function gets a docstring (purpose, parameters, returns, raises)
 - Every module gets a module-level docstring
 - All I/O operations are async-first (sync wrappers are convenience layers)
-- All HTTP calls go through `terraforge.core.http` (never raw httpx)
-- All cloud storage calls go through `terraforge.core.storage` (never raw obstore/boto3)
-- All CLI output goes through `terraforge.core.output` (never raw print/rich)
+- All HTTP calls go through `earthforge.core.http` (never raw httpx)
+- All cloud storage calls go through `earthforge.core.storage` (never raw obstore/boto3)
+- All CLI output goes through `earthforge.core.output` (never raw print/rich)
 - Error handling in every function — no happy-path-only code
 
 ### Git Discipline
 
-TerraForge's git history must reflect incremental, deliberate construction — not scaffold dumps.
+EarthForge's git history must reflect incremental, deliberate construction — not scaffold dumps.
 
 **Commit messages** use Conventional Commits with package scope:
 ```
@@ -110,7 +110,7 @@ test(raster): add COG validation tests for untiled GeoTIFF
 ## Project Structure
 
 ```
-terraforge/
+earthforge/
 ├── CLAUDE.md                    ← You are here
 ├── README.md                    ← Human-facing: problem statement, install, usage examples
 ├── ARCHITECTURE.md              ← Human-facing: system design, dependency graph, decisions
@@ -136,11 +136,11 @@ terraforge/
 
 **Note:** The structure above is the *target*. The repo only contains directories for implemented functionality. `packages/cube/` does not exist until cube features are built and tested.
 
-Each package under `packages/` uses the `src/terraforge/{domain}/` layout, enabling:
+Each package under `packages/` uses the `src/earthforge/{domain}/` layout, enabling:
 ```python
-from terraforge.core.config import load_profile
-from terraforge.stac.search import search_catalog
-from terraforge.raster.info import inspect_cog
+from earthforge.core.config import load_profile
+from earthforge.stac.search import search_catalog
+from earthforge.raster.info import inspect_cog
 ```
 
 The CLI package (`packages/cli/`) imports from domain packages and dispatches commands.
@@ -150,15 +150,15 @@ It contains NO business logic — only argument parsing and output formatting.
 
 ## Architecture Summary
 
-TerraForge is a library-first, CLI-first toolkit. The library layer (`packages/core`, `packages/stac`, etc.) contains all business logic and exposes async Python APIs. The CLI layer (`packages/cli`) is a thin Typer application that calls library functions and formats output.
+EarthForge is a library-first, CLI-first toolkit. The library layer (`packages/core`, `packages/stac`, etc.) contains all business logic and exposes async Python APIs. The CLI layer (`packages/cli`) is a thin Typer application that calls library functions and formats output.
 
 **I/O is async-first.** Every network operation uses async clients. The CLI wraps async calls with `asyncio.run()`. The library exposes async functions (primary) and sync wrappers (convenience).
 
-**Storage is abstracted.** All cloud storage access goes through `terraforge.core.storage`, which wraps `obstore` for a unified `ObjectStore` interface across S3, GCS, Azure Blob, and local filesystem.
+**Storage is abstracted.** All cloud storage access goes through `earthforge.core.storage`, which wraps `obstore` for a unified `ObjectStore` interface across S3, GCS, Azure Blob, and local filesystem.
 
 **Output is structured.** All CLI commands support `--output json|table|csv|quiet`. Commands return Python objects; the output module handles rendering.
 
-**Format detection is centralized.** `terraforge.core.formats.detect()` uses a magic-bytes → extension → content-inspection chain to identify file formats.
+**Format detection is centralized.** `earthforge.core.formats.detect()` uses a magic-bytes → extension → content-inspection chain to identify file formats.
 
 See `ai-dev/architecture.md` for the complete system design.
 
@@ -166,31 +166,31 @@ See `ai-dev/architecture.md` for the complete system design.
 
 ## Critical Conventions
 
-- **Import paths**: Always `from terraforge.{domain}.{module} import {name}`. Never relative imports across packages.
+- **Import paths**: Always `from earthforge.{domain}.{module} import {name}`. Never relative imports across packages.
 - **Async naming**: Async functions have no prefix. Sync wrappers get `_sync` suffix: `search()` is async, `search_sync()` is the wrapper.
-- **Error types**: All exceptions inherit from `terraforge.core.errors.TerraForgeError`. Domain packages define subclasses.
+- **Error types**: All exceptions inherit from `earthforge.core.errors.EarthForgeError`. Domain packages define subclasses.
 - **CLI returns**: Commands return structured data (dataclasses/Pydantic models). The output formatter renders. Commands never call `print()`.
-- **Configuration**: All configurable values flow through `terraforge.core.config`. No function accepts raw URLs or credentials.
+- **Configuration**: All configurable values flow through `earthforge.core.config`. No function accepts raw URLs or credentials.
 - **Testing**: `respx` for async HTTP mocking. `pytest-recording` for VCR fixtures. Never make real network calls in unit tests.
-- **Namespace packages**: No `__init__.py` at the `terraforge/` level. Only at `terraforge/core/`, `terraforge/stac/`, etc. This enables implicit namespace package merging across pip installs.
+- **Namespace packages**: No `__init__.py` at the `earthforge/` level. Only at `earthforge/core/`, `earthforge/stac/`, etc. This enables implicit namespace package merging across pip installs.
 - **Rust fallback**: Always guard Rust extension imports with try/except and fall back to pure Python.
 
 ---
 
 ## What NOT To Do
 
-- Do NOT use `fsspec` for storage abstraction. Use `obstore` via `terraforge.core.storage`. See DL-003.
-- Do NOT use `requests` or `urllib3` for HTTP. Use `httpx` via `terraforge.core.http`.
+- Do NOT use `fsspec` for storage abstraction. Use `obstore` via `earthforge.core.storage`. See DL-003.
+- Do NOT use `requests` or `urllib3` for HTTP. Use `httpx` via `earthforge.core.http`.
 - Do NOT put business logic in the CLI layer. CLI commands are thin wrappers.
-- Do NOT use `print()` or `rich.print()` directly in library code. Use `terraforge.core.output`.
+- Do NOT use `print()` or `rich.print()` directly in library code. Use `earthforge.core.output`.
 - Do NOT use `hatchling` as the build backend for `packages/rs/`. Use `maturin`. See DL-005.
 - Do NOT create synchronous-first APIs with async bolted on. Async is the primary API.
-- Do NOT hardcode STAC API URLs or cloud credentials. Use profiles via `terraforge.core.config`.
+- Do NOT hardcode STAC API URLs or cloud credentials. Use profiles via `earthforge.core.config`.
 - Do NOT add an "ai" or "services" package without a bounded scope documented in a decision record.
 - Do NOT create separate CI workflows per package. One workflow, one matrix.
 - Do NOT use `eval()` or `exec()` for band math expressions in the pipeline runner.
-- Do NOT put a `terraforge/__init__.py` at the namespace level. Namespace packages require its absence.
+- Do NOT put a `earthforge/__init__.py` at the namespace level. Namespace packages require its absence.
 - Do NOT create empty directories or skeleton files for future work. If it's in the repo, it works.
 - Do NOT commit a single "initial commit" with the entire project. Build incrementally — architecture first, then core, then features with tests.
 - Do NOT commit AI-generated code without reading and understanding every line.
-- Do NOT add Kubernetes manifests, Helm charts, Docker Compose files, or orchestration infrastructure. TerraForge is a CLI toolkit, not a platform.
+- Do NOT add Kubernetes manifests, Helm charts, Docker Compose files, or orchestration infrastructure. EarthForge is a CLI toolkit, not a platform.

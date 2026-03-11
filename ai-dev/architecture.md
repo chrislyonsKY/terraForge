@@ -1,4 +1,4 @@
-# TerraForge Architecture
+# EarthForge Architecture
 
 > Read `CLAUDE.md` first. This document provides the detailed system design.
 
@@ -6,44 +6,44 @@
 
 ## System Overview
 
-TerraForge is a library-first, CLI-first toolkit for working with cloud-native geospatial data. The library layer provides async Python APIs for STAC discovery, COG operations, GeoParquet queries, and Zarr datacube access. The CLI layer is a thin Typer application that dispatches to library functions and formats output.
+EarthForge is a library-first, CLI-first toolkit for working with cloud-native geospatial data. The library layer provides async Python APIs for STAC discovery, COG operations, GeoParquet queries, and Zarr datacube access. The CLI layer is a thin Typer application that dispatches to library functions and formats output.
 
-The design prioritizes composability over completeness. TerraForge is not a platform — it is a set of focused tools that integrate with existing workflows via structured output, stdin/stdout piping, and Python imports.
+The design prioritizes composability over completeness. EarthForge is not a platform — it is a set of focused tools that integrate with existing workflows via structured output, stdin/stdout piping, and Python imports.
 
 ---
 
 ## Package Dependency Graph
 
 ```
-terraforge (meta-package)
-├── terraforge-core (required)
+earthforge (meta-package)
+├── earthforge-core (required)
 │   ├── httpx         → async HTTP client
 │   ├── obstore       → S3/GCS/Azure/local storage
 │   ├── pydantic      → config, validation, output models
 │   ├── rich          → terminal formatting
 │   └── orjson        → fast JSON serialization
-├── terraforge-cli (optional: cli)
-│   ├── terraforge-core
+├── earthforge-cli (optional: cli)
+│   ├── earthforge-core
 │   └── typer         → CLI framework
-├── terraforge-stac (optional: stac)
-│   ├── terraforge-core
+├── earthforge-stac (optional: stac)
+│   ├── earthforge-core
 │   ├── pystac-client → STAC API search
 │   └── pystac        → STAC object model
-├── terraforge-raster (optional: raster)
-│   ├── terraforge-core
+├── earthforge-raster (optional: raster)
+│   ├── earthforge-core
 │   ├── rasterio      → COG I/O via GDAL
 │   ├── numpy         → array operations
 │   └── Pillow        → preview PNG generation
-├── terraforge-vector (optional: vector)
-│   ├── terraforge-core
+├── earthforge-vector (optional: vector)
+│   ├── earthforge-core
 │   ├── geopandas     → GeoParquet ergonomic API
 │   └── pyarrow       → Arrow/Parquet engine
-├── terraforge-cube (optional: cube)
-│   ├── terraforge-core
+├── earthforge-cube (optional: cube)
+│   ├── earthforge-core
 │   ├── xarray        → labeled multidimensional arrays
 │   ├── zarr          → Zarr format I/O
 │   └── h5netcdf      → NetCDF support
-└── terraforge-rs (optional, Rust acceleration)
+└── earthforge-rs (optional, Rust acceleration)
     └── PyO3/maturin  → Python extension from Rust
 ```
 
@@ -53,18 +53,18 @@ The dependency arrow is strictly one-directional: domain packages → core. Core
 
 ## Module Interface Contracts
 
-### terraforge.core.config
+### earthforge.core.config
 
 ```python
 @dataclass
-class TerraForgeProfile:
+class EarthForgeProfile:
     name: str
     stac_api: str | None
     storage_backend: str          # "s3" | "gcs" | "azure" | "local"
     storage_options: dict[str, str]  # backend-specific credentials/config
 
-async def load_profile(name: str = "default") -> TerraForgeProfile
-async def init_config() -> Path  # creates ~/.terraforge/config.toml
+async def load_profile(name: str = "default") -> EarthForgeProfile
+async def init_config() -> Path  # creates ~/.earthforge/config.toml
 ```
 
 Config file format (TOML, parsed with stdlib tomllib):
@@ -85,14 +85,14 @@ account_name = "pcstacitems"
 sas_token_endpoint = "https://planetarycomputer.microsoft.com/api/sas/v1/token"
 ```
 
-### terraforge.core.storage
+### earthforge.core.storage
 
 ```python
 class StorageClient:
     """Unified cloud storage abstraction wrapping obstore."""
 
     @classmethod
-    async def from_profile(cls, profile: TerraForgeProfile) -> StorageClient
+    async def from_profile(cls, profile: EarthForgeProfile) -> StorageClient
 
     async def get(self, path: str) -> bytes
     async def get_range(self, path: str, start: int, end: int) -> bytes
@@ -101,7 +101,7 @@ class StorageClient:
     async def head(self, path: str) -> ObjectMeta
 ```
 
-### terraforge.core.output
+### earthforge.core.output
 
 ```python
 class OutputFormat(StrEnum):
@@ -116,7 +116,7 @@ def render_to_console(data: BaseModel | list[BaseModel], fmt: OutputFormat) -> N
 
 All CLI commands produce Pydantic models. The output module serializes them. This is the structured output contract — `--output json` always produces valid JSON matching the model schema.
 
-### terraforge.core.formats
+### earthforge.core.formats
 
 ```python
 class FormatType(StrEnum):
@@ -139,21 +139,21 @@ async def detect(source: str) -> FormatType
 
 Detection chain: magic bytes (first 512 bytes via range read) → file extension → content inspection (format-specific metadata checks). Domain packages register their detectors at import time via a registry pattern.
 
-### terraforge.core.errors
+### earthforge.core.errors
 
 ```python
-class TerraForgeError(Exception):
-    """Base exception for all TerraForge errors."""
+class EarthForgeError(Exception):
+    """Base exception for all EarthForge errors."""
     exit_code: int = 1
 
-class ConfigError(TerraForgeError): ...
-class StorageError(TerraForgeError): ...
-class FormatDetectionError(TerraForgeError): ...
+class ConfigError(EarthForgeError): ...
+class StorageError(EarthForgeError): ...
+class FormatDetectionError(EarthForgeError): ...
 
 # Domain packages extend:
-# class StacSearchError(TerraForgeError): ...
-# class CogValidationError(TerraForgeError): ...
-# class GeoParquetSchemaError(TerraForgeError): ...
+# class StacSearchError(EarthForgeError): ...
+# class CogValidationError(EarthForgeError): ...
+# class GeoParquetSchemaError(EarthForgeError): ...
 ```
 
 ---
@@ -163,9 +163,9 @@ class FormatDetectionError(TerraForgeError): ...
 ### Command Tree
 
 ```
-terraforge
+earthforge
 ├── config
-│   ├── init              # Create ~/.terraforge/config.toml
+│   ├── init              # Create ~/.earthforge/config.toml
 │   ├── set               # Set a config value
 │   ├── get               # Get a config value
 │   └── profile           # Manage named profiles
@@ -267,10 +267,10 @@ def search_catalog_sync(...) -> list[StacItem]:
 
 ### HTTP Client
 
-All HTTP goes through a shared `httpx.AsyncClient` managed by `terraforge.core.http`:
+All HTTP goes through a shared `httpx.AsyncClient` managed by `earthforge.core.http`:
 
 ```python
-async def get_client(profile: TerraForgeProfile) -> httpx.AsyncClient:
+async def get_client(profile: EarthForgeProfile) -> httpx.AsyncClient:
     """Return a configured async HTTP client with auth, timeouts, retries."""
 ```
 
@@ -294,9 +294,9 @@ Everything else. STAC search logic, config management, output formatting, CLI di
 
 ```python
 try:
-    from terraforge_rs import detect_format_fast
+    from earthforge_rs import detect_format_fast
 except ImportError:
-    from terraforge.core._formats_py import detect_format_fast
+    from earthforge.core._formats_py import detect_format_fast
 ```
 
 The Rust extension is always optional. Pure Python implementations exist for all Rust-accelerated functions.

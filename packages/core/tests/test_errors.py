@@ -1,36 +1,36 @@
-"""Tests for the TerraForge error hierarchy."""
+"""Tests for the EarthForge error hierarchy."""
 
 from __future__ import annotations
 
 import pytest
 
-from terraforge.core.errors import (
+from earthforge.core.errors import (
     ConfigError,
+    EarthForgeError,
     FormatDetectionError,
     HttpError,
     StorageError,
-    TerraForgeError,
 )
 
 
-class TestTerraForgeError:
-    """Tests for the base TerraForgeError."""
+class TestEarthForgeError:
+    """Tests for the base EarthForgeError."""
 
     def test_message_stored(self) -> None:
-        err = TerraForgeError("something broke")
+        err = EarthForgeError("something broke")
         assert str(err) == "something broke"
 
     def test_default_exit_code(self) -> None:
-        err = TerraForgeError("oops")
+        err = EarthForgeError("oops")
         assert err.exit_code == 1
 
     def test_custom_exit_code(self) -> None:
-        err = TerraForgeError("oops", exit_code=42)
+        err = EarthForgeError("oops", exit_code=42)
         assert err.exit_code == 42
 
     def test_is_exception(self) -> None:
-        with pytest.raises(TerraForgeError):
-            raise TerraForgeError("test")
+        with pytest.raises(EarthForgeError):
+            raise EarthForgeError("test")
 
 
 class TestConfigError:
@@ -38,14 +38,14 @@ class TestConfigError:
 
     def test_inherits_from_base(self) -> None:
         err = ConfigError("bad profile")
-        assert isinstance(err, TerraForgeError)
+        assert isinstance(err, EarthForgeError)
 
     def test_exit_code(self) -> None:
         err = ConfigError("bad profile")
         assert err.exit_code == 2
 
     def test_caught_by_base(self) -> None:
-        with pytest.raises(TerraForgeError):
+        with pytest.raises(EarthForgeError):
             raise ConfigError("missing config")
 
 
@@ -57,7 +57,7 @@ class TestStorageError:
         assert err.exit_code == 3
 
     def test_inherits_from_base(self) -> None:
-        assert isinstance(StorageError("x"), TerraForgeError)
+        assert isinstance(StorageError("x"), EarthForgeError)
 
 
 class TestHttpError:
@@ -76,7 +76,7 @@ class TestHttpError:
         assert err.status_code is None
 
     def test_inherits_from_base(self) -> None:
-        assert isinstance(HttpError("x"), TerraForgeError)
+        assert isinstance(HttpError("x"), EarthForgeError)
 
 
 class TestFormatDetectionError:
@@ -87,4 +87,4 @@ class TestFormatDetectionError:
         assert err.exit_code == 5
 
     def test_inherits_from_base(self) -> None:
-        assert isinstance(FormatDetectionError("x"), TerraForgeError)
+        assert isinstance(FormatDetectionError("x"), EarthForgeError)

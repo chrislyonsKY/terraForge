@@ -1,18 +1,18 @@
-"""TerraForge cloud storage abstraction.
+"""EarthForge cloud storage abstraction.
 
-All cloud storage access in TerraForge flows through this module. Domain packages
+All cloud storage access in EarthForge flows through this module. Domain packages
 never import ``obstore`` directly — they use :class:`StorageClient` to get a
 unified async interface across S3, GCS, Azure Blob, and local filesystem.
 
 The wrapper translates obstore's free-function API into a method-based client
 that carries its store reference internally, and converts obstore exceptions
-into :class:`~terraforge.core.errors.StorageError`.
+into :class:`~earthforge.core.errors.StorageError`.
 
 Usage in domain code::
 
-    from terraforge.core.storage import StorageClient
+    from earthforge.core.storage import StorageClient
 
-    async def read_header(profile: TerraForgeProfile, path: str) -> bytes:
+    async def read_header(profile: EarthForgeProfile, path: str) -> bytes:
         client = StorageClient.from_profile(profile)
         return await client.get_range(path, start=0, end=512)
 """
@@ -28,12 +28,12 @@ from typing import TYPE_CHECKING
 import obstore as obs
 from obstore.store import AzureStore, GCSStore, LocalStore, S3Store
 
-from terraforge.core.errors import StorageError
+from earthforge.core.errors import StorageError
 
 if TYPE_CHECKING:
     from obstore.store import ObjectStore
 
-    from terraforge.core.config import TerraForgeProfile
+    from earthforge.core.config import EarthForgeProfile
 
 logger = logging.getLogger(__name__)
 
@@ -55,11 +55,11 @@ class ObjectMeta:
     e_tag: str
 
 
-def _build_store(profile: TerraForgeProfile) -> ObjectStore:
-    """Create an obstore store instance from a TerraForge profile.
+def _build_store(profile: EarthForgeProfile) -> ObjectStore:
+    """Create an obstore store instance from a EarthForge profile.
 
     Parameters:
-        profile: The active TerraForge profile with backend and options.
+        profile: The active EarthForge profile with backend and options.
 
     Returns:
         An obstore ``ObjectStore`` implementation.
@@ -106,7 +106,7 @@ def _convert_meta(raw: object) -> ObjectMeta:
         raw: The obstore metadata dict.
 
     Returns:
-        A TerraForge ``ObjectMeta``.
+        A EarthForge ``ObjectMeta``.
     """
     if isinstance(raw, dict):
         return ObjectMeta(
@@ -128,7 +128,7 @@ class StorageClient:
     """Unified cloud storage client wrapping obstore.
 
     Provides async methods for common object storage operations. Created
-    from a :class:`~terraforge.core.config.TerraForgeProfile` via the
+    from a :class:`~earthforge.core.config.EarthForgeProfile` via the
     :meth:`from_profile` classmethod.
 
     Parameters:
@@ -139,8 +139,8 @@ class StorageClient:
         self._store = store
 
     @classmethod
-    def from_profile(cls, profile: TerraForgeProfile) -> StorageClient:
-        """Create a storage client from a TerraForge profile.
+    def from_profile(cls, profile: EarthForgeProfile) -> StorageClient:
+        """Create a storage client from a EarthForge profile.
 
         Parameters:
             profile: The profile containing backend selection and credentials.

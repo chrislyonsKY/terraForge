@@ -1,6 +1,6 @@
 Read CLAUDE.md, then {{agent_file}}, then {{guardrail_file}}.
 
-Implement {{function_name}} in packages/{{package}}/src/terraforge/{{package}}/{{module}}.
+Implement {{function_name}} in packages/{{package}}/src/earthforge/{{package}}/{{module}}.
 
 Requirements:
 - {{requirement_1}}

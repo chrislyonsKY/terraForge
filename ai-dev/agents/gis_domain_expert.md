@@ -6,7 +6,7 @@
 
 ## Role
 
-Ensure TerraForge code correctly implements cloud-native geospatial standards: STAC, COG, GeoParquet, Zarr, FlatGeobuf, COPC.
+Ensure EarthForge code correctly implements cloud-native geospatial standards: STAC, COG, GeoParquet, Zarr, FlatGeobuf, COPC.
 
 ## Responsibilities
 

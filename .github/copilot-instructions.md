@@ -1,4 +1,4 @@
-# Copilot Instructions — TerraForge
+# Copilot Instructions — EarthForge
 
 > Cloud-Native Geospatial Developer Toolkit
 > Python 3.11+ · Hatch · Typer · PyO3/maturin · httpx · obstore
@@ -20,7 +20,7 @@ Do not batch explanations. Explain each component immediately after writing it.
 - **Monorepo** with Hatch workspace packages under `packages/`
 - **Library-first, CLI-second**: Business logic in domain packages, CLI is thin dispatch
 - **Async-first I/O**: httpx for HTTP, obstore for cloud storage, asyncio.run() at CLI entry
-- **Namespace packages**: No `terraforge/__init__.py` — packages merge via PEP 420
+- **Namespace packages**: No `earthforge/__init__.py` — packages merge via PEP 420
 - **Structured output**: Commands return Pydantic models, output module renders json/table/csv
 
 ## Packages
@@ -37,12 +37,12 @@ Do not batch explanations. Explain each component immediately after writing it.
 
 ## Hard Rules
 
-- All I/O through `terraforge.core.http` or `terraforge.core.storage` — never raw httpx/obstore
-- All output through `terraforge.core.output` — never `print()`
-- All exceptions inherit `terraforge.core.errors.TerraForgeError`
+- All I/O through `earthforge.core.http` or `earthforge.core.storage` — never raw httpx/obstore
+- All output through `earthforge.core.output` — never `print()`
+- All exceptions inherit `earthforge.core.errors.EarthForgeError`
 - No business logic in CLI layer
 - No `eval()`/`exec()` for expressions
-- No hardcoded URLs or credentials — use `terraforge.core.config` profiles
+- No hardcoded URLs or credentials — use `earthforge.core.config` profiles
 - Rust extension: always provide pure-Python fallback via try/except import
 - `packages/rs/` uses maturin build backend, not hatchling
 - No empty files, skeleton directories, or TODO-only stubs — if it's in the repo, it works

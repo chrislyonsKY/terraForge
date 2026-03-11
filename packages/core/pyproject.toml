@@ -3,9 +3,9 @@ requires = ["hatchling>=1.18"]
 build-backend = "hatchling.build"
 
 [project]
-name = "terraforge-core"
+name = "earthforge-core"
 version = "0.1.0"
-description = "TerraForge core: shared types, config, storage, output, format detection"
+description = "EarthForge core: shared types, config, storage, output, format detection"
 readme = "README.md"
 license = "Apache-2.0"
 requires-python = ">=3.11"
@@ -18,4 +18,4 @@ dependencies = [
 ]
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/terraforge"]
+packages = ["src/earthforge"]

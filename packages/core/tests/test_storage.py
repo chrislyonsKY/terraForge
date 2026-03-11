@@ -1,4 +1,4 @@
-"""Tests for the TerraForge storage abstraction.
+"""Tests for the EarthForge storage abstraction.
 
 Uses obstore's LocalStore backend so no real cloud calls are made.
 """
@@ -9,9 +9,9 @@ from pathlib import Path
 
 import pytest
 
-from terraforge.core.config import TerraForgeProfile
-from terraforge.core.errors import StorageError
-from terraforge.core.storage import StorageClient, _build_store
+from earthforge.core.config import EarthForgeProfile
+from earthforge.core.errors import StorageError
+from earthforge.core.storage import StorageClient, _build_store
 
 # ---------------------------------------------------------------------------
 # Store construction
@@ -22,7 +22,7 @@ class TestBuildStore:
     """Tests for store factory from profile."""
 
     def test_local_backend(self, tmp_path: Path) -> None:
-        profile = TerraForgeProfile(
+        profile = EarthForgeProfile(
             name="test",
             storage_backend="local",
             storage_options={"root": str(tmp_path)},
@@ -31,7 +31,7 @@ class TestBuildStore:
         assert store is not None
 
     def test_unknown_backend_raises(self) -> None:
-        profile = TerraForgeProfile.__new__(TerraForgeProfile)
+        profile = EarthForgeProfile.__new__(EarthForgeProfile)
         # Bypass __post_init__ validation to test _build_store directly
         object.__setattr__(profile, "name", "bad")
         object.__setattr__(profile, "stac_api", None)
@@ -49,7 +49,7 @@ class TestBuildStore:
 @pytest.fixture()
 def local_client(tmp_path: Path) -> StorageClient:
     """A StorageClient backed by a local tmp directory."""
-    profile = TerraForgeProfile(
+    profile = EarthForgeProfile(
         name="local-test",
         storage_backend="local",
         storage_options={"root": str(tmp_path)},
@@ -68,7 +68,7 @@ def tmp_path_with_file(tmp_path: Path) -> Path:
 @pytest.fixture()
 def client_with_file(tmp_path_with_file: Path) -> StorageClient:
     """A StorageClient with a pre-existing test file."""
-    profile = TerraForgeProfile(
+    profile = EarthForgeProfile(
         name="local-test",
         storage_backend="local",
         storage_options={"root": str(tmp_path_with_file)},
@@ -80,9 +80,9 @@ class TestStorageClientPutGet:
     """Tests for put and get operations."""
 
     async def test_put_then_get(self, local_client: StorageClient) -> None:
-        await local_client.put("test.txt", b"hello terraforge")
+        await local_client.put("test.txt", b"hello earthforge")
         data = await local_client.get("test.txt")
-        assert data == b"hello terraforge"
+        assert data == b"hello earthforge"
 
     async def test_get_nonexistent_raises(self, local_client: StorageClient) -> None:
         with pytest.raises(StorageError, match="Failed to read"):

@@ -1,4 +1,4 @@
-"""TerraForge structured output rendering.
+"""EarthForge structured output rendering.
 
 All CLI output flows through this module. Commands return Pydantic models;
 this module serializes them into the format requested by ``--output``. Domain
@@ -16,7 +16,7 @@ it produces valid JSON for every command. The schema is the Pydantic model itsel
 
 Usage in CLI commands::
 
-    from terraforge.core.output import OutputFormat, render_to_console
+    from earthforge.core.output import OutputFormat, render_to_console
 
     result = await some_library_function(...)
     render_to_console(result, fmt=OutputFormat.TABLE)

@@ -1,4 +1,4 @@
-"""TerraForge CLI entry point.
+"""EarthForge CLI entry point.
 
 Defines the root Typer application with global flags and registers command
 groups. The ``app`` object is the entry point referenced in ``pyproject.toml``
@@ -13,16 +13,16 @@ from __future__ import annotations
 
 import typer
 
-from terraforge.core import __version__
-from terraforge.core.errors import TerraForgeError
-from terraforge.core.output import OutputFormat
+from earthforge.core import __version__
+from earthforge.core.errors import EarthForgeError
+from earthforge.core.output import OutputFormat
 
 # ---------------------------------------------------------------------------
 # Root app
 # ---------------------------------------------------------------------------
 
 app = typer.Typer(
-    name="terraforge",
+    name="earthforge",
     help="Cloud-native geospatial developer toolkit.",
     no_args_is_help=True,
     rich_markup_mode="rich",
@@ -88,7 +88,7 @@ def main(
 ) -> None:
     """Cloud-native geospatial developer toolkit."""
     if version:
-        typer.echo(f"terraforge {__version__}")
+        typer.echo(f"earthforge {__version__}")
         raise typer.Exit()
 
     state = GlobalState()
@@ -123,7 +123,7 @@ def get_state(ctx: typer.Context) -> GlobalState:
 def run_command(ctx: typer.Context, coro: object) -> object:
     """Run an async command coroutine with standard error handling.
 
-    Catches :class:`TerraForgeError` and exits with the appropriate code.
+    Catches :class:`EarthForgeError` and exits with the appropriate code.
     This is the bridge between the async library layer and the sync CLI layer.
 
     Parameters:
@@ -134,13 +134,13 @@ def run_command(ctx: typer.Context, coro: object) -> object:
         The coroutine's return value.
 
     Raises:
-        typer.Exit: On TerraForgeError, with the error's exit code.
+        typer.Exit: On EarthForgeError, with the error's exit code.
     """
     import asyncio
 
     try:
         return asyncio.run(coro)  # type: ignore[arg-type]
-    except TerraForgeError as exc:
+    except EarthForgeError as exc:
         state = get_state(ctx)
         if state.verbose > 0:
             typer.echo(f"Error ({type(exc).__name__}): {exc}", err=True)
@@ -156,6 +156,6 @@ def run_command(ctx: typer.Context, coro: object) -> object:
 # Import and register subcommand modules. These are guarded imports so the CLI
 # can still show --help even if an optional domain package is not installed.
 
-from terraforge.cli.commands import info as _info_cmd  # noqa: E402
+from earthforge.cli.commands import info as _info_cmd  # noqa: E402
 
 app.command(name="info", help="Inspect a geospatial file (auto-detects format).")(_info_cmd.info)

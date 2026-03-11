@@ -3,13 +3,13 @@ requires = ["hatchling>=1.18"]
 build-backend = "hatchling.build"
 
 [project]
-name = "terraforge"
+name = "earthforge"
 version = "0.1.0"
 description = "Cloud-native geospatial developer toolkit"
 readme = "README.md"
 license = "Apache-2.0"
 requires-python = ">=3.11"
-authors = [{ name = "TerraForge Contributors" }]
+authors = [{ name = "EarthForge Contributors" }]
 keywords = ["geospatial", "cloud-native", "stac", "cog", "geoparquet", "cli"]
 classifiers = [
     "Development Status :: 3 - Alpha",
@@ -23,17 +23,17 @@ classifiers = [
     "Typing :: Typed",
 ]
 dependencies = [
-    "terraforge-core>=0.1.0",
+    "earthforge-core>=0.1.0",
 ]
 
 [project.optional-dependencies]
-cli = ["terraforge-cli>=0.1.0"]
-stac = ["terraforge-stac>=0.1.0"]
-raster = ["terraforge-raster>=0.1.0"]
-vector = ["terraforge-vector>=0.1.0"]
-cube = ["terraforge-cube>=0.1.0"]
+cli = ["earthforge-cli>=0.1.0"]
+stac = ["earthforge-stac>=0.1.0"]
+raster = ["earthforge-raster>=0.1.0"]
+vector = ["earthforge-vector>=0.1.0"]
+cube = ["earthforge-cube>=0.1.0"]
 all = [
-    "terraforge[cli,stac,raster,vector,cube]",
+    "earthforge[cli,stac,raster,vector,cube]",
 ]
 dev = [
     "ruff>=0.4",
@@ -45,8 +45,8 @@ dev = [
 ]
 
 [project.urls]
-Repository = "https://github.com/terraforge-geo/terraforge"
-Documentation = "https://terraforge-geo.github.io/terraforge"
+Repository = "https://github.com/earthforge-geo/earthforge"
+Documentation = "https://earthforge-geo.github.io/earthforge"
 
 [tool.hatch.build.targets.wheel]
 packages = []
@@ -88,7 +88,7 @@ ignore = [
 "packages/cli/**/*.py" = ["T20", "B008"]
 
 [tool.ruff.lint.isort]
-known-first-party = ["terraforge"]
+known-first-party = ["earthforge"]
 
 # ---------------------------------------------------------------------------
 # Mypy — strict type checking
@@ -102,13 +102,13 @@ disallow_untyped_defs = true
 disallow_incomplete_defs = true
 namespace_packages = true
 explicit_package_bases = true
-mypy_path = "packages/core/src:packages/cli/src"
+mypy_path = "packages/core/src:packages/cli/src:packages/raster/src:packages/vector/src"
 
 # ---------------------------------------------------------------------------
 # Pytest
 # ---------------------------------------------------------------------------
 [tool.pytest.ini_options]
-testpaths = ["packages/core/tests", "packages/cli/tests"]
+testpaths = ["packages/core/tests", "packages/cli/tests", "packages/raster/tests", "packages/vector/tests"]
 asyncio_mode = "auto"
 markers = [
     "integration: marks tests requiring real network access (deselect with '-m not integration')",

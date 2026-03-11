@@ -1,6 +1,6 @@
-"""TerraForge HTTP client wrapper.
+"""EarthForge HTTP client wrapper.
 
-All HTTP traffic in TerraForge flows through this module. Domain packages never
+All HTTP traffic in EarthForge flows through this module. Domain packages never
 import ``httpx`` directly — they call :func:`get_client` to obtain a configured
 ``httpx.AsyncClient`` with consistent timeouts, retries, and user-agent headers.
 
@@ -11,9 +11,9 @@ the lifecycle manually with :func:`get_client` / :func:`close_client`.
 
 Usage in domain code::
 
-    from terraforge.core.http import managed_client
+    from earthforge.core.http import managed_client
 
-    async def fetch_stac_item(profile: TerraForgeProfile, url: str) -> dict:
+    async def fetch_stac_item(profile: EarthForgeProfile, url: str) -> dict:
         async with managed_client(profile) as client:
             response = await client.get(url)
             response.raise_for_status()
@@ -29,11 +29,11 @@ from typing import TYPE_CHECKING
 
 import httpx
 
-from terraforge.core import __version__
-from terraforge.core.errors import HttpError
+from earthforge.core import __version__
+from earthforge.core.errors import HttpError
 
 if TYPE_CHECKING:
-    from terraforge.core.config import TerraForgeProfile
+    from earthforge.core.config import EarthForgeProfile
 
 logger = logging.getLogger(__name__)
 
@@ -47,14 +47,14 @@ MAX_RETRIES = 3
 RETRYABLE_STATUS_CODES = frozenset({429, 500, 502, 503, 504})
 
 #: User-Agent string sent with every request.
-USER_AGENT = f"terraforge/{__version__}"
+USER_AGENT = f"earthforge/{__version__}"
 
 
-def _build_client(profile: TerraForgeProfile) -> httpx.AsyncClient:
+def _build_client(profile: EarthForgeProfile) -> httpx.AsyncClient:
     """Create a new ``httpx.AsyncClient`` configured for the given profile.
 
     Parameters:
-        profile: The active TerraForge profile (used for future auth header injection).
+        profile: The active EarthForge profile (used for future auth header injection).
 
     Returns:
         A configured but not-yet-entered async HTTP client.
@@ -75,14 +75,14 @@ def _build_client(profile: TerraForgeProfile) -> httpx.AsyncClient:
 
 
 @asynccontextmanager
-async def managed_client(profile: TerraForgeProfile) -> AsyncIterator[httpx.AsyncClient]:
+async def managed_client(profile: EarthForgeProfile) -> AsyncIterator[httpx.AsyncClient]:
     """Context manager that provides a configured HTTP client with automatic cleanup.
 
     This is the preferred way to obtain an HTTP client in domain code. The client
     is created on entry and closed on exit, ensuring connections are released.
 
     Parameters:
-        profile: The active TerraForge profile.
+        profile: The active EarthForge profile.
 
     Yields:
         A configured ``httpx.AsyncClient``.
@@ -108,7 +108,7 @@ async def managed_client(profile: TerraForgeProfile) -> AsyncIterator[httpx.Asyn
 
 
 async def request(
-    profile: TerraForgeProfile,
+    profile: EarthForgeProfile,
     method: str,
     url: str,
     *,
@@ -116,13 +116,13 @@ async def request(
     json: object | None = None,
     headers: dict[str, str] | None = None,
 ) -> httpx.Response:
-    """Issue a single HTTP request with TerraForge's standard configuration.
+    """Issue a single HTTP request with EarthForge's standard configuration.
 
     This is a convenience function for one-off requests. For multiple requests
     within the same operation, prefer :func:`managed_client` to reuse connections.
 
     Parameters:
-        profile: The active TerraForge profile.
+        profile: The active EarthForge profile.
         method: HTTP method (``"GET"``, ``"POST"``, etc.).
         url: The target URL.
         params: Optional query parameters.
@@ -159,7 +159,7 @@ async def request(
 
 
 async def get_bytes(
-    profile: TerraForgeProfile,
+    profile: EarthForgeProfile,
     url: str,
     *,
     start: int | None = None,
@@ -171,7 +171,7 @@ async def get_bytes(
     a small portion of a large file needs to be read (e.g. magic bytes, overviews).
 
     Parameters:
-        profile: The active TerraForge profile.
+        profile: The active EarthForge profile.
         url: The target URL.
         start: Start byte offset (inclusive). If ``None``, reads from the beginning.
         end: End byte offset (exclusive). If ``None``, reads to the end.

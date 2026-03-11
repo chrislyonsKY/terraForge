@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=https://promptfoo.dev/config-schema.json
 description: >
-  TerraForge Prompt Template Evaluation — Tests that prompt templates from
+  EarthForge Prompt Template Evaluation — Tests that prompt templates from
   ai-dev/prompt-templates.md produce consistent, useful output across models.
 
 providers:
@@ -44,7 +44,7 @@ tests:
       - type: llm-rubric
         value: >
           The response must reference waiting for the user to type "Engage"
-          before writing code, consistent with the TerraForge workflow protocol.
+          before writing code, consistent with the EarthForge workflow protocol.
 
   # ------------------------------------------------------------------
   # Template Test 2: Code review template produces structured findings

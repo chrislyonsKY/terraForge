@@ -1,6 +1,6 @@
 # Real-World Test Data Plan
 
-Every TerraForge feature must be validated against real-world data before it ships. This document lists the specific public datasets, exact URLs, and expected results for each feature. The results must be recorded in `ai-dev/validation-reports/`.
+Every EarthForge feature must be validated against real-world data before it ships. This document lists the specific public datasets, exact URLs, and expected results for each feature. The results must be recorded in `ai-dev/validation-reports/`.
 
 ---
 
@@ -50,17 +50,17 @@ Every TerraForge feature must be validated against real-world data before it shi
 | Expected format | COG — tiled, with overviews, deflate or JPEG2000 compression |
 | Size | ~50-150MB per band |
 
-**Tests for `terraforge raster info`:**
+**Tests for `earthforge raster info`:**
 
 - Should report: tiled=true, overview_count > 0, CRS (EPSG:32618 or UTM zone), band count, dimensions, compression
 - Should complete in <3 seconds via range requests (not full download)
 
-**Tests for `terraforge raster preview`:**
+**Tests for `earthforge raster preview`:**
 
 - Should generate a PNG quicklook from overview level
 - Should transfer <5MB of data for a ~100MB COG
 
-**Tests for `terraforge raster validate`:**
+**Tests for `earthforge raster validate`:**
 
 - Sentinel-2 COGs should pass validation (tiled, overviews present, correct IFD ordering)
 
@@ -74,7 +74,7 @@ Every TerraForge feature must be validated against real-world data before it shi
 
 ### Non-COG GeoTIFF (Expected Failure)
 
-To validate that `terraforge raster validate` correctly identifies non-COGs, create or obtain a stripped (non-tiled) GeoTIFF without overviews. The validate command should report warnings: "Not tiled", "No overviews."
+To validate that `earthforge raster validate` correctly identifies non-COGs, create or obtain a stripped (non-tiled) GeoTIFF without overviews. The validate command should report warnings: "Not tiled", "No overviews."
 
 ---
 
@@ -90,17 +90,17 @@ To validate that `terraforge raster validate` correctly identifies non-COGs, cre
 | Size | Individual partitions ~50-200MB, total dataset ~110GB |
 | Auth | Public, no auth |
 
-**Tests for `terraforge vector info`:**
+**Tests for `earthforge vector info`:**
 
 - Should report: geometry column, CRS, geometry types (MultiPolygon), feature count, bbox, row group count
 - Should detect `geo` metadata key in Parquet metadata
 
-**Tests for `terraforge vector query`:**
+**Tests for `earthforge vector query`:**
 
 - Query with bbox `(-85.5, 37.0, -84.0, 38.5)` (Kentucky) should return buildings
 - Verify predicate pushdown: query should NOT read all row groups (measure data transferred vs. file size)
 
-**Tests for `terraforge vector validate`:**
+**Tests for `earthforge vector validate`:**
 
 - Overture files should pass GeoParquet validation (geo metadata present, CRS in PROJJSON, geometry column declared)
 
@@ -124,12 +124,12 @@ To validate that `terraforge raster validate` correctly identifies non-COGs, cre
 | Variables | temperature, pressure, precipitation, etc. |
 | Dimensions | time, latitude, longitude |
 
-**Tests for `terraforge cube info`:**
+**Tests for `earthforge cube info`:**
 
 - Should report: dimensions (time, latitude, longitude), variables, chunk sizes, CF-convention metadata
 - Should complete without downloading the full dataset (lazy open via consolidated metadata)
 
-**Tests for `terraforge cube slice`:**
+**Tests for `earthforge cube slice`:**
 
 - Spatiotemporal slice: time `2025-06`, bbox `(-85.5, 37.0, -84.0, 38.5)` — should return a subset without downloading full dataset
 - Verify lazy loading: `xr.open_zarr()` should NOT trigger data transfer; only `.load()` on the slice should
@@ -138,7 +138,7 @@ To validate that `terraforge raster validate` correctly identifies non-COGs, cre
 
 ## Format Detection
 
-### Universal `terraforge info` Auto-Detection Tests
+### Universal `earthforge info` Auto-Detection Tests
 
 | Input | Expected Detection | Notes |
 |---|---|---|
@@ -158,7 +158,7 @@ To validate that `terraforge raster validate` correctly identifies non-COGs, cre
 
 ### Conversion Output Validation
 
-All conversion outputs must be validated by third-party tools, not just by TerraForge's own validators:
+All conversion outputs must be validated by third-party tools, not just by EarthForge's own validators:
 
 | Conversion | Validation Tool | Expected Result |
 |---|---|---|

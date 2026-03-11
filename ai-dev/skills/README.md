@@ -1,6 +1,6 @@
 # ai-dev/skills/
 
-Project-specific domain knowledge for TerraForge. These provide deeper context than agents carry — specific API patterns, format quirks, and library-specific conventions.
+Project-specific domain knowledge for EarthForge. These provide deeper context than agents carry — specific API patterns, format quirks, and library-specific conventions.
 
 | Skill | File | Applies When |
 |---|---|---|

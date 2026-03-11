@@ -6,7 +6,7 @@
 
 ## Context
 
-TerraForge's primary operations are network I/O: STAC API search, COG range reads, cloud storage access, asset downloads. Sequential execution of these operations creates a performance ceiling that blocks adoption for batch workflows (processing hundreds of STAC items, generating previews for a collection).
+EarthForge's primary operations are network I/O: STAC API search, COG range reads, cloud storage access, asset downloads. Sequential execution of these operations creates a performance ceiling that blocks adoption for batch workflows (processing hundreds of STAC items, generating previews for a collection).
 
 ## Decision
 

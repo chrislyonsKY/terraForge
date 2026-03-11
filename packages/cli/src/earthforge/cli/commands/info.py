@@ -1,7 +1,7 @@
-"""TerraForge ``info`` command — inspect a geospatial file.
+"""EarthForge ``info`` command — inspect a geospatial file.
 
 Auto-detects the file format and returns structured metadata. This is the
-first working command in TerraForge (Milestone 0) and demonstrates the full
+first working command in EarthForge (Milestone 0) and demonstrates the full
 architecture: CLI dispatch → async library call → structured output.
 
 For M0, this command handles format detection and basic file metadata. Domain
@@ -17,8 +17,9 @@ from pathlib import Path
 import typer
 from pydantic import BaseModel, Field
 
-from terraforge.core.formats import FormatType, detect
-from terraforge.core.output import render_to_console
+from earthforge.core.errors import EarthForgeError
+from earthforge.core.formats import FormatType, detect
+from earthforge.core.output import render_to_console
 
 
 class FileInfo(BaseModel):
@@ -56,25 +57,52 @@ _FORMAT_LABELS: dict[FormatType, str] = {
 }
 
 
-async def _info(source: str, profile: str) -> FileInfo:
+_RASTER_FORMATS = {FormatType.COG, FormatType.GEOTIFF}
+_VECTOR_FORMATS = {FormatType.GEOPARQUET, FormatType.PARQUET}
+
+
+async def _info(source: str, profile: str) -> BaseModel:
     """Async implementation of the info command.
+
+    Detects the file format, then dispatches to the appropriate domain-specific
+    inspector if available (raster, vector). Falls back to basic file info for
+    formats without a deep inspector.
 
     Parameters:
         source: Local file path or remote URL.
         profile: Config profile name (for remote URL auth).
 
     Returns:
-        Structured file information.
+        Structured file information (type depends on detected format).
     """
-    from terraforge.core.config import load_profile
+    from earthforge.core.config import load_profile
 
     prof = await load_profile(profile)
     fmt = await detect(source, profile=prof)
 
+    # Dispatch to domain-specific deep inspection.
+    # If the domain inspector fails (e.g. file has correct magic bytes but is
+    # not a valid raster/vector), fall through to basic file info.
+    if fmt in _RASTER_FORMATS:
+        try:
+            from earthforge.raster.info import inspect_raster
+
+            return await inspect_raster(source)
+        except (ImportError, EarthForgeError):
+            pass  # package missing or file unreadable — fall through
+
+    if fmt in _VECTOR_FORMATS:
+        try:
+            from earthforge.vector.info import inspect_vector
+
+            return await inspect_vector(source)
+        except (ImportError, EarthForgeError):
+            pass  # package missing or file unreadable — fall through
+
+    # Basic file info for formats without a deep inspector
     size_bytes: int | None = None
     last_modified: str | None = None
 
-    # Get local file metadata if it's a local path
     if not source.startswith(("http://", "https://")):
         try:
             path = Path(source)
@@ -83,7 +111,7 @@ async def _info(source: str, profile: str) -> FileInfo:
             mtime = datetime.fromtimestamp(stat.st_mtime, tz=UTC)
             last_modified = mtime.isoformat()
         except OSError:
-            pass  # File metadata unavailable — not fatal for detection
+            pass
 
     return FileInfo(
         source=source,
@@ -99,10 +127,10 @@ def info(
     source: str = typer.Argument(help="Path or URL to a geospatial file."),
 ) -> None:
     """Inspect a geospatial file and display its format and metadata."""
-    from terraforge.cli.main import get_state, run_command
+    from earthforge.cli.main import get_state, run_command
 
     state = get_state(ctx)
     result = run_command(ctx, _info(source, state.profile))
 
-    if isinstance(result, FileInfo):
+    if isinstance(result, BaseModel):
         render_to_console(result, state.output, no_color=state.no_color)

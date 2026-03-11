@@ -1,6 +1,6 @@
-# Contributing to TerraForge
+# Contributing to EarthForge
 
-TerraForge is an open-source project with specific engineering standards. This document describes what we expect from contributions and why. Please read it before opening a PR.
+EarthForge is an open-source project with specific engineering standards. This document describes what we expect from contributions and why. Please read it before opening a PR.
 
 ## Prerequisites
 
@@ -13,8 +13,8 @@ TerraForge is an open-source project with specific engineering standards. This d
 ## Setup
 
 ```bash
-git clone https://github.com/chrislyonsKY/terraforge.git
-cd terraforge
+git clone https://github.com/chrislyonsKY/earthforge.git
+cd earthforge
 pip install -e ".[all,dev]"
 ```
 
@@ -28,7 +28,7 @@ mypy runs in strict mode. Every function parameter has a type, every return valu
 
 ### Every function gets error handling
 
-No happy-path-only code. If a function opens a file, it handles the file-not-found case. If it makes an HTTP request, it handles timeouts and connection errors. If it parses user input, it validates before processing. Exceptions are specific (`CogValidationError`, not `Exception`) and include actionable messages ("Missing overviews. Convert with: `terraforge raster convert {path} --to cog`").
+No happy-path-only code. If a function opens a file, it handles the file-not-found case. If it makes an HTTP request, it handles timeouts and connection errors. If it parses user input, it validates before processing. Exceptions are specific (`CogValidationError`, not `Exception`) and include actionable messages ("Missing overviews. Convert with: `earthforge raster convert {path} --to cog`").
 
 ### Every I/O function is async
 
@@ -36,11 +36,11 @@ The primary API is async. If your function makes a network call or reads from cl
 
 ### No business logic in the CLI layer
 
-CLI command handlers parse arguments, call a library function, and format the output. That's it. If your CLI handler is longer than 15 lines or imports anything other than `terraforge.*`, `typer`, and `asyncio`, logic has leaked into the wrong layer.
+CLI command handlers parse arguments, call a library function, and format the output. That's it. If your CLI handler is longer than 15 lines or imports anything other than `earthforge.*`, `typer`, and `asyncio`, logic has leaked into the wrong layer.
 
 ### No direct third-party imports in domain code
 
-Domain packages (`stac`, `raster`, `vector`, `cube`) access HTTP via `terraforge.core.http`, storage via `terraforge.core.storage`, and output via `terraforge.core.output`. Never import `httpx`, `obstore`, or `rich` directly in domain code. This keeps the abstraction boundaries clean and makes it possible to swap implementations without touching every module.
+Domain packages (`stac`, `raster`, `vector`, `cube`) access HTTP via `earthforge.core.http`, storage via `earthforge.core.storage`, and output via `earthforge.core.output`. Never import `httpx`, `obstore`, or `rich` directly in domain code. This keeps the abstraction boundaries clean and makes it possible to swap implementations without touching every module.
 
 ### Return types are structured, not dicts
 
@@ -61,7 +61,7 @@ pytest
 
 ## Real-World Validation
 
-TerraForge features must work against real data, not just mocked test fixtures. After implementing any feature that processes geospatial data:
+EarthForge features must work against real data, not just mocked test fixtures. After implementing any feature that processes geospatial data:
 
 1. Run it against the datasets listed in `ai-dev/test-data-plan.md` — these are real COGs on S3, real STAC APIs, real GeoParquet from Overture Maps, real Zarr climate stores
 2. Record the results in `ai-dev/validation-reports/VR-{milestone}-{feature}.md` using the template in that directory
@@ -115,7 +115,7 @@ Decision records exist so that future contributors — including AI coding tools
 
 ## Scope Boundaries
 
-TerraForge is a composable CLI toolkit for cloud-native geospatial data. Contributions that expand the scope beyond this need explicit discussion before implementation:
+EarthForge is a composable CLI toolkit for cloud-native geospatial data. Contributions that expand the scope beyond this need explicit discussion before implementation:
 
 - No web servers or API endpoints (use TiTiler, stac-fastapi)
 - No databases or persistent state (use PostGIS)

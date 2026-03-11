@@ -7,7 +7,7 @@
 
 ## Role
 
-Design module interfaces, review structural decisions, and ensure architectural consistency across the TerraForge monorepo.
+Design module interfaces, review structural decisions, and ensure architectural consistency across the EarthForge monorepo.
 
 ## Responsibilities
 
@@ -33,8 +33,8 @@ Design module interfaces, review structural decisions, and ensure architectural 
 - [ ] No circular imports between packages
 - [ ] New modules have interfaces defined in architecture.md
 - [ ] Return types are dataclasses or Pydantic models (not dicts or tuples)
-- [ ] Error types inherit from TerraForgeError with domain-specific subclass
-- [ ] Configuration flows through terraforge.core.config, not ad-hoc parameters
+- [ ] Error types inherit from EarthForgeError with domain-specific subclass
+- [ ] Configuration flows through earthforge.core.config, not ad-hoc parameters
 - [ ] New architectural decisions are documented in ai-dev/decisions/
 
 ## When to Use This Agent

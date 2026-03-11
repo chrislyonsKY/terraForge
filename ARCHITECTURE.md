@@ -1,24 +1,24 @@
 # Architecture
 
-This document describes TerraForge's system design. It exists at the repo root because architecture is a first-class artifact of the project, not an afterthought. Detailed module interfaces and implementation patterns live in [`ai-dev/architecture.md`](ai-dev/architecture.md).
+This document describes EarthForge's system design. It exists at the repo root because architecture is a first-class artifact of the project, not an afterthought. Detailed module interfaces and implementation patterns live in [`ai-dev/architecture.md`](ai-dev/architecture.md).
 
 ## Design Principles
 
-**Library-first, CLI-second.** All business logic lives in domain packages (`terraforge.stac`, `terraforge.raster`, `terraforge.vector`, `terraforge.cube`). The CLI is a thin dispatch layer that parses arguments, calls library functions, and formats output. Anything you can do from the CLI, you can do from Python.
+**Library-first, CLI-second.** All business logic lives in domain packages (`earthforge.stac`, `earthforge.raster`, `earthforge.vector`, `earthforge.cube`). The CLI is a thin dispatch layer that parses arguments, calls library functions, and formats output. Anything you can do from the CLI, you can do from Python.
 
 **Async-first I/O.** Cloud-native geospatial work is I/O-bound — STAC API calls, COG range requests, cloud storage access. The primary API is async. Synchronous wrappers exist for convenience, not as the canonical path. See [DL-002](ai-dev/decisions/DL-002-async-first-io.md).
 
-**Structured output as a contract.** Every CLI command supports `--output json|table|csv|quiet`. JSON output is not a best-effort serialization of whatever the command happens to produce — it conforms to a Pydantic model schema that is versioned and tested. This makes TerraForge pipeline-friendly by design.
+**Structured output as a contract.** Every CLI command supports `--output json|table|csv|quiet`. JSON output is not a best-effort serialization of whatever the command happens to produce — it conforms to a Pydantic model schema that is versioned and tested. This makes EarthForge pipeline-friendly by design.
 
-**Format detection, not format flags.** `terraforge info s3://bucket/file` auto-detects whether the file is a COG, GeoParquet, Zarr store, or STAC catalog. The user shouldn't need to know the format to inspect it.
+**Format detection, not format flags.** `earthforge info s3://bucket/file` auto-detects whether the file is a COG, GeoParquet, Zarr store, or STAC catalog. The user shouldn't need to know the format to inspect it.
 
-**Composability over completeness.** TerraForge does not include a web server, a database, a tile cache, or an ML framework. It produces structured output that feeds into other tools. The scope boundary is deliberate — see [what TerraForge is not](README.md#what-terraforge-is-not).
+**Composability over completeness.** EarthForge does not include a web server, a database, a tile cache, or an ML framework. It produces structured output that feeds into other tools. The scope boundary is deliberate — see [what EarthForge is not](README.md#what-earthforge-is-not).
 
 ## Package Structure
 
 ```
-terraforge (meta-package)
-├── terraforge-core (always installed)
+earthforge (meta-package)
+├── earthforge-core (always installed)
 │   ├── config      — Profile management, config.toml parsing
 │   ├── storage     — S3/GCS/Azure/local via obstore (DL-003)
 │   ├── http        — Async HTTP client (httpx wrapper)
@@ -26,30 +26,30 @@ terraforge (meta-package)
 │   ├── formats     — Format detection chain
 │   ├── errors      — Exception hierarchy
 │   └── types       — Shared types: BBox, CRS, TimeRange
-├── terraforge-cli (optional: pip install terraforge[cli])
+├── earthforge-cli (optional: pip install earthforge[cli])
 │   └── Typer app   — Thin dispatch, no business logic
-├── terraforge-stac (optional: pip install terraforge[stac])
+├── earthforge-stac (optional: pip install earthforge[stac])
 │   ├── search      — pystac-client wrapper with async + profiles
 │   ├── info        — Item/collection/catalog inspection
 │   ├── validate    — STAC spec validation
 │   └── fetch       — Parallel asset download with resume
-├── terraforge-raster (optional: pip install terraforge[raster])
+├── earthforge-raster (optional: pip install earthforge[raster])
 │   ├── info        — COG metadata via rasterio
 │   ├── validate    — COG compliance checking
 │   ├── convert     — GeoTIFF → COG with sensible defaults
 │   ├── preview     — Quicklook PNG via HTTP range requests
 │   └── calc        — Band math with safe expression parsing
-├── terraforge-vector (optional: pip install terraforge[vector])
+├── earthforge-vector (optional: pip install earthforge[vector])
 │   ├── info        — GeoParquet schema, CRS, feature count
 │   ├── validate    — GeoParquet schema compliance
 │   ├── convert     — Shapefile/GeoJSON → GeoParquet/FlatGeobuf
 │   └── query       — Spatial/attribute filtering with predicate pushdown
-├── terraforge-cube (optional: pip install terraforge[cube])
+├── earthforge-cube (optional: pip install earthforge[cube])
 │   ├── info        — Zarr dimensions, variables, chunks
 │   ├── validate    — Zarr structure compliance
 │   ├── convert     — NetCDF ↔ Zarr, rechunk
 │   └── slice       — Spatiotemporal extraction
-└── terraforge-rs (optional, Rust acceleration)
+└── earthforge-rs (optional, Rust acceleration)
     ├── format detection  — Magic byte sniffing
     ├── range reads       — Parallel HTTP range assembly
     └── parquet I/O       — geoarrow-rs acceleration
@@ -72,7 +72,7 @@ No package at the same level imports from another (stac does not import from ras
 
 The Rust extension (`packages/rs/`) accelerates three specific bottlenecks where Python's overhead is measurable: format detection across many files, parallel HTTP range reads, and GeoParquet I/O for large datasets. Everything else stays in Python.
 
-The Rust extension is always optional. Every Rust-accelerated function has a pure-Python fallback. `pip install terraforge` works without a Rust toolchain. See [DL-005](ai-dev/decisions/DL-005-rust-boundary.md).
+The Rust extension is always optional. Every Rust-accelerated function has a pure-Python fallback. `pip install earthforge` works without a Rust toolchain. See [DL-005](ai-dev/decisions/DL-005-rust-boundary.md).
 
 ## Decision Records
 

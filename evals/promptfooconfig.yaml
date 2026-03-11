@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=https://promptfoo.dev/config-schema.json
 description: >
-  TerraForge Agent Prompt Evaluation — Tests whether ai-dev/agents/ produce code
+  EarthForge Agent Prompt Evaluation — Tests whether ai-dev/agents/ produce code
   that follows project conventions, guardrails, and architectural patterns.
 
 providers:
@@ -21,7 +21,7 @@ defaultTest:
 # --------------------------------------------------------------------------
 # Test Suite: Python Expert Agent
 # Verifies that the python_expert agent prompt produces code following
-# TerraForge async-first, structured-return, no-print conventions.
+# EarthForge async-first, structured-return, no-print conventions.
 # --------------------------------------------------------------------------
 
 prompts:
@@ -36,7 +36,7 @@ tests:
   - description: "Python Expert produces async-first function with sync wrapper"
     vars:
       task: >
-        Implement a function called inspect_geoparquet in packages/vector/src/terraforge/vector/info.py
+        Implement a function called inspect_geoparquet in packages/vector/src/earthforge/vector/info.py
         that reads GeoParquet metadata (schema, CRS, feature count, bbox) from a local file.
     assert:
       - type: javascript
@@ -63,7 +63,7 @@ tests:
   - description: "Python Expert returns structured types, not raw dicts"
     vars:
       task: >
-        Implement a function called validate_cog in packages/raster/src/terraforge/raster/validate.py
+        Implement a function called validate_cog in packages/raster/src/earthforge/raster/validate.py
         that checks whether a GeoTIFF file is a valid Cloud Optimized GeoTIFF.
         Check for: internal tiling, overview presence, and IFD ordering.
     assert:
@@ -85,18 +85,18 @@ tests:
   - description: "Python Expert includes error handling, not happy-path-only"
     vars:
       task: >
-        Implement a function called fetch_stac_item in packages/stac/src/terraforge/stac/info.py
+        Implement a function called fetch_stac_item in packages/stac/src/earthforge/stac/info.py
         that fetches and parses a STAC item from a URL.
     assert:
       - type: javascript
         value: file://assertions/check_error_handling.js
       - type: icontains
-        value: "TerraForgeError"
+        value: "EarthForgeError"
       - type: llm-rubric
         value: >
           The code must handle at least: network errors (timeout, connection refused),
           invalid JSON responses, and missing required STAC fields. Exceptions must be
-          specific TerraForgeError subclasses with actionable messages, not bare Exception.
+          specific EarthForgeError subclasses with actionable messages, not bare Exception.
 
   # ------------------------------------------------------------------
   # Test 4: No direct third-party imports in domain code
@@ -104,7 +104,7 @@ tests:
   - description: "Python Expert uses core wrappers, not direct third-party imports"
     vars:
       task: >
-        Implement a function called download_asset in packages/stac/src/terraforge/stac/fetch.py
+        Implement a function called download_asset in packages/stac/src/earthforge/stac/fetch.py
         that downloads a STAC asset from a URL to a local path with progress reporting.
     assert:
       - type: javascript
@@ -117,8 +117,8 @@ tests:
         value: "from rich"
       - type: llm-rubric
         value: >
-          The code must use terraforge.core.http for HTTP calls, terraforge.core.storage
-          for cloud storage access, and terraforge.core.output for progress reporting.
+          The code must use earthforge.core.http for HTTP calls, earthforge.core.storage
+          for cloud storage access, and earthforge.core.output for progress reporting.
           It must NOT import httpx, obstore, boto3, or rich directly.
 
   # ------------------------------------------------------------------
@@ -129,7 +129,7 @@ tests:
     vars:
       task: >
         Implement the format detection function detect() in
-        packages/core/src/terraforge/core/formats.py that identifies whether a
+        packages/core/src/earthforge/core/formats.py that identifies whether a
         file is a COG, GeoParquet, Zarr, FlatGeobuf, or unknown based on magic bytes.
     assert:
       - type: llm-rubric

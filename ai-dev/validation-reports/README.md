@@ -1,6 +1,6 @@
 # ai-dev/validation-reports/
 
-Real-world validation results. Each report documents the actual behavior of a TerraForge feature against the real-world test datasets defined in `ai-dev/test-data-plan.md`.
+Real-world validation results. Each report documents the actual behavior of a EarthForge feature against the real-world test datasets defined in `ai-dev/test-data-plan.md`.
 
 **A feature is not complete until its validation report is committed.**
 
@@ -24,7 +24,7 @@ Examples:
 **Milestone:** M{n}
 **Date:** YYYY-MM-DD
 **Tester:** {name}
-**TerraForge version:** {commit hash or version}
+**EarthForge version:** {commit hash or version}
 
 ## Test Environment
 
@@ -40,7 +40,7 @@ Examples:
 **Dataset:** {name and URL from test-data-plan.md}
 **Command:**
 ```bash
-terraforge {exact command run}
+earthforge {exact command run}
 ```
 
 **Expected result:** {what should happen}

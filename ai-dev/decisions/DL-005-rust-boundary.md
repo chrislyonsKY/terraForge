@@ -6,7 +6,7 @@
 
 ## Context
 
-TerraForge uses PyO3/maturin for Rust extensions. The boundary between Rust and Python determines build complexity, contributor accessibility, and fallback behavior when the Rust extension isn't available.
+EarthForge uses PyO3/maturin for Rust extensions. The boundary between Rust and Python determines build complexity, contributor accessibility, and fallback behavior when the Rust extension isn't available.
 
 ## Decision
 
@@ -27,16 +27,16 @@ STAC search, config management, output formatting, CLI dispatch, pipeline execut
 Every function accelerated by Rust must have a pure-Python fallback:
 ```python
 try:
-    from terraforge_rs import detect_format_fast
+    from earthforge_rs import detect_format_fast
 except ImportError:
-    from terraforge.core._formats_py import detect_format_fast
+    from earthforge.core._formats_py import detect_format_fast
 ```
 
-`pip install terraforge` always works. Rust acceleration is a bonus.
+`pip install earthforge` always works. Rust acceleration is a bonus.
 
 ## Alternatives Considered
 
-- **Rust for everything** — Rejected. Shrinks contributor pool dramatically. Most TerraForge logic is I/O orchestration where Python is fast enough.
+- **Rust for everything** — Rejected. Shrinks contributor pool dramatically. Most EarthForge logic is I/O orchestration where Python is fast enough.
 - **No Rust** — Rejected. The three identified bottlenecks have measurable Python overhead. Format detection across 10K files and parallel range reads for large COGs are real production workflows.
 - **C extensions instead of Rust** — Rejected. PyO3/maturin has better DX, memory safety, and ecosystem momentum than CPython C extensions.
 

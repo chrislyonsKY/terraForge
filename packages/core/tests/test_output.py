@@ -1,4 +1,4 @@
-"""Tests for the TerraForge output rendering module."""
+"""Tests for the EarthForge output rendering module."""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ import json
 import pytest
 from pydantic import BaseModel
 
-from terraforge.core.output import OutputFormat, render, render_to_console
+from earthforge.core.output import OutputFormat, render, render_to_console
 
 # ---------------------------------------------------------------------------
 # Test models

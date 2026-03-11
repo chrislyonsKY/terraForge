@@ -1,6 +1,6 @@
-"""TerraForge error hierarchy.
+"""EarthForge error hierarchy.
 
-All exceptions raised by TerraForge inherit from ``TerraForgeError``. Each domain
+All exceptions raised by EarthForge inherit from ``EarthForgeError``. Each domain
 package defines its own subclasses (e.g. ``StacSearchError``, ``CogValidationError``)
 so callers can catch at whatever granularity they need. The ``exit_code`` attribute
 maps directly to CLI exit codes, letting the CLI layer translate library exceptions
@@ -10,8 +10,8 @@ into meaningful shell return values without parsing message strings.
 from __future__ import annotations
 
 
-class TerraForgeError(Exception):
-    """Base exception for all TerraForge errors.
+class EarthForgeError(Exception):
+    """Base exception for all EarthForge errors.
 
     Parameters:
         message: Human-readable description of the error.
@@ -29,7 +29,7 @@ class TerraForgeError(Exception):
         self.exit_code = exit_code
 
 
-class ConfigError(TerraForgeError):
+class ConfigError(EarthForgeError):
     """Raised when configuration loading, parsing, or validation fails.
 
     Examples: missing config file, invalid TOML, unknown profile name,
@@ -40,7 +40,7 @@ class ConfigError(TerraForgeError):
         super().__init__(message, exit_code=exit_code)
 
 
-class StorageError(TerraForgeError):
+class StorageError(EarthForgeError):
     """Raised when a cloud storage operation fails.
 
     Examples: permission denied on S3, object not found, network timeout,
@@ -51,7 +51,7 @@ class StorageError(TerraForgeError):
         super().__init__(message, exit_code=exit_code)
 
 
-class HttpError(TerraForgeError):
+class HttpError(EarthForgeError):
     """Raised when an HTTP request fails after retries.
 
     Parameters:
@@ -74,7 +74,7 @@ class HttpError(TerraForgeError):
         self.status_code = status_code
 
 
-class FormatDetectionError(TerraForgeError):
+class FormatDetectionError(EarthForgeError):
     """Raised when format detection cannot determine the file type.
 
     This typically means the file's magic bytes don't match any known format,

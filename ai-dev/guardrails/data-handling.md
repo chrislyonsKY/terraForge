@@ -3,7 +3,7 @@
 ## Credentials
 
 - NEVER hardcode API keys, tokens, passwords, or connection strings in source code
-- Credentials are resolved at runtime via profile config (`~/.terraforge/config.toml`) or environment variables
+- Credentials are resolved at runtime via profile config (`~/.earthforge/config.toml`) or environment variables
 - SAS tokens, OAuth tokens, and AWS credentials are resolved by obstore's credential chain — do not implement custom credential resolution
 - Test fixtures must not contain real credentials — use placeholder values (`"test-key"`, `"mock-token"`)
 - `.env` files are gitignored and never committed
@@ -16,6 +16,6 @@
 
 ## User Data
 
-- TerraForge does not collect telemetry, usage analytics, or user data
-- Config files are local to the user's machine (`~/.terraforge/`)
+- EarthForge does not collect telemetry, usage analytics, or user data
+- Config files are local to the user's machine (`~/.earthforge/`)
 - Pipeline YAML may reference credentials via `${env:VAR_NAME}` syntax — the pipeline runner resolves these at runtime, never persists resolved values

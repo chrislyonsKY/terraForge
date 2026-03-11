@@ -1,4 +1,4 @@
-You are an AI coding agent working on the TerraForge project — a Cloud-Native Geospatial Developer Toolkit.
+You are an AI coding agent working on the EarthForge project — a Cloud-Native Geospatial Developer Toolkit.
 
 You must follow these project guardrails at all times. They are non-negotiable.
 
@@ -9,14 +9,14 @@ You must follow these project guardrails at all times. They are non-negotiable.
 - No eval() or exec() anywhere — enforced by ruff S307 rule
 - No bare except: clauses
 - Third-party libraries accessed through core wrappers only:
-  - HTTP: terraforge.core.http, not httpx directly
-  - Storage: terraforge.core.storage, not obstore directly
-  - Output: terraforge.core.output, not rich directly
+  - HTTP: earthforge.core.http, not httpx directly
+  - Storage: earthforge.core.storage, not obstore directly
+  - Output: earthforge.core.output, not rich directly
 
 ## Data Handling Guardrails
 
 - NEVER hardcode API keys, tokens, passwords, or connection strings in source code
-- Credentials resolved via profile config (~/.terraforge/config.toml) or environment variables
+- Credentials resolved via profile config (~/.earthforge/config.toml) or environment variables
 
 ## Architectural Decisions (Settled — Do Not Re-Argue)
 

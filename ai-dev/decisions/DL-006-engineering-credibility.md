@@ -8,11 +8,11 @@
 
 Open-source geospatial projects face a credibility problem. The barrier to generating a scaffold with AI tools is near zero, which means the ecosystem is flooded with repos that have impressive READMEs, complex directory structures, and zero working code. Reviewers, potential contributors, and users have learned to recognize the signals: identical template files across modules, empty directories, generic descriptions, massive initial commits, and scope that claims everything without delivering anything.
 
-TerraForge must be distinguishable from this pattern on first inspection. The difference between an engineered project and a vibe-coded project is not the code itself — it's the evidence of deliberate decision-making at every layer.
+EarthForge must be distinguishable from this pattern on first inspection. The difference between an engineered project and a vibe-coded project is not the code itself — it's the evidence of deliberate decision-making at every layer.
 
 ## Decision
 
-TerraForge adopts the following principles to signal engineering intent:
+EarthForge adopts the following principles to signal engineering intent:
 
 ### 1. Nothing ships empty
 
@@ -24,7 +24,7 @@ Architecture decisions (this directory) exist because tradeoffs were evaluated. 
 
 ### 3. Scope boundaries are explicit and enforced
 
-TerraForge does not include a web server, a database, an ML pipeline, Kubernetes manifests, or Docker Compose files. These exclusions are stated in README.md, CONTRIBUTING.md, and CLAUDE.md. They exist because every feature that's outside scope dilutes focus and signals that the project is trying to be everything, which is the defining characteristic of projects that deliver nothing.
+EarthForge does not include a web server, a database, an ML pipeline, Kubernetes manifests, or Docker Compose files. These exclusions are stated in README.md, CONTRIBUTING.md, and CLAUDE.md. They exist because every feature that's outside scope dilutes focus and signals that the project is trying to be everything, which is the defining characteristic of projects that deliver nothing.
 
 ### 4. Git history tells a construction story
 
@@ -32,7 +32,7 @@ The first commits are architecture docs and decision records. Then core interfac
 
 ### 5. AI-assisted code is reviewed, not dumped
 
-AI tools accelerate development. They don't replace engineering judgment. Every function committed to TerraForge must be understood by the person committing it. Generated code that passes tests but can't be explained doesn't belong in the repo.
+AI tools accelerate development. They don't replace engineering judgment. Every function committed to EarthForge must be understood by the person committing it. Generated code that passes tests but can't be explained doesn't belong in the repo.
 
 ### 6. Contributing standards are specific, not generic
 

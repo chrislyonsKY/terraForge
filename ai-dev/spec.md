@@ -1,12 +1,12 @@
-# TerraForge Specification
+# EarthForge Specification
 
 > Read `CLAUDE.md` and `ai-dev/architecture.md` before this document.
 
 ## Product Definition
 
-TerraForge is a library-first, CLI-first toolkit for working with cloud-native geospatial data. It provides composable, scriptable, pipeline-friendly commands for STAC discovery, COG operations, GeoParquet queries, Zarr datacube access, and format conversion.
+EarthForge is a library-first, CLI-first toolkit for working with cloud-native geospatial data. It provides composable, scriptable, pipeline-friendly commands for STAC discovery, COG operations, GeoParquet queries, Zarr datacube access, and format conversion.
 
-TerraForge is NOT a platform, not a web application, not a GIS desktop tool. It is a developer toolkit that integrates with existing workflows.
+EarthForge is NOT a platform, not a web application, not a GIS desktop tool. It is a developer toolkit that integrates with existing workflows.
 
 ## Target Users
 
@@ -18,7 +18,7 @@ TerraForge is NOT a platform, not a web application, not a GIS desktop tool. It 
 
 ### Engineering Credibility
 - [ ] README leads with the problem statement, not the solution
-- [ ] README explicitly states what TerraForge is NOT
+- [ ] README explicitly states what EarthForge is NOT
 - [ ] ARCHITECTURE.md exists at repo root with system design and dependency graph
 - [ ] CONTRIBUTING.md states specific engineering standards (async-first, mypy strict, no print, commit format)
 - [ ] Git history shows incremental construction: docs → core interfaces → first working command
@@ -28,11 +28,11 @@ TerraForge is NOT a platform, not a web application, not a GIS desktop tool. It 
 
 ### Functional
 - [ ] Monorepo builds and installs: `pip install -e ".[all,dev]"` succeeds
-- [ ] `terraforge --version` prints version
-- [ ] `terraforge --help` shows all command groups (config, stac, raster, vector, cube, pipeline)
-- [ ] `terraforge info <local-cog.tif>` returns structured COG metadata (dimensions, CRS, bands, tile size, overview count)
-- [ ] `terraforge info <local.parquet>` returns structured GeoParquet metadata (schema, CRS, feature count, bbox)
-- [ ] `terraforge info` auto-detects format without user specifying it
+- [ ] `earthforge --version` prints version
+- [ ] `earthforge --help` shows all command groups (config, stac, raster, vector, cube, pipeline)
+- [ ] `earthforge info <local-cog.tif>` returns structured COG metadata (dimensions, CRS, bands, tile size, overview count)
+- [ ] `earthforge info <local.parquet>` returns structured GeoParquet metadata (schema, CRS, feature count, bbox)
+- [ ] `earthforge info` auto-detects format without user specifying it
 - [ ] `--output json` on all info commands produces valid JSON matching Pydantic model schema
 - [ ] `--output table` produces human-readable Rich table
 - [ ] CI passes: ruff lint, mypy strict, pytest (with mocked I/O), hatch build
@@ -48,13 +48,13 @@ TerraForge is NOT a platform, not a web application, not a GIS desktop tool. It 
 ## Milestone 1 Acceptance Criteria (STAC + Raster)
 
 ### Functional
-- [ ] `terraforge config init` creates `~/.terraforge/config.toml` with default profile
-- [ ] `terraforge stac search sentinel-2-l2a --bbox -85,37,-84,38` returns items from Element84 Earth Search
-- [ ] `terraforge stac search` works against Planetary Computer with `--profile planetary`
-- [ ] `terraforge stac info <item-url>` returns item metadata
-- [ ] `terraforge raster info <remote-cog-url>` reads metadata via HTTP range requests (no full download)
-- [ ] `terraforge raster preview <remote-cog-url>` generates a PNG quicklook from overview level
-- [ ] `terraforge raster validate <file>` checks COG compliance (tiling, overviews, IFD order)
+- [ ] `earthforge config init` creates `~/.earthforge/config.toml` with default profile
+- [ ] `earthforge stac search sentinel-2-l2a --bbox -85,37,-84,38` returns items from Element84 Earth Search
+- [ ] `earthforge stac search` works against Planetary Computer with `--profile planetary`
+- [ ] `earthforge stac info <item-url>` returns item metadata
+- [ ] `earthforge raster info <remote-cog-url>` reads metadata via HTTP range requests (no full download)
+- [ ] `earthforge raster preview <remote-cog-url>` generates a PNG quicklook from overview level
+- [ ] `earthforge raster validate <file>` checks COG compliance (tiling, overviews, IFD order)
 - [ ] All commands support `--output json` for pipeline integration
 
 ### Real-World Validation
@@ -67,10 +67,10 @@ TerraForge is NOT a platform, not a web application, not a GIS desktop tool. It 
 ## Milestone 2 Acceptance Criteria (Vector + Conversion)
 
 ### Functional
-- [ ] `terraforge vector info <file.parquet>` returns schema, CRS, feature count, bbox
-- [ ] `terraforge vector query <file.parquet> --bbox -85,37,-84,38` returns matching features using predicate pushdown
-- [ ] `terraforge vector convert buildings.shp --to geoparquet` produces valid GeoParquet with spatial index
-- [ ] `terraforge raster convert image.tif --to cog` produces valid COG with sensible defaults
+- [ ] `earthforge vector info <file.parquet>` returns schema, CRS, feature count, bbox
+- [ ] `earthforge vector query <file.parquet> --bbox -85,37,-84,38` returns matching features using predicate pushdown
+- [ ] `earthforge vector convert buildings.shp --to geoparquet` produces valid GeoParquet with spatial index
+- [ ] `earthforge raster convert image.tif --to cog` produces valid COG with sensible defaults
 - [ ] Rust extension builds and accelerates GeoParquet I/O (with fallback to pure Python)
 
 ### Real-World Validation
@@ -82,12 +82,12 @@ TerraForge is NOT a platform, not a web application, not a GIS desktop tool. It 
 ## Milestone 3 Acceptance Criteria (Pipeline + Cube)
 
 ### Functional
-- [ ] `terraforge pipeline validate pipeline.yaml` validates against JSON Schema
-- [ ] `terraforge pipeline run pipeline.yaml` executes a STAC→process→export workflow
+- [ ] `earthforge pipeline validate pipeline.yaml` validates against JSON Schema
+- [ ] `earthforge pipeline run pipeline.yaml` executes a STAC→process→export workflow
 - [ ] `for_each_item` processes STAC items concurrently with configurable parallelism
-- [ ] `terraforge cube info climate.zarr` returns dimensions, variables, chunks
-- [ ] `terraforge cube slice climate.zarr --time 2025-06 --bbox -85,37,-84,38` extracts a slice without downloading the full dataset
-- [ ] `terraforge stac fetch <item-url>` downloads assets in parallel with resume support
+- [ ] `earthforge cube info climate.zarr` returns dimensions, variables, chunks
+- [ ] `earthforge cube slice climate.zarr --time 2025-06 --bbox -85,37,-84,38` extracts a slice without downloading the full dataset
+- [ ] `earthforge stac fetch <item-url>` downloads assets in parallel with resume support
 
 ### Real-World Validation
 - [ ] `VR-M3-pipeline-run.md` — NDVI pipeline from `test-data-plan.md` executed end-to-end, output COGs validated
@@ -97,9 +97,9 @@ TerraForge is NOT a platform, not a web application, not a GIS desktop tool. It 
 
 ## Milestone 4 Acceptance Criteria (Community + Polish)
 
-- [ ] `terraforge explore` launches interactive TUI for STAC browsing and dataset inspection
-- [ ] `terraforge bench vector-query` produces benchmark comparison (GeoParquet vs Shapefile)
-- [ ] `terraforge completions bash|zsh|fish` generates shell completions
+- [ ] `earthforge explore` launches interactive TUI for STAC browsing and dataset inspection
+- [ ] `earthforge bench vector-query` produces benchmark comparison (GeoParquet vs Shapefile)
+- [ ] `earthforge completions bash|zsh|fish` generates shell completions
 - [ ] Documentation site (mkdocs-material) deployed with tutorials, CLI reference, and architecture guide
 - [ ] v0.1.0 published to PyPI
 - [ ] README includes shields.io badges: license, Python version, PyPI version, CI status
@@ -107,6 +107,6 @@ TerraForge is NOT a platform, not a web application, not a GIS desktop tool. It 
 ## Non-Functional Requirements
 
 - **Performance**: COG preview from remote URL completes in <5 seconds for a 10GB file on a reasonable connection
-- **Install size**: `pip install terraforge[stac]` installs <50MB of dependencies (excluding GDAL)
+- **Install size**: `pip install earthforge[stac]` installs <50MB of dependencies (excluding GDAL)
 - **Compatibility**: Works on Linux, macOS, Windows. Rust extension provides pre-built wheels for all three.
 - **Accessibility**: CLI output respects `NO_COLOR` environment variable and `--no-color` flag

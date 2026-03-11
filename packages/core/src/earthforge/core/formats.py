@@ -1,4 +1,4 @@
-"""TerraForge centralized format detection.
+"""EarthForge centralized format detection.
 
 Identifies geospatial file formats using a three-stage detection chain:
 
@@ -16,7 +16,7 @@ full downloads.
 
 Usage::
 
-    from terraforge.core.formats import detect, detect_sync, FormatType
+    from earthforge.core.formats import detect, detect_sync, FormatType
 
     fmt = await detect("/path/to/file.tif")
     assert fmt == FormatType.GEOTIFF
@@ -31,10 +31,10 @@ from enum import StrEnum
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from terraforge.core.errors import FormatDetectionError
+from earthforge.core.errors import FormatDetectionError
 
 if TYPE_CHECKING:
-    from terraforge.core.config import TerraForgeProfile
+    from earthforge.core.config import EarthForgeProfile
 
 logger = logging.getLogger(__name__)
 
@@ -42,7 +42,7 @@ logger = logging.getLogger(__name__)
 class FormatType(StrEnum):
     """Known geospatial file format identifiers.
 
-    Members map to canonical format names used throughout TerraForge for
+    Members map to canonical format names used throughout EarthForge for
     dispatch, validation, and output labeling.
     """
 
@@ -271,7 +271,7 @@ async def _read_header_local(source: str) -> bytes:
         raise FormatDetectionError(f"Cannot read {source}: {exc}") from exc
 
 
-async def _read_header_remote(source: str, profile: TerraForgeProfile | None) -> bytes:
+async def _read_header_remote(source: str, profile: EarthForgeProfile | None) -> bytes:
     """Read the first 512 bytes from a remote URL via HTTP range request.
 
     Parameters:
@@ -284,8 +284,8 @@ async def _read_header_remote(source: str, profile: TerraForgeProfile | None) ->
     Raises:
         FormatDetectionError: If the fetch fails.
     """
-    from terraforge.core.config import TerraForgeProfile as _Profile
-    from terraforge.core.http import get_bytes
+    from earthforge.core.config import EarthForgeProfile as _Profile
+    from earthforge.core.http import get_bytes
 
     if profile is None:
         profile = _Profile(name="_detect", storage_backend="local")
@@ -342,7 +342,7 @@ def _detect_by_extension(source: str) -> FormatType | None:
 async def detect(
     source: str,
     *,
-    profile: TerraForgeProfile | None = None,
+    profile: EarthForgeProfile | None = None,
 ) -> FormatType:
     """Detect the geospatial format of a file or URL.
 
@@ -395,7 +395,7 @@ async def detect(
 def detect_sync(
     source: str,
     *,
-    profile: TerraForgeProfile | None = None,
+    profile: EarthForgeProfile | None = None,
 ) -> FormatType:
     """Synchronous convenience wrapper for :func:`detect`.
 

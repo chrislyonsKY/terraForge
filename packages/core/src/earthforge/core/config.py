@@ -1,7 +1,7 @@
-"""TerraForge configuration management.
+"""EarthForge configuration management.
 
 Provides profile-based configuration backed by a TOML file at
-``~/.terraforge/config.toml``. Each profile bundles a STAC API endpoint,
+``~/.earthforge/config.toml``. Each profile bundles a STAC API endpoint,
 a storage backend selection, and backend-specific options (credentials,
 regions, endpoints). The ``default`` profile is used when no ``--profile``
 flag is given.
@@ -31,7 +31,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Self
 
-from terraforge.core.errors import ConfigError
+from earthforge.core.errors import ConfigError
 
 logger = logging.getLogger(__name__)
 
@@ -42,8 +42,8 @@ VALID_BACKENDS = frozenset({"s3", "gcs", "azure", "local"})
 DEFAULT_STAC_API = "https://earth-search.aws.element84.com/v1"
 
 _DEFAULT_CONFIG = """\
-# TerraForge configuration
-# Documentation: https://terraforge-geo.github.io/terraforge/config
+# EarthForge configuration
+# Documentation: https://earthforge-geo.github.io/earthforge/config
 
 [profiles.default]
 stac_api = "https://earth-search.aws.element84.com/v1"
@@ -55,7 +55,7 @@ root = "."
 
 
 @dataclass(frozen=True, slots=True)
-class TerraForgeProfile:
+class EarthForgeProfile:
     """A named configuration profile.
 
     Parameters:
@@ -90,7 +90,7 @@ class TerraForgeProfile:
             data: The TOML table for this profile.
 
         Returns:
-            A validated ``TerraForgeProfile``.
+            A validated ``EarthForgeProfile``.
 
         Raises:
             ConfigError: If required fields are missing or have wrong types.
@@ -125,12 +125,12 @@ class TerraForgeProfile:
 
 
 def config_dir() -> Path:
-    """Return the TerraForge configuration directory.
+    """Return the EarthForge configuration directory.
 
     Returns:
-        ``Path("~/.terraforge")`` expanded to an absolute path.
+        ``Path("~/.earthforge")`` expanded to an absolute path.
     """
-    return Path.home() / ".terraforge"
+    return Path.home() / ".earthforge"
 
 
 def _config_file() -> Path:
@@ -138,7 +138,7 @@ def _config_file() -> Path:
     return config_dir() / "config.toml"
 
 
-async def load_profile(name: str = "default") -> TerraForgeProfile:
+async def load_profile(name: str = "default") -> EarthForgeProfile:
     """Load a named profile from the configuration file.
 
     If no config file exists, returns a built-in default profile (for the
@@ -148,7 +148,7 @@ async def load_profile(name: str = "default") -> TerraForgeProfile:
         name: Profile name to load.
 
     Returns:
-        The resolved ``TerraForgeProfile``.
+        The resolved ``EarthForgeProfile``.
 
     Raises:
         ConfigError: If the config file is malformed, the profile doesn't exist,
@@ -159,7 +159,7 @@ async def load_profile(name: str = "default") -> TerraForgeProfile:
     if not path.exists():
         logger.debug("No config file at %s, using built-in defaults", path)
         if name == "default":
-            return TerraForgeProfile(
+            return EarthForgeProfile(
                 name="default",
                 stac_api=DEFAULT_STAC_API,
                 storage_backend="local",
@@ -167,7 +167,7 @@ async def load_profile(name: str = "default") -> TerraForgeProfile:
             )
         raise ConfigError(
             f"Profile {name!r} not found: no config file at {path}. "
-            f"Run 'terraforge config init' to create one."
+            f"Run 'earthforge config init' to create one."
         )
 
     try:
@@ -190,17 +190,17 @@ async def load_profile(name: str = "default") -> TerraForgeProfile:
     if not isinstance(profile_data, dict):
         raise ConfigError(f"Profile {name!r} must be a TOML table")
 
-    return TerraForgeProfile.from_dict(name, profile_data)
+    return EarthForgeProfile.from_dict(name, profile_data)
 
 
-def load_profile_sync(name: str = "default") -> TerraForgeProfile:
+def load_profile_sync(name: str = "default") -> EarthForgeProfile:
     """Synchronous convenience wrapper for :func:`load_profile`.
 
     Parameters:
         name: Profile name to load.
 
     Returns:
-        The resolved ``TerraForgeProfile``.
+        The resolved ``EarthForgeProfile``.
 
     Raises:
         ConfigError: Same conditions as :func:`load_profile`.

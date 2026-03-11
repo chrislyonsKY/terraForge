@@ -1,6 +1,6 @@
 # evals/
 
-Prompt evaluation infrastructure using [promptfoo](https://www.promptfoo.dev/). Tests that TerraForge's AI development docs (agents, templates, guardrails) produce correct, consistent, and safe output across models.
+Prompt evaluation infrastructure using [promptfoo](https://www.promptfoo.dev/). Tests that EarthForge's AI development docs (agents, templates, guardrails) produce correct, consistent, and safe output across models.
 
 ## Eval Suites
 

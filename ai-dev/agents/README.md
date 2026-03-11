@@ -1,6 +1,6 @@
 # ai-dev/agents/
 
-Specialized agent configurations for TerraForge development. Each agent reads `CLAUDE.md` first (including the teach-as-you-build protocol), then applies its domain expertise.
+Specialized agent configurations for EarthForge development. Each agent reads `CLAUDE.md` first (including the teach-as-you-build protocol), then applies its domain expertise.
 
 | Agent | File | Primary Use |
 |---|---|---|
@@ -15,7 +15,7 @@ Specialized agent configurations for TerraForge development. Each agent reads `C
 
 Reference from a Claude Code or Copilot prompt:
 ```
-Read CLAUDE.md, then ai-dev/agents/python_expert.md. Implement terraforge.core.storage.
+Read CLAUDE.md, then ai-dev/agents/python_expert.md. Implement earthforge.core.storage.
 ```
 
 ## All Agents Must

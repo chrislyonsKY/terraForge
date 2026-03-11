@@ -6,11 +6,11 @@
 
 ## Context
 
-TerraForge's `ai-dev/` infrastructure (agent prompts, guardrails, prompt templates) is code — it directly determines the quality of AI-generated output. Changes to CLAUDE.md, agent configurations, or guardrail wording can silently degrade the code that agents produce. There's no automated way to detect when an edit to `ai-dev/agents/python_expert.md` causes the agent to stop producing async-first code or start using `print()` in library modules.
+EarthForge's `ai-dev/` infrastructure (agent prompts, guardrails, prompt templates) is code — it directly determines the quality of AI-generated output. Changes to CLAUDE.md, agent configurations, or guardrail wording can silently degrade the code that agents produce. There's no automated way to detect when an edit to `ai-dev/agents/python_expert.md` causes the agent to stop producing async-first code or start using `print()` in library modules.
 
 ## Decision
 
-Use promptfoo as the evaluation framework for TerraForge's AI development infrastructure. Three eval suites run in CI on every PR that touches `ai-dev/`, `CLAUDE.md`, `copilot-instructions.md`, or `evals/`:
+Use promptfoo as the evaluation framework for EarthForge's AI development infrastructure. Three eval suites run in CI on every PR that touches `ai-dev/`, `CLAUDE.md`, `copilot-instructions.md`, or `evals/`:
 
 1. **Agent Prompt Eval** — Feeds agent system prompts + coding tasks to Claude Opus 4 and GPT-4o, then checks output for structural code patterns (async-first, structured returns, error handling, no direct imports) via JavaScript assertions and semantic checks via llm-rubric.
 

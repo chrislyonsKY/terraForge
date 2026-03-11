@@ -1,11 +1,11 @@
-"""Tests for the TerraForge CLI main app."""
+"""Tests for the EarthForge CLI main app."""
 
 from __future__ import annotations
 
 from typer.testing import CliRunner
 
-from terraforge.cli.main import app
-from terraforge.core import __version__
+from earthforge.cli.main import app
+from earthforge.core import __version__
 
 runner = CliRunner()
 
@@ -16,7 +16,7 @@ class TestRootApp:
     def test_help(self) -> None:
         result = runner.invoke(app, ["--help"])
         assert result.exit_code == 0
-        assert "terraforge" in result.output.lower() or "cloud-native" in result.output.lower()
+        assert "earthforge" in result.output.lower() or "cloud-native" in result.output.lower()
 
     def test_version(self) -> None:
         result = runner.invoke(app, ["--version"])

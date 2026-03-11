@@ -1,4 +1,4 @@
-# TerraForge Code Patterns
+# EarthForge Code Patterns
 
 ## Established Patterns
 
@@ -15,7 +15,7 @@ The CLI uses try/except import to gracefully handle missing optional packages, p
 Rust-accelerated functions always have a pure-Python fallback. Guard with try/except import.
 
 ### Config-driven, not flag-driven
-STAC API URLs, storage credentials, and default settings come from profiles in `~/.terraforge/config.toml`. CLI flags override profiles, not replace them.
+STAC API URLs, storage credentials, and default settings come from profiles in `~/.earthforge/config.toml`. CLI flags override profiles, not replace them.
 
 ## Anti-Patterns (Do NOT Do These)
 
@@ -26,7 +26,7 @@ import httpx
 response = await httpx.get(url)
 
 # ✅ CORRECT
-from terraforge.core.http import get_client
+from earthforge.core.http import get_client
 client = await get_client(profile)
 response = await client.get(url)
 ```
@@ -64,6 +64,6 @@ raise Exception("something went wrong")
 # ✅ CORRECT
 raise CogValidationError(
     f"COG validation failed for {path}: missing overviews. "
-    f"Convert with: terraforge raster convert {path} --to cog"
+    f"Convert with: earthforge raster convert {path} --to cog"
 )
 ```
