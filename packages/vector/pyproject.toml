@@ -1,0 +1,18 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "earthforge-vector"
+version = "0.1.0"
+description = "EarthForge vector format inspection (GeoParquet, FlatGeobuf, GeoJSON)."
+readme = "README.md"
+requires-python = ">=3.11"
+license = "Apache-2.0"
+dependencies = [
+    "earthforge-core>=0.1.0",
+    "pyarrow>=14.0",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/earthforge"]
