@@ -1,0 +1,45 @@
+You are an AI coding agent working on the TerraForge project — a Cloud-Native Geospatial Developer Toolkit.
+
+You must follow these project guardrails at all times. They are non-negotiable.
+
+## Coding Standards Guardrails
+
+- All I/O functions must be async-first
+- No print() statements in library code — enforced by ruff T20 rule
+- No eval() or exec() anywhere — enforced by ruff S307 rule
+- No bare except: clauses
+- Third-party libraries accessed through core wrappers only:
+  - HTTP: terraforge.core.http, not httpx directly
+  - Storage: terraforge.core.storage, not obstore directly
+  - Output: terraforge.core.output, not rich directly
+
+## Data Handling Guardrails
+
+- NEVER hardcode API keys, tokens, passwords, or connection strings in source code
+- Credentials resolved via profile config (~/.terraforge/config.toml) or environment variables
+
+## Architectural Decisions (Settled — Do Not Re-Argue)
+
+- DL-002: Async-first I/O. Async is the primary API. Sync wrappers are convenience.
+- DL-003: obstore over fsspec. Rust-backed, zero-copy Arrow integration, simpler auth.
+- DL-005: packages/rs/ uses maturin build backend, NOT hatchling.
+
+## CLI Architecture
+
+The CLI is a thin dispatch layer. No business logic in CLI handlers. Handlers parse args, call library functions, format output.
+
+## What NOT To Do
+
+- Do NOT use fsspec, requests, urllib3, boto3 directly
+- Do NOT use eval() or exec()
+- Do NOT use print() in library code
+- Do NOT hardcode credentials
+- Do NOT put business logic in CLI handlers
+- Do NOT use hatchling for the Rust package
+- Do NOT make synchronous APIs primary
+
+## Task
+
+The user has asked:
+
+{{task}}

@@ -1,0 +1,152 @@
+name: Prompt Eval
+
+on:
+  pull_request:
+    paths:
+      - 'ai-dev/agents/**'
+      - 'ai-dev/guardrails/**'
+      - 'ai-dev/prompt-templates.md'
+      - 'CLAUDE.md'
+      - '.github/copilot-instructions.md'
+      - 'evals/**'
+
+jobs:
+  eval-agents:
+    name: Agent Prompt Eval
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Cache promptfoo
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/promptfoo
+          key: ${{ runner.os }}-promptfoo-agents-${{ hashFiles('evals/promptfooconfig.yaml') }}
+
+      - name: Run agent evals
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          PROMPTFOO_CACHE_PATH: ~/.cache/promptfoo
+        working-directory: evals
+        run: |
+          npx promptfoo@latest eval \
+            -c promptfooconfig.yaml \
+            -o results-agents.json \
+            -o report-agents.html
+
+      - name: Check quality gate (agents)
+        working-directory: evals
+        run: |
+          FAILURES=$(jq '.results.stats.failures' results-agents.json)
+          TOTAL=$(jq '.results.stats.successes + .results.stats.failures' results-agents.json)
+          echo "Agent eval: $((TOTAL - FAILURES))/$TOTAL passed"
+          if [ "$FAILURES" -gt 0 ]; then
+            echo "::error::Agent prompt eval failed with $FAILURES failures"
+            exit 1
+          fi
+
+      - name: Upload agent eval results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: eval-results-agents
+          path: |
+            evals/results-agents.json
+            evals/report-agents.html
+
+  eval-redteam:
+    name: Guardrail Red-Team
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Cache promptfoo
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/promptfoo
+          key: ${{ runner.os }}-promptfoo-redteam-${{ hashFiles('evals/promptfooconfig.redteam.yaml') }}
+
+      - name: Run red-team evals
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          PROMPTFOO_CACHE_PATH: ~/.cache/promptfoo
+        working-directory: evals
+        run: |
+          npx promptfoo@latest eval \
+            -c promptfooconfig.redteam.yaml \
+            -o results-redteam.json \
+            -o report-redteam.html
+
+      - name: Check quality gate (red-team)
+        working-directory: evals
+        run: |
+          FAILURES=$(jq '.results.stats.failures' results-redteam.json)
+          TOTAL=$(jq '.results.stats.successes + .results.stats.failures' results-redteam.json)
+          echo "Red-team eval: $((TOTAL - FAILURES))/$TOTAL guardrails held"
+          if [ "$FAILURES" -gt 0 ]; then
+            echo "::error::Red-team eval: $FAILURES guardrails breached"
+            exit 1
+          fi
+
+      - name: Upload red-team results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: eval-results-redteam
+          path: |
+            evals/results-redteam.json
+            evals/report-redteam.html
+
+  eval-templates:
+    name: Template Consistency
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Cache promptfoo
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/promptfoo
+          key: ${{ runner.os }}-promptfoo-templates-${{ hashFiles('evals/promptfooconfig.templates.yaml') }}
+
+      - name: Run template evals
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          PROMPTFOO_CACHE_PATH: ~/.cache/promptfoo
+        working-directory: evals
+        run: |
+          npx promptfoo@latest eval \
+            -c promptfooconfig.templates.yaml \
+            -o results-templates.json \
+            -o report-templates.html
+
+      - name: Check quality gate (templates)
+        working-directory: evals
+        run: |
+          FAILURES=$(jq '.results.stats.failures' results-templates.json)
+          TOTAL=$(jq '.results.stats.successes + .results.stats.failures' results-templates.json)
+          echo "Template eval: $((TOTAL - FAILURES))/$TOTAL passed"
+          if [ "$FAILURES" -gt 0 ]; then
+            echo "::warning::Template eval had $FAILURES failures — review report"
+          fi
+
+      - name: Upload template results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: eval-results-templates
+          path: |
+            evals/results-templates.json
+            evals/report-templates.html

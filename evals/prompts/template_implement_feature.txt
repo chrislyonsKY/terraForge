@@ -1,0 +1,11 @@
+Read CLAUDE.md, then {{agent_file}}, then {{guardrail_file}}.
+
+Implement {{function_name}} in packages/{{package}}/src/terraforge/{{package}}/{{module}}.
+
+Requirements:
+- {{requirement_1}}
+- {{requirement_2}}
+
+Follow the teach-as-you-build protocol: after writing the function, explain what you wrote, why you made the choices you made, how it connects to the rest of the system, and what to watch for.
+
+Show me the plan first. Do not write code until I type Engage.

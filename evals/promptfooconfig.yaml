@@ -1,0 +1,142 @@
+# yaml-language-server: $schema=https://promptfoo.dev/config-schema.json
+description: >
+  TerraForge Agent Prompt Evaluation — Tests whether ai-dev/agents/ produce code
+  that follows project conventions, guardrails, and architectural patterns.
+
+providers:
+  - id: anthropic:messages:claude-opus-4-6
+    label: claude-opus-4
+  - id: openai:gpt-4o
+    label: gpt-4o
+
+defaultTest:
+  assert:
+    # Cost guard — agent evals shouldn't exceed $0.50 per test case
+    - type: cost
+      threshold: 0.50
+    # Latency guard — 60s max per generation
+    - type: latency
+      threshold: 60000
+
+# --------------------------------------------------------------------------
+# Test Suite: Python Expert Agent
+# Verifies that the python_expert agent prompt produces code following
+# TerraForge async-first, structured-return, no-print conventions.
+# --------------------------------------------------------------------------
+
+prompts:
+  - id: file://prompts/python_expert_implement.txt
+    label: python-expert-implement
+
+tests:
+  # ------------------------------------------------------------------
+  # Test 1: Async-first pattern
+  # The agent should produce an async function with a sync wrapper
+  # ------------------------------------------------------------------
+  - description: "Python Expert produces async-first function with sync wrapper"
+    vars:
+      task: >
+        Implement a function called inspect_geoparquet in packages/vector/src/terraforge/vector/info.py
+        that reads GeoParquet metadata (schema, CRS, feature count, bbox) from a local file.
+    assert:
+      - type: javascript
+        value: file://assertions/check_async_pattern.js
+      - type: not-icontains
+        value: "import requests"
+      - type: not-icontains
+        value: "import boto3"
+      - type: icontains
+        value: "async def"
+      - type: icontains
+        value: "_sync"
+      - type: llm-rubric
+        value: >
+          The code must define an async function as the primary API and a sync wrapper
+          with a _sync suffix. The async function must have a complete docstring with
+          Args, Returns, and Raises sections. The function must return a frozen dataclass
+          or Pydantic model, not a raw dict.
+
+  # ------------------------------------------------------------------
+  # Test 2: Structured return types
+  # The agent should never return raw dicts
+  # ------------------------------------------------------------------
+  - description: "Python Expert returns structured types, not raw dicts"
+    vars:
+      task: >
+        Implement a function called validate_cog in packages/raster/src/terraforge/raster/validate.py
+        that checks whether a GeoTIFF file is a valid Cloud Optimized GeoTIFF.
+        Check for: internal tiling, overview presence, and IFD ordering.
+    assert:
+      - type: javascript
+        value: file://assertions/check_structured_return.js
+      - type: icontains
+        value: "dataclass"
+      - type: not-icontains
+        value: "-> dict"
+      - type: llm-rubric
+        value: >
+          The function must return a structured type (dataclass or Pydantic model)
+          with named fields, not a dict or tuple. The return type must include
+          a boolean validity flag and a list of warnings/issues found.
+
+  # ------------------------------------------------------------------
+  # Test 3: Error handling — no happy-path-only code
+  # ------------------------------------------------------------------
+  - description: "Python Expert includes error handling, not happy-path-only"
+    vars:
+      task: >
+        Implement a function called fetch_stac_item in packages/stac/src/terraforge/stac/info.py
+        that fetches and parses a STAC item from a URL.
+    assert:
+      - type: javascript
+        value: file://assertions/check_error_handling.js
+      - type: icontains
+        value: "TerraForgeError"
+      - type: llm-rubric
+        value: >
+          The code must handle at least: network errors (timeout, connection refused),
+          invalid JSON responses, and missing required STAC fields. Exceptions must be
+          specific TerraForgeError subclasses with actionable messages, not bare Exception.
+
+  # ------------------------------------------------------------------
+  # Test 4: No direct third-party imports in domain code
+  # ------------------------------------------------------------------
+  - description: "Python Expert uses core wrappers, not direct third-party imports"
+    vars:
+      task: >
+        Implement a function called download_asset in packages/stac/src/terraforge/stac/fetch.py
+        that downloads a STAC asset from a URL to a local path with progress reporting.
+    assert:
+      - type: javascript
+        value: file://assertions/check_no_direct_imports.js
+      - type: not-contains
+        value: "import httpx"
+      - type: not-contains
+        value: "import obstore"
+      - type: not-contains
+        value: "from rich"
+      - type: llm-rubric
+        value: >
+          The code must use terraforge.core.http for HTTP calls, terraforge.core.storage
+          for cloud storage access, and terraforge.core.output for progress reporting.
+          It must NOT import httpx, obstore, boto3, or rich directly.
+
+  # ------------------------------------------------------------------
+  # Test 5: Teach-as-you-build compliance
+  # Agent should explain after generating the code
+  # ------------------------------------------------------------------
+  - description: "Python Expert follows teach-as-you-build protocol"
+    vars:
+      task: >
+        Implement the format detection function detect() in
+        packages/core/src/terraforge/core/formats.py that identifies whether a
+        file is a COG, GeoParquet, Zarr, FlatGeobuf, or unknown based on magic bytes.
+    assert:
+      - type: llm-rubric
+        value: >
+          After presenting the code, the response must include an explanation section
+          that covers: (1) what was written, (2) why specific choices were made,
+          (3) how the component connects to the rest of the system, and
+          (4) what to watch for. The explanation should read as a teaching narrative,
+          not a bullet list. The response should end by asking if the user is
+          ready for the next component.

@@ -1,0 +1,66 @@
+# yaml-language-server: $schema=https://promptfoo.dev/config-schema.json
+description: >
+  TerraForge Prompt Template Evaluation — Tests that prompt templates from
+  ai-dev/prompt-templates.md produce consistent, useful output across models.
+
+providers:
+  - id: anthropic:messages:claude-opus-4-6
+    label: claude-opus-4
+  - id: openai:gpt-4o
+    label: gpt-4o
+
+prompts:
+  - id: file://prompts/template_implement_feature.txt
+    label: implement-feature-template
+
+defaultTest:
+  assert:
+    - type: cost
+      threshold: 0.50
+
+tests:
+  # ------------------------------------------------------------------
+  # Template Test 1: "Implement a New Domain Function" template
+  # Both models should produce a plan-first response
+  # ------------------------------------------------------------------
+  - description: "Implement template produces plan before code"
+    vars:
+      agent_file: ai-dev/agents/python_expert.md
+      guardrail_file: ai-dev/guardrails/coding-standards.md
+      function_name: detect_format
+      package: core
+      module: formats.py
+      requirement_1: "Identify COG, GeoParquet, Zarr, and FlatGeobuf from magic bytes"
+      requirement_2: "Return a FormatType enum value"
+    assert:
+      - type: llm-rubric
+        value: >
+          The response must present a plan BEFORE writing code. The plan should
+          identify which files will be created or modified, what interfaces will
+          be implemented, and what the function signature will look like. The
+          response should NOT jump straight into code generation.
+      - type: icontains
+        value: "Engage"
+      - type: llm-rubric
+        value: >
+          The response must reference waiting for the user to type "Engage"
+          before writing code, consistent with the TerraForge workflow protocol.
+
+  # ------------------------------------------------------------------
+  # Template Test 2: Code review template produces structured findings
+  # ------------------------------------------------------------------
+  - description: "Review template produces numbered findings with severity"
+    vars:
+      agent_file: ai-dev/agents/architect.md
+      guardrail_file: ai-dev/guardrails/coding-standards.md
+      function_name: search_catalog
+      package: stac
+      module: search.py
+      requirement_1: "Review for adherence to async-first convention"
+      requirement_2: "Review for proper error handling"
+    assert:
+      - type: llm-rubric
+        value: >
+          The response must produce a numbered list of findings, each with a
+          severity level (Critical, Warning, or Info). Findings must be specific
+          and actionable, not generic advice.
