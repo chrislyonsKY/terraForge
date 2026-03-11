@@ -1,0 +1,115 @@
+[build-system]
+requires = ["hatchling>=1.18"]
+build-backend = "hatchling.build"
+
+[project]
+name = "terraforge"
+version = "0.1.0"
+description = "Cloud-native geospatial developer toolkit"
+readme = "README.md"
+license = "Apache-2.0"
+requires-python = ">=3.11"
+authors = [{ name = "TerraForge Contributors" }]
+keywords = ["geospatial", "cloud-native", "stac", "cog", "geoparquet", "cli"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: Apache Software License",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Scientific/Engineering :: GIS",
+    "Typing :: Typed",
+]
+dependencies = [
+    "terraforge-core>=0.1.0",
+]
+
+[project.optional-dependencies]
+cli = ["terraforge-cli>=0.1.0"]
+stac = ["terraforge-stac>=0.1.0"]
+raster = ["terraforge-raster>=0.1.0"]
+vector = ["terraforge-vector>=0.1.0"]
+cube = ["terraforge-cube>=0.1.0"]
+all = [
+    "terraforge[cli,stac,raster,vector,cube]",
+]
+dev = [
+    "ruff>=0.4",
+    "mypy>=1.10",
+    "pytest>=8.0",
+    "pytest-asyncio>=0.23",
+    "respx>=0.21",
+    "coverage>=7.0",
+]
+
+[project.urls]
+Repository = "https://github.com/terraforge-geo/terraforge"
+Documentation = "https://terraforge-geo.github.io/terraforge"
+
+[tool.hatch.build.targets.wheel]
+packages = []
+
+# ---------------------------------------------------------------------------
+# Hatch workspace: each package under packages/ is a separate editable install
+# ---------------------------------------------------------------------------
+[tool.hatch.workspace]
+members = ["packages/*"]
+
+# ---------------------------------------------------------------------------
+# Ruff — linting and formatting
+# ---------------------------------------------------------------------------
+[tool.ruff]
+target-version = "py311"
+line-length = 99
+src = ["packages/*/src"]
+
+[tool.ruff.lint]
+select = [
+    "E",    # pycodestyle errors
+    "W",    # pycodestyle warnings
+    "F",    # pyflakes
+    "I",    # isort
+    "N",    # pep8-naming
+    "UP",   # pyupgrade
+    "B",    # flake8-bugbear
+    "A",    # flake8-builtins
+    "T20",  # flake8-print — no print() in library code
+    "S",    # flake8-bandit — security
+    "RUF",  # ruff-specific rules
+]
+ignore = [
+    "S101",  # allow assert in tests
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**/*.py" = ["S101", "T20"]
+"packages/cli/**/*.py" = ["T20", "B008"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["terraforge"]
+
+# ---------------------------------------------------------------------------
+# Mypy — strict type checking
+# ---------------------------------------------------------------------------
+[tool.mypy]
+python_version = "3.11"
+strict = true
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+namespace_packages = true
+explicit_package_bases = true
+mypy_path = "packages/core/src:packages/cli/src"
+
+# ---------------------------------------------------------------------------
+# Pytest
+# ---------------------------------------------------------------------------
+[tool.pytest.ini_options]
+testpaths = ["packages/core/tests", "packages/cli/tests"]
+asyncio_mode = "auto"
+markers = [
+    "integration: marks tests requiring real network access (deselect with '-m not integration')",
+]
