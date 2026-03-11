@@ -1,0 +1,22 @@
+[build-system]
+requires = ["hatchling>=1.18"]
+build-backend = "hatchling.build"
+
+[project]
+name = "terraforge-cli"
+version = "0.1.0"
+description = "TerraForge CLI — thin Typer dispatch layer for cloud-native geospatial operations"
+readme = "README.md"
+license = "Apache-2.0"
+requires-python = ">=3.11"
+dependencies = [
+    "terraforge-core>=0.1.0",
+    "typer>=0.9",
+]
+
+[project.scripts]
+terraforge = "terraforge.cli.main:app"
+tf = "terraforge.cli.main:app"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/terraforge"]
