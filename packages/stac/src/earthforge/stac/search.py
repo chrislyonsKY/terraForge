@@ -67,6 +67,7 @@ class SearchResultItem(BaseModel):
         collection: The collection this item belongs to.
         datetime: The item's datetime as ISO string, or ``None`` for date ranges.
         bbox: Bounding box ``[west, south, east, north]``.
+        properties: Raw STAC properties dict (``eo:cloud_cover``, ``platform``, etc.).
         asset_count: Number of assets in this item.
         assets: List of asset metadata (populated when detail is requested).
         self_link: URL to the item's self link.
@@ -76,6 +77,7 @@ class SearchResultItem(BaseModel):
     collection: str | None = Field(default=None, title="Collection")
     datetime: str | None = Field(default=None, title="Datetime")
     bbox: list[float] | None = Field(default=None, title="Bounding Box")
+    properties: dict[str, object] = Field(default_factory=dict, title="Properties")
     asset_count: int = Field(default=0, title="Assets")
     assets: list[AssetInfo] = Field(default_factory=list, title="Asset Details")
     self_link: str | None = Field(default=None, title="Self Link")
@@ -201,6 +203,7 @@ def _do_search(
                 collection=item.collection_id,
                 datetime=dt_str,
                 bbox=list(item.bbox) if item.bbox else None,
+                properties=dict(item.properties) if item.properties else {},
                 asset_count=len(item.assets),
                 assets=assets,
                 self_link=self_link,

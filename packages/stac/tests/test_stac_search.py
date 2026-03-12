@@ -32,7 +32,11 @@ def _make_mock_item(
     item.id = item_id
     item.collection_id = collection_id
     item.datetime = dt or datetime(2024, 6, 15, 10, 30, 0, tzinfo=UTC)
-    item.properties = {"datetime": "2024-06-15T10:30:00Z"}
+    item.properties = {
+        "datetime": "2024-06-15T10:30:00Z",
+        "eo:cloud_cover": 12.5,
+        "platform": "sentinel-2a",
+    }
     item.bbox = bbox or [-85.0, 37.0, -84.0, 38.0]
 
     # Assets
@@ -80,6 +84,8 @@ class TestSearchCatalog:
         assert result.items[0].id == "S2A_test"
         assert result.items[0].collection == "sentinel-2-l2a"
         assert result.items[0].asset_count == 1
+        assert result.items[0].properties["eo:cloud_cover"] == 12.5
+        assert result.items[0].properties["platform"] == "sentinel-2a"
 
     @patch("pystac_client.Client")
     async def test_empty_search(self, mock_client_cls: MagicMock) -> None:

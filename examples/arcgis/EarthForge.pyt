@@ -20,7 +20,6 @@ from __future__ import annotations
 
 import asyncio
 import json
-import os
 import sys
 from pathlib import Path
 
@@ -53,13 +52,14 @@ def _ensure_imports():
     # Try importing first — if it works, we're installed
     try:
         import earthforge.core.config  # noqa: F401
+
         return
     except ImportError:
         pass
 
     # Look for dev checkout relative to this .pyt file
     pyt_dir = Path(__file__).resolve().parent
-    repo_root = pyt_dir.parent  # examples/arcgis -> repo root
+    repo_root = pyt_dir.parent.parent  # examples/arcgis -> examples -> repo root
 
     for pkg in ["core", "stac", "raster", "vector"]:
         src = repo_root / "packages" / pkg / "src"
@@ -84,6 +84,7 @@ def _run_async(coro):
         if loop.is_running():
             # Jupyter/Pro notebook context — use nest_asyncio if available
             import nest_asyncio
+
             nest_asyncio.apply()
             return loop.run_until_complete(coro)
         else:
@@ -95,6 +96,7 @@ def _run_async(coro):
 # ─────────────────────────────────────────────────────────────────────────────
 # Tool: STAC Search
 # ─────────────────────────────────────────────────────────────────────────────
+
 
 class STACSearch:
     """Search a STAC catalog for geospatial assets.
@@ -198,23 +200,22 @@ class STACSearch:
         if date_range:
             messages.addMessage(f"  Date range: {date_range}")
 
-        result = _run_async(search_catalog(
-            profile,
-            collections=[collection] if collection else None,
-            bbox=bbox,
-            datetime_range=date_range or None,
-            max_items=max_items,
-        ))
+        result = _run_async(
+            search_catalog(
+                profile,
+                collections=[collection] if collection else None,
+                bbox=bbox,
+                datetime_range=date_range or None,
+                max_items=max_items,
+            )
+        )
 
         messages.addMessage(f"Found {result.returned} items (matched: {result.matched})")
 
         # Filter by cloud cover
         items = result.items
         if max_cloud < 100:
-            items = [
-                i for i in items
-                if (i.properties.get("eo:cloud_cover") or 0) <= max_cloud
-            ]
+            items = [i for i in items if (i.properties.get("eo:cloud_cover") or 0) <= max_cloud]
             messages.addMessage(f"After cloud filter (<={max_cloud}%): {len(items)} items")
 
         # Build GeoJSON
@@ -223,22 +224,24 @@ class STACSearch:
             if not item.bbox:
                 continue
             w, s, e, n = item.bbox
-            features.append({
-                "type": "Feature",
-                "geometry": {
-                    "type": "Polygon",
-                    "coordinates": [[[w, s], [e, s], [e, n], [w, n], [w, s]]],
-                },
-                "properties": {
-                    "id": item.id,
-                    "collection": item.collection,
-                    "datetime": item.datetime,
-                    "cloud_cover": item.properties.get("eo:cloud_cover"),
-                    "platform": item.properties.get("platform"),
-                    "asset_count": item.asset_count,
-                    "self_link": item.self_link,
-                },
-            })
+            features.append(
+                {
+                    "type": "Feature",
+                    "geometry": {
+                        "type": "Polygon",
+                        "coordinates": [[[w, s], [e, s], [e, n], [w, n], [w, s]]],
+                    },
+                    "properties": {
+                        "id": item.id,
+                        "collection": item.collection,
+                        "datetime": item.datetime,
+                        "cloud_cover": item.properties.get("eo:cloud_cover"),
+                        "platform": item.properties.get("platform"),
+                        "asset_count": item.asset_count,
+                        "self_link": item.self_link,
+                    },
+                }
+            )
 
         geojson = {"type": "FeatureCollection", "features": features}
         Path(output_path).write_text(json.dumps(geojson, indent=2))
@@ -249,6 +252,7 @@ class STACSearch:
 # ─────────────────────────────────────────────────────────────────────────────
 # Tool: Raster Info
 # ─────────────────────────────────────────────────────────────────────────────
+
 
 class RasterInfo:
     """Inspect raster metadata without downloading the full file.
@@ -300,7 +304,8 @@ class RasterInfo:
         messages.addMessage(f"  Dimensions:  {info.width} x {info.height}")
         messages.addMessage(f"  CRS:         {info.crs}")
         messages.addMessage(f"  Bands:       {info.band_count}")
-        messages.addMessage(f"  Tiled:       {info.is_tiled} ({info.tile_width}x{info.tile_height})")
+        tiling = f"{info.tile_width}x{info.tile_height}"
+        messages.addMessage(f"  Tiled:       {info.is_tiled} ({tiling})")
         messages.addMessage(f"  Overviews:   {info.overview_count} {info.overview_levels}")
         messages.addMessage(f"  Compression: {info.compression}")
         messages.addMessage(f"  Bounds:      {info.bounds}")
@@ -317,6 +322,7 @@ class RasterInfo:
 # ─────────────────────────────────────────────────────────────────────────────
 # Tool: COG Validate
 # ─────────────────────────────────────────────────────────────────────────────
+
 
 class COGValidate:
     """Validate Cloud-Optimized GeoTIFF compliance.
@@ -389,6 +395,7 @@ class COGValidate:
 # Tool: Vector Convert
 # ─────────────────────────────────────────────────────────────────────────────
 
+
 class VectorConvert:
     """Convert vector data to GeoParquet.
 
@@ -443,11 +450,13 @@ class VectorConvert:
         messages.addMessage(f"  Output: {output}")
         messages.addMessage(f"  Compression: {compression}")
 
-        result = _run_async(convert_vector(
-            source=source,
-            output=output,
-            compression=compression,
-        ))
+        result = _run_async(
+            convert_vector(
+                source=source,
+                output=output,
+                compression=compression,
+            )
+        )
 
         messages.addMessage(f"  Features:  {result.feature_count}")
         messages.addMessage(f"  Geometry:  {result.geometry_type}")
@@ -459,6 +468,7 @@ class VectorConvert:
 # ─────────────────────────────────────────────────────────────────────────────
 # Tool: Format Detect
 # ─────────────────────────────────────────────────────────────────────────────
+
 
 class FormatDetect:
     """Detect geospatial file format.
@@ -512,6 +522,7 @@ class FormatDetect:
 # ─────────────────────────────────────────────────────────────────────────────
 # Helpers
 # ─────────────────────────────────────────────────────────────────────────────
+
 
 def _param(name, label, datatype, direction="Input", required=True, default=None):
     """Create an ArcGIS tool parameter with common defaults.
