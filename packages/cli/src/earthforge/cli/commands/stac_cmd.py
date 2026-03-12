@@ -107,5 +107,57 @@ def info(
         render_to_console(result, state.output, no_color=state.no_color)
 
 
+def fetch(
+    ctx: typer.Context,
+    item_url: str = typer.Argument(help="URL to a STAC item JSON."),
+    assets: str | None = typer.Option(
+        None,
+        "--assets",
+        "-a",
+        help="Comma-separated asset keys to download (default: all data assets).",
+    ),
+    output_dir: str | None = typer.Option(
+        None,
+        "--output-dir",
+        "-d",
+        help="Local directory to write files into (default: ./<item_id>/).",
+    ),
+    parallel: int = typer.Option(
+        4,
+        "--parallel",
+        "-p",
+        min=1,
+        max=16,
+        help="Maximum concurrent downloads.",
+    ),
+) -> None:
+    """Download assets from a STAC item with resume support."""
+    from earthforge.cli.main import get_state, run_command
+    from earthforge.stac.fetch import fetch_assets
+
+    state = get_state(ctx)
+
+    asset_list: list[str] | None = None
+    if assets:
+        asset_list = [a.strip() for a in assets.split(",") if a.strip()]
+
+    async def _run() -> BaseModel:
+        from earthforge.core.config import load_profile
+
+        profile = await load_profile(state.profile)
+        return await fetch_assets(
+            profile,
+            item_url,
+            output_dir=output_dir,
+            assets=asset_list,
+            parallel=parallel,
+        )
+
+    result = run_command(ctx, _run())
+    if isinstance(result, BaseModel):
+        render_to_console(result, state.output, no_color=state.no_color)
+
+
 app.command(name="search", help="Search a STAC catalog for items.")(search)
 app.command(name="info", help="Inspect a STAC item or collection by URL.")(info)
+app.command(name="fetch", help="Download assets from a STAC item.")(fetch)
