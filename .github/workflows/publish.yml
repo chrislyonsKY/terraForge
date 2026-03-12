@@ -39,10 +39,15 @@ jobs:
             (cd "$pkg" && hatch build --clean -t wheel -t sdist)
           done
 
+          # Build the root earthforge meta-package (pip install earthforge[all])
+          echo "── Building root meta-package ──"
+          hatch build --clean -t wheel -t sdist
+
       - name: Collect dist artifacts
         run: |
           mkdir -p dist_all
           find packages/*/dist \( -name "*.whl" -o -name "*.tar.gz" \) -exec cp {} dist_all/ \;
+          cp dist/*.whl dist/*.tar.gz dist_all/ 2>/dev/null || true
           ls -lh dist_all/
 
       - uses: actions/upload-artifact@v4
