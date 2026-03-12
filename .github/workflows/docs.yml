@@ -1,0 +1,50 @@
+name: Docs
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  deploy:
+    name: Build and deploy docs
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # full history required for git-revision-date plugin
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install docs dependencies
+        run: |
+          pip install \
+            "mkdocs-material>=9.5" \
+            "mkdocstrings[python]>=0.25" \
+            "pymdown-extensions>=10.0"
+
+      - name: Install earthforge packages (for mkdocstrings to resolve imports)
+        run: |
+          pip install \
+            "httpx>=0.27" \
+            "pydantic>=2.0" \
+            "rich>=13.0" \
+            "orjson>=3.9" \
+            "typer>=0.9" \
+            "pystac>=1.9" \
+            "pystac-client>=0.8" \
+            "numpy>=1.24"
+          pip install -e packages/core
+          pip install -e packages/stac
+          pip install -e packages/raster
+          pip install -e packages/vector
+          pip install -e packages/cli
+
+      - name: Build and deploy to GitHub Pages
+        run: mkdocs gh-deploy --force
