@@ -7,7 +7,6 @@ or NetCDF stores. No real network requests are made.
 from __future__ import annotations
 
 import json
-import tempfile
 from pathlib import Path
 
 import numpy as np
@@ -25,7 +24,6 @@ from earthforge.cube.info import (
     VariableInfo,
     inspect_cube,
 )
-
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -96,12 +94,12 @@ def netcdf_file(tmp_path: Path) -> str:
 class TestCubeInfoModel:
     def test_fields_present(self) -> None:
         info = CubeInfo(
-            source="/tmp/test.zarr",
+            source="test.zarr",
             format="zarr",
             dimensions=[],
             variables=[],
         )
-        assert info.source == "/tmp/test.zarr"
+        assert info.source == "test.zarr"
         assert info.format == "zarr"
         assert info.global_attrs == {}
         assert info.spatial_bbox is None
@@ -109,7 +107,7 @@ class TestCubeInfoModel:
 
     def test_serializes_to_json(self) -> None:
         info = CubeInfo(
-            source="/tmp/test.zarr",
+            source="test.zarr",
             format="zarr",
             dimensions=[DimensionInfo(name="time", size=10, dtype="int64")],
             variables=[
@@ -122,7 +120,7 @@ class TestCubeInfoModel:
             ],
         )
         doc = json.loads(info.model_dump_json())
-        assert doc["source"] == "/tmp/test.zarr"
+        assert doc["source"] == "test.zarr"
         assert doc["dimensions"][0]["name"] == "time"
         assert doc["variables"][0]["name"] == "t2m"
 

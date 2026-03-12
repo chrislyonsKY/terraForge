@@ -19,7 +19,6 @@ import xarray as xr
 from earthforge.cube.errors import CubeError
 from earthforge.cube.slice import SliceResult, slice_cube
 
-
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
@@ -72,13 +71,13 @@ def zarr_store(tmp_path: Path) -> str:
 class TestSliceResultModel:
     def test_fields_present(self) -> None:
         result = SliceResult(
-            source="/tmp/in.zarr",
-            output="/tmp/out.zarr",
+            source="in.zarr",
+            output="out.zarr",
             output_format="zarr",
             variables_selected=["t2m"],
             elapsed_seconds=1.23,
         )
-        assert result.source == "/tmp/in.zarr"
+        assert result.source == "in.zarr"
         assert result.bbox is None
         assert result.time_range is None
         assert result.shape == {}
@@ -129,7 +128,7 @@ class TestTimeFiltering:
             time_range="2025-01-01/2025-06-30",
             output=out,
         )
-        assert result.shape.get("time", 0) <= 6  # noqa: PLR2004
+        assert result.shape.get("time", 0) <= 6
 
     @pytest.mark.asyncio
     async def test_time_range_recorded_in_result(

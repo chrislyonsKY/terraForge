@@ -185,8 +185,8 @@ def _extract_dimension_info(ds: Any, dim_name: str) -> DimensionInfo:
             if vals.size > 0:
                 min_val = str(vals.min())
                 max_val = str(vals.max())
-        except Exception:
-            pass
+        except Exception as _exc:
+            logger.debug("Best-effort metadata extraction failed: %s", _exc)
 
     return DimensionInfo(
         name=dim_name,
@@ -279,8 +279,8 @@ def _build_cube_info(source: str, fmt: str, ds: Any) -> CubeInfo:
                 float(lons.max()),
                 float(lats.max()),
             ]
-        except Exception:
-            pass
+        except Exception as _exc:
+            logger.debug("Best-effort metadata extraction failed: %s", _exc)
 
     # Derive time range
     time_range: list[str] | None = None
@@ -294,8 +294,8 @@ def _build_cube_info(source: str, fmt: str, ds: Any) -> CubeInfo:
                     pd.Timestamp(times[0]).isoformat(),
                     pd.Timestamp(times[-1]).isoformat(),
                 ]
-        except Exception:
-            pass
+        except Exception as _exc:
+            logger.debug("Best-effort metadata extraction failed: %s", _exc)
 
     # Attempt CRS extraction from grid_mapping variable
     crs: str | None = None
@@ -386,8 +386,8 @@ def _inspect_cube_sync(source: str) -> CubeInfo:
     finally:
         try:
             ds.close()
-        except Exception:
-            pass
+        except Exception as _exc:
+            logger.debug("Best-effort metadata extraction failed: %s", _exc)
 
     return result
 

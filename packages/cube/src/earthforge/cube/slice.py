@@ -79,7 +79,7 @@ def _parse_time_range(time_range: str) -> tuple[str, str]:
         CubeError: If the format is invalid.
     """
     parts = time_range.strip().split("/")
-    if len(parts) != 2:  # noqa: PLR2004
+    if len(parts) != 2:
         raise CubeError(
             f"Invalid time_range '{time_range}'. Expected ISO 8601 range: "
             "'YYYY-MM-DD/YYYY-MM-DD' or 'YYYY-MM/YYYY-MM'."
@@ -139,7 +139,7 @@ def _apply_bbox(ds: Any, bbox: tuple[float, float, float, float]) -> Any:
     try:
         lons = ds.coords[lon_dim].values
         # Handle 0-360 longitude convention
-        if float(lons.max()) > 180 and west < 0:  # noqa: PLR2004
+        if float(lons.max()) > 180 and west < 0:
             west = west + 360
             east = east + 360
 
@@ -275,8 +275,8 @@ def _slice_cube_sync(
     finally:
         try:
             ds.close()
-        except Exception:
-            pass
+        except Exception as _exc:
+            logger.debug("Best-effort metadata extraction failed: %s", _exc)
 
     elapsed = time.perf_counter() - t_start
     output_size = _dir_size(out_path)

@@ -73,7 +73,7 @@ def slice_cmd(
     bbox_tuple: tuple[float, float, float, float] | None = None
     if bbox:
         parts = [float(v.strip()) for v in bbox.split(",")]
-        if len(parts) != 4:  # noqa: PLR2004
+        if len(parts) != 4:
             typer.echo(
                 "Error: --bbox requires exactly 4 values: west,south,east,north",
                 err=True,

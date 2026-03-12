@@ -90,7 +90,7 @@ def vector_query(
     state = get_state(ctx)
 
     parts = [float(v.strip()) for v in bbox.split(",")]
-    if len(parts) != 4:  # noqa: PLR2004
+    if len(parts) != 4:
         typer.echo("Error: --bbox requires west,south,east,north", err=True)
         raise typer.Exit(code=1)
     bbox_tuple = (parts[0], parts[1], parts[2], parts[3])

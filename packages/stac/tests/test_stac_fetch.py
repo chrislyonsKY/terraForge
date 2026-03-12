@@ -5,9 +5,7 @@ All HTTP is mocked via respx. No real network calls.
 
 from __future__ import annotations
 
-import asyncio
 from pathlib import Path
-from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 import respx
@@ -16,7 +14,6 @@ from httpx import Response
 from earthforge.core.config import EarthForgeProfile
 from earthforge.stac.errors import StacError
 from earthforge.stac.fetch import (
-    AssetFetchResult,
     FetchResult,
     _select_assets,
     fetch_assets,

@@ -7,7 +7,6 @@ import pytest
 from earthforge.pipeline.errors import PipelineValidationError
 from earthforge.pipeline.schema import validate_pipeline_doc
 
-
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
@@ -68,7 +67,10 @@ class TestValidDocuments:
             {
                 "for_each_item": [
                     {"stac.fetch": {"assets": ["B04", "B08"]}},
-                    {"raster.calc": {"expression": "(B08 - B04) / (B08 + B04)", "output": "ndvi_{item_id}.tif"}},
+                    {"raster.calc": {
+                        "expression": "(B08 - B04) / (B08 + B04)",
+                        "output": "ndvi_{item_id}.tif",
+                    }},
                     {"raster.convert": {"format": "COG"}},
                 ]
             }
