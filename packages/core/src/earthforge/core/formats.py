@@ -185,9 +185,17 @@ def _inspect_parquet_for_geo(
 ) -> FormatType | None:
     """Check if a Parquet file is GeoParquet.
 
-    GeoParquet files contain a ``geo`` key in the Parquet metadata. Since
-    the metadata is in the file footer (not header), we fall back to extension
-    checking here. Full GeoParquet validation is in the vector domain package.
+    GeoParquet files contain a ``geo`` key in the Parquet file-level
+    key-value metadata. This metadata lives in the file footer (not the
+    header), so we read the last 4 KB of the file for local paths.
+
+    In Thrift compact protocol, a 3-character string key is preceded by a
+    single-byte length varint ``\\x03``. The pattern ``\\x03geo`` in the
+    footer uniquely identifies a GeoParquet ``geo`` metadata key — the
+    ``geometry`` key would appear as ``\\x08geometry`` (length 8).
+
+    For remote URLs the footer is not fetched by the header reader, so we
+    fall back to the ``.geoparquet`` extension convention.
 
     Parameters:
         header: First 512 bytes of the file.
@@ -195,14 +203,34 @@ def _inspect_parquet_for_geo(
         source: File path or URL (for logging).
 
     Returns:
-        ``FormatType.GEOPARQUET`` if the source extension suggests it, else ``None``.
+        ``FormatType.GEOPARQUET`` if the ``geo`` metadata key is found, else ``None``.
     """
     if candidate != FormatType.PARQUET:
         return None
 
+    # Extension hint for remote URLs (no footer available from header bytes)
     source_lower = source.lower()
-    if ".geoparquet" in source_lower or "geoparquet" in source_lower:
+    if ".geoparquet" in source_lower or source_lower.endswith(".geoparquet"):
         return FormatType.GEOPARQUET
+
+    # For local files, read the footer and check for the geo key
+    if not _is_remote(source):
+        try:
+            path = Path(source)
+            file_size = path.stat().st_size
+            if file_size < 12:  # too small to be valid Parquet
+                return None
+            # Read last 4096 bytes — sufficient for nearly all real Parquet footers
+            read_start = max(0, file_size - 4096)
+            with path.open("rb") as fh:
+                fh.seek(read_start)
+                footer_region = fh.read()
+            # \x03geo = Thrift compact string encoding for the 3-char key "geo"
+            if b"\x03geo" in footer_region:
+                logger.debug("GeoParquet geo metadata key found in footer of %s", source)
+                return FormatType.GEOPARQUET
+        except OSError:
+            pass
 
     return None
 

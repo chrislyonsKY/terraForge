@@ -173,11 +173,14 @@ class TestGeoParquetInspector:
         result = _inspect_parquet_for_geo(b"PAR1", FormatType.PARQUET, "data.geoparquet")
         assert result == FormatType.GEOPARQUET
 
-    def test_geoparquet_in_path(self) -> None:
+    def test_geoparquet_directory_name_not_detected(self) -> None:
+        # A parent directory named "geoparquet" is not a reliable signal.
+        # Footer inspection requires an actual readable file, so a non-existent
+        # path returns None — the caller's full detect() chain handles this.
         result = _inspect_parquet_for_geo(
             b"PAR1", FormatType.PARQUET, "/data/geoparquet/part-0.parquet"
         )
-        assert result == FormatType.GEOPARQUET
+        assert result is None
 
     def test_plain_parquet_stays(self) -> None:
         result = _inspect_parquet_for_geo(b"PAR1", FormatType.PARQUET, "plain.parquet")
