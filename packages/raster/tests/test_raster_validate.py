@@ -18,7 +18,6 @@ from rasterio.transform import from_bounds
 from earthforge.raster.errors import RasterError
 from earthforge.raster.validate import CogValidationResult, validate_cog
 
-
 # ---------------------------------------------------------------------------
 # Fixtures
 # ---------------------------------------------------------------------------
@@ -28,7 +27,7 @@ from earthforge.raster.validate import CogValidationResult, validate_cog
 def strip_geotiff(tmp_path: Path) -> Path:
     """Create a strip-layout (non-tiled), uncompressed GeoTIFF — not COG-compliant."""
     path = tmp_path / "strip.tif"
-    width, height = 512, 512
+    width, height = 1024, 1024
     transform = from_bounds(-85.0, 37.0, -84.0, 38.0, width, height)
 
     with rasterio.open(
@@ -62,7 +61,7 @@ def valid_cog(tmp_path: Path) -> Path:
 
     src_path = tmp_path / "src.tif"
     cog_path = tmp_path / "cog.tif"
-    width, height = 512, 512
+    width, height = 1024, 1024
     transform = from_bounds(-85.0, 37.0, -84.0, 38.0, width, height)
 
     with rasterio.open(
@@ -90,13 +89,13 @@ def valid_cog(tmp_path: Path) -> Path:
 
 @pytest.fixture()
 def tiled_no_overviews(tmp_path: Path) -> Path:
-    """Create a tiled, compressed GeoTIFF without overviews (512x512).
+    """Create a tiled, compressed GeoTIFF without overviews (1024x1024).
 
-    At 512x512, rio-cogeo (strict mode) will flag missing overviews as an
-    error rather than a warning.
+    At >512 pixels, rio-cogeo flags missing overviews. Using strict mode
+    ensures this is reported as an error rather than a warning.
     """
     path = tmp_path / "tiled_no_ovr.tif"
-    width, height = 512, 512
+    width, height = 1024, 1024
     transform = from_bounds(-85.0, 37.0, -84.0, 38.0, width, height)
 
     with rasterio.open(

@@ -14,7 +14,7 @@ Checks performed:
    resolution data in the file (rio-cogeo byte-level check).
 5. **compression** — Data is compressed (rasterio).
 
-rio-cogeo is the authoritative source for checks 2–4. Its byte-level IFD
+rio-cogeo is the authoritative source for checks 2-4. Its byte-level IFD
 ordering check catches files that appear valid from rasterio metadata alone
 but have incorrect internal structure. Using ``strict=True`` treats missing
 overviews as a validation error rather than a warning.
@@ -173,7 +173,7 @@ def _validate_cog_sync(source: str) -> CogValidationResult:
                 )
     except RasterError:
         raise
-    except Exception:
+    except Exception:  # noqa: S110
         pass  # Supplementary checks are best-effort; don't mask the primary result
 
     # Ensure all standard named checks are present, defaulting to passed if
