@@ -157,11 +157,13 @@ def check_metadata_completeness(item: object, properties: dict) -> list[QualityC
     checks = []
     for prop in REQUIRED_PROPERTIES:
         present = prop in properties and properties[prop] is not None
-        checks.append(QualityCheck(
-            name=f"metadata.{prop}",
-            passed=present,
-            message=f"{prop}: {'present' if present else 'MISSING'}",
-        ))
+        checks.append(
+            QualityCheck(
+                name=f"metadata.{prop}",
+                passed=present,
+                message=f"{prop}: {'present' if present else 'MISSING'}",
+            )
+        )
     return checks
 
 
@@ -221,27 +223,33 @@ async def audit_item(
     if item.self_link:
         try:
             info = await inspect_stac_item(profile, item.self_link)
-            result.checks.append(QualityCheck(
-                name="item_fetchable",
-                passed=True,
-                message=f"Item JSON fetched OK ({info.asset_count} assets)",
-            ))
+            result.checks.append(
+                QualityCheck(
+                    name="item_fetchable",
+                    passed=True,
+                    message=f"Item JSON fetched OK ({info.asset_count} assets)",
+                )
+            )
             result.metadata["asset_count"] = info.asset_count
             result.metadata["stac_extensions"] = len(info.stac_extensions)
         except Exception as exc:
-            result.checks.append(QualityCheck(
-                name="item_fetchable",
-                passed=False,
-                message=f"Failed to fetch item: {exc}",
-            ))
+            result.checks.append(
+                QualityCheck(
+                    name="item_fetchable",
+                    passed=False,
+                    message=f"Failed to fetch item: {exc}",
+                )
+            )
             return result
     else:
-        result.checks.append(QualityCheck(
-            name="item_fetchable",
-            passed=False,
-            message="No self_link — cannot fetch full item metadata",
-            severity="warning",
-        ))
+        result.checks.append(
+            QualityCheck(
+                name="item_fetchable",
+                passed=False,
+                message="No self_link — cannot fetch full item metadata",
+                severity="warning",
+            )
+        )
 
     # Check 3: Raster inspection (red band)
     red_asset = next((a for a in item.assets if a.key in ("red", "B04")), None)
@@ -249,11 +257,13 @@ async def audit_item(
         try:
             raster_info = await inspect_raster(red_asset.href)
 
-            result.checks.append(QualityCheck(
-                name="raster_accessible",
-                passed=True,
-                message=f"Red band accessible: {raster_info.width}x{raster_info.height}",
-            ))
+            result.checks.append(
+                QualityCheck(
+                    name="raster_accessible",
+                    passed=True,
+                    message=f"Red band accessible: {raster_info.width}x{raster_info.height}",
+                )
+            )
 
             result.metadata["dimensions"] = f"{raster_info.width}x{raster_info.height}"
             result.metadata["crs"] = raster_info.crs
@@ -263,70 +273,85 @@ async def audit_item(
             result.checks.append(check_crs_consistency(raster_info.crs))
 
             # Check tiling
-            result.checks.append(QualityCheck(
-                name="raster_tiled",
-                passed=raster_info.is_tiled,
-                message=(
-                    f"Tiled: {raster_info.is_tiled}"
-                    f" ({raster_info.tile_width}x{raster_info.tile_height})"
-                ),
-            ))
+            result.checks.append(
+                QualityCheck(
+                    name="raster_tiled",
+                    passed=raster_info.is_tiled,
+                    message=(
+                        f"Tiled: {raster_info.is_tiled}"
+                        f" ({raster_info.tile_width}x{raster_info.tile_height})"
+                    ),
+                )
+            )
 
             # Check overviews
             has_overviews = raster_info.overview_count > 0
-            result.checks.append(QualityCheck(
-                name="raster_overviews",
-                passed=has_overviews,
-                message=f"Overviews: {raster_info.overview_count} levels",
-            ))
+            result.checks.append(
+                QualityCheck(
+                    name="raster_overviews",
+                    passed=has_overviews,
+                    message=f"Overviews: {raster_info.overview_count} levels",
+                )
+            )
 
             # Check compression
             has_compression = (
-                raster_info.compression is not None
-                and raster_info.compression != "none"
+                raster_info.compression is not None and raster_info.compression != "none"
             )
-            result.checks.append(QualityCheck(
-                name="raster_compressed",
-                passed=has_compression,
-                message=f"Compression: {raster_info.compression or 'none'}",
-            ))
+            result.checks.append(
+                QualityCheck(
+                    name="raster_compressed",
+                    passed=has_compression,
+                    message=f"Compression: {raster_info.compression or 'none'}",
+                )
+            )
 
         except Exception as exc:
-            result.checks.append(QualityCheck(
-                name="raster_accessible",
-                passed=False,
-                message=f"Cannot read raster: {exc}",
-            ))
+            result.checks.append(
+                QualityCheck(
+                    name="raster_accessible",
+                    passed=False,
+                    message=f"Cannot read raster: {exc}",
+                )
+            )
             return result
 
         # Check 4: Full COG validation (rio-cogeo byte-level checks)
         try:
             cog_result = await validate_cog(red_asset.href)
-            result.checks.append(QualityCheck(
-                name="cog_valid",
-                passed=cog_result.is_valid,
-                message=f"COG validation: {'PASS' if cog_result.is_valid else 'FAIL'}",
-            ))
+            result.checks.append(
+                QualityCheck(
+                    name="cog_valid",
+                    passed=cog_result.is_valid,
+                    message=f"COG validation: {'PASS' if cog_result.is_valid else 'FAIL'}",
+                )
+            )
 
             for check in cog_result.checks:
                 if not check.passed:
-                    result.checks.append(QualityCheck(
-                        name=f"cog_{check.name}",
-                        passed=False,
-                        message=check.message,
-                    ))
+                    result.checks.append(
+                        QualityCheck(
+                            name=f"cog_{check.name}",
+                            passed=False,
+                            message=check.message,
+                        )
+                    )
         except Exception as exc:
-            result.checks.append(QualityCheck(
-                name="cog_valid",
-                passed=False,
-                message=f"COG validation error: {exc}",
-            ))
+            result.checks.append(
+                QualityCheck(
+                    name="cog_valid",
+                    passed=False,
+                    message=f"COG validation error: {exc}",
+                )
+            )
     else:
-        result.checks.append(QualityCheck(
-            name="raster_accessible",
-            passed=False,
-            message="No red/B04 band asset found in item",
-        ))
+        result.checks.append(
+            QualityCheck(
+                name="raster_accessible",
+                passed=False,
+                message="No red/B04 band asset found in item",
+            )
+        )
 
     return result
 

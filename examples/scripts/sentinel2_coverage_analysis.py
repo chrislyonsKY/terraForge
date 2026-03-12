@@ -220,21 +220,25 @@ async def validate_sample_cogs(items: list, sample_size: int = 3) -> list:
             info = await inspect_raster(red_asset.href)
             validation = await validate_cog(red_asset.href)
 
-            results.append({
-                "item_id": item.id,
-                "cloud_cover": cloud_cover,
-                "dimensions": f"{info.width}x{info.height}",
-                "crs": info.crs,
-                "compression": info.compression,
-                "is_tiled": info.is_tiled,
-                "cog_valid": validation.is_valid,
-                "checks": {c.name: c.passed for c in validation.checks},
-            })
+            results.append(
+                {
+                    "item_id": item.id,
+                    "cloud_cover": cloud_cover,
+                    "dimensions": f"{info.width}x{info.height}",
+                    "crs": info.crs,
+                    "compression": info.compression,
+                    "is_tiled": info.is_tiled,
+                    "cog_valid": validation.is_valid,
+                    "checks": {c.name: c.passed for c in validation.checks},
+                }
+            )
         except Exception as exc:
-            results.append({
-                "item_id": item.id,
-                "error": str(exc),
-            })
+            results.append(
+                {
+                    "item_id": item.id,
+                    "error": str(exc),
+                }
+            )
 
     return results
 
@@ -341,11 +345,13 @@ async def main() -> None:
     ]
 
     print(f"  Overall cloud cover: {format_stats(all_cloud)}")
-    print(f"  Usable scenes (<{CLOUD_THRESHOLD:.0f}% cloud): "
-          f"{sum(1 for cc in all_cloud if cc < CLOUD_THRESHOLD)} / {len(items)}")
+    print(
+        f"  Usable scenes (<{CLOUD_THRESHOLD:.0f}% cloud): "
+        f"{sum(1 for cc in all_cloud if cc < CLOUD_THRESHOLD)} / {len(items)}"
+    )
     print()
     print(f"  {'Month':<10} {'Total':>6} {'Usable':>7} {'Rate':>7}  Cloud Cover Range")
-    print(f"  {'-'*9:<10} {'-'*5:>6} {'-'*6:>7} {'-'*6:>7}  {'-'*25}")
+    print(f"  {'-' * 9:<10} {'-' * 5:>6} {'-' * 6:>7} {'-' * 6:>7}  {'-' * 25}")
 
     for month, data in sorted(monthly.items()):
         cc = data["cloud_covers"]
@@ -378,8 +384,7 @@ async def main() -> None:
         else:
             status = "PASS" if v["cog_valid"] else "FAIL"
             print(
-                f"    {v['item_id']}: [{status}] "
-                f"{v['dimensions']} {v['crs']} {v['compression']}"
+                f"    {v['item_id']}: [{status}] {v['dimensions']} {v['crs']} {v['compression']}"
             )
             for check_name, passed in v["checks"].items():
                 mark = "OK" if passed else "FAIL"
@@ -402,8 +407,10 @@ async def main() -> None:
     best_months = sorted(monthly.items(), key=lambda x: x[1]["usable_rate"], reverse=True)
     if best_months:
         top_month = best_months[0]
-        print(f"  Recommendation: {top_month[0]} has the highest usable rate "
-              f"({top_month[1]['usable_rate']:.0f}%)")
+        print(
+            f"  Recommendation: {top_month[0]} has the highest usable rate "
+            f"({top_month[1]['usable_rate']:.0f}%)"
+        )
         print("  Schedule field validation or classification analysis for this window.")
     print()
 

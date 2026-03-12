@@ -59,14 +59,14 @@ OUTPUT_PATH = OUTPUT_DIR / "vegetation_change.gif"
 # NDVI color ramp: brown -> yellow -> green (classic vegetation palette)
 # Each entry is (ndvi_threshold, R, G, B)
 NDVI_COLORMAP = [
-    (-1.0, 20, 20, 80),      # water / shadow — dark blue
-    (-0.1, 60, 40, 20),      # bare soil — dark brown
-    (0.0, 140, 100, 50),     # bare / sparse — tan
-    (0.15, 200, 170, 80),    # sparse vegetation — yellow-brown
-    (0.3, 180, 200, 60),     # light vegetation — yellow-green
-    (0.5, 80, 160, 40),      # moderate vegetation — green
-    (0.7, 20, 120, 20),      # dense vegetation — dark green
-    (1.0, 0, 80, 0),         # very dense — forest green
+    (-1.0, 20, 20, 80),  # water / shadow — dark blue
+    (-0.1, 60, 40, 20),  # bare soil — dark brown
+    (0.0, 140, 100, 50),  # bare / sparse — tan
+    (0.15, 200, 170, 80),  # sparse vegetation — yellow-brown
+    (0.3, 180, 200, 60),  # light vegetation — yellow-green
+    (0.5, 80, 160, 40),  # moderate vegetation — green
+    (0.7, 20, 120, 20),  # dense vegetation — dark green
+    (1.0, 0, 80, 0),  # very dense — forest green
 ]
 
 
@@ -145,7 +145,7 @@ def add_label(rgb: np.ndarray, text: str) -> np.ndarray:
     except ImportError:
         # Fallback: just darken the top bar
         bar_height = 20
-        rgb[:bar_height, :min(len(text) * 8 + 16, rgb.shape[1])] //= 3
+        rgb[:bar_height, : min(len(text) * 8 + 16, rgb.shape[1])] //= 3
         return rgb
 
 
@@ -200,8 +200,7 @@ async def main() -> None:
 
     # Filter by cloud cover and pick one scene per month
     candidates = [
-        item for item in result.items
-        if (item.properties.get("eo:cloud_cover") or 100) < MAX_CLOUD
+        item for item in result.items if (item.properties.get("eo:cloud_cover") or 100) < MAX_CLOUD
     ]
     candidates.sort(key=lambda i: i.datetime or "")
 
@@ -307,7 +306,7 @@ async def main() -> None:
             save_all=True,
             append_images=pil_frames[1:],
             duration=800,  # ms per frame
-            loop=0,        # infinite loop
+            loop=0,  # infinite loop
         )
 
         file_size = OUTPUT_PATH.stat().st_size

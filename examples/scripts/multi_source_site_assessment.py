@@ -225,13 +225,15 @@ def fetch_wma_geojson_for_bbox(bbox: list[float]) -> dict:
     """
     data = {
         "where": "1=1",
-        "geometry": json.dumps({
-            "xmin": bbox[0],
-            "ymin": bbox[1],
-            "xmax": bbox[2],
-            "ymax": bbox[3],
-            "spatialReference": {"wkid": 4326},
-        }),
+        "geometry": json.dumps(
+            {
+                "xmin": bbox[0],
+                "ymin": bbox[1],
+                "xmax": bbox[2],
+                "ymax": bbox[3],
+                "spatialReference": {"wkid": 4326},
+            }
+        ),
         "geometryType": "esriGeometryEnvelope",
         "spatialRel": "esriSpatialRelIntersects",
         "outFields": "AREANAME,WMA,ACRES_CAL,Counties,MANAGER",
@@ -248,11 +250,13 @@ def fetch_wma_geojson_for_bbox(bbox: list[float]) -> dict:
     for feat in esri_json.get("features", []):
         attrs = feat.get("attributes", {})
         geom = feat.get("geometry", {})
-        features.append({
-            "type": "Feature",
-            "properties": attrs,
-            "geometry": _esri_polygon_to_geojson(geom),
-        })
+        features.append(
+            {
+                "type": "Feature",
+                "properties": attrs,
+                "geometry": _esri_polygon_to_geojson(geom),
+            }
+        )
 
     return {"type": "FeatureCollection", "features": features}
 
@@ -305,12 +309,14 @@ async def assess_vector_boundaries() -> dict:
                 name = f.get("AREANAME", "Unknown")
                 acres = f.get("ACRES_CAL", 0) or 0
                 total_acres += acres
-                assessment["wma_details"].append({
-                    "name": name,
-                    "acres": round(acres),
-                    "counties": f.get("Counties", ""),
-                    "manager": f.get("MANAGER", ""),
-                })
+                assessment["wma_details"].append(
+                    {
+                        "name": name,
+                        "acres": round(acres),
+                        "counties": f.get("Counties", ""),
+                        "manager": f.get("MANAGER", ""),
+                    }
+                )
 
             assessment["total_protected_acres"] = round(total_acres)
 
@@ -400,7 +406,7 @@ async def main() -> None:
     if wma["wma_details"]:
         print()
         print(f"  {'Name':<30} {'Acres':>10}  Counties")
-        print(f"  {'-'*29:<30} {'-'*9:>10}  {'-'*25}")
+        print(f"  {'-' * 29:<30} {'-' * 9:>10}  {'-' * 25}")
         for w in sorted(wma["wma_details"], key=lambda x: x["acres"], reverse=True):
             print(f"  {w['name'][:30]:<30} {w['acres']:>10,}  {w['counties']}")
 
