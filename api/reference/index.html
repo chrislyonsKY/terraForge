@@ -5468,7 +5468,7 @@ results = await search_catalog(
 
 
 <h3 id="earthforge.stac.search.search_catalog" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">search_catalog</span><span class="p">(</span><span class="n">profile</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">collections</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">bbox</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">datetime_range</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">max_items</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">query</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">search_catalog</span><span class="p">(</span><span class="n">profile</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">collections</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">bbox</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">datetime_range</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">max_items</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">query</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">filter_expr</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">filter_lang</span><span class="o">=</span><span class="s1">&#39;cql2-json&#39;</span><span class="p">)</span></code>
 
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-async"><code>async</code></small>
@@ -5589,11 +5589,45 @@ blocking the event loop.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Additional CQL2 query parameters.</p>
+                <p>Legacy query parameters (deprecated — use <code>filter_expr</code> instead).</p>
               </div>
             </td>
             <td>
                   <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>filter_expr</code>
+            </td>
+            <td>
+                  <code><span title="dict">dict</span>[<span title="str">str</span>, <span title="object">object</span>] | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>CQL2-JSON filter expression, preferred per STAC best practices.
+Example: <code>{"op": "&lt;=", "args": [{"property": "eo:cloud_cover"}, 20]}</code></p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>filter_lang</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span> | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Filter language (default: <code>"cql2-json"</code>). Only used when
+<code>filter_expr</code> is provided.</p>
+              </div>
+            </td>
+            <td>
+                  <code>&#39;cql2-json&#39;</code>
             </td>
           </tr>
       </tbody>
