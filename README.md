@@ -224,4 +224,4 @@ See [CONTRIBUTING.md](CONTRIBUTING.md). EarthForge has specific engineering stan
 
 ## License
 
-Apache 2.0. See [LICENSE](LICENSE).
+GNU General Public License v3.0. See [LICENSE](LICENSE).
