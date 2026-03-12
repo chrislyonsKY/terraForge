@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import ast
 from pathlib import Path
 
 import pytest
@@ -15,7 +14,6 @@ from earthforge.pipeline.steps import (
     list_steps,
     register_step,
 )
-
 
 # ---------------------------------------------------------------------------
 # Registry

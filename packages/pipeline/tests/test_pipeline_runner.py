@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import tempfile
 from pathlib import Path
 from unittest.mock import AsyncMock, patch
 
@@ -10,12 +9,10 @@ import pytest
 
 from earthforge.pipeline.errors import PipelineError, PipelineValidationError
 from earthforge.pipeline.runner import (
-    ItemResult,
     PipelineRunResult,
     load_pipeline,
     run_pipeline,
 )
-
 
 # ---------------------------------------------------------------------------
 # Helpers

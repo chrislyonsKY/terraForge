@@ -36,9 +36,10 @@ import asyncio
 import logging
 import operator
 import time
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any
 
 from earthforge.pipeline.errors import StepError
 
@@ -171,7 +172,9 @@ async def step_stac_fetch(ctx: StepContext) -> StepResult:
         from earthforge.core.config import EarthForgeProfile
         from earthforge.stac.fetch import fetch_assets
     except ImportError as exc:
-        raise StepError("stac.fetch", ctx.item_id, f"earthforge-stac not installed: {exc}") from exc
+        raise StepError(
+            "stac.fetch", ctx.item_id, f"earthforge-stac not installed: {exc}"
+        ) from exc
 
     profile = EarthForgeProfile(name=ctx.profile, storage_backend="local")
     assets: list[str] | None = ctx.params.get("assets")
@@ -423,7 +426,10 @@ async def step_raster_convert(ctx: StepContext) -> StepResult:
         item_id=ctx.item_id,
         outputs={"cog": str(output_path)},
         elapsed_seconds=time.perf_counter() - t0,
-        message=f"Converted to {fmt} ({compression}) → {output_path.name} ({result.output_size_bytes:,} bytes)",
+        message=(
+            f"Converted to {fmt} ({compression}) → "
+            f"{output_path.name} ({result.output_size_bytes:,} bytes)"
+        ),
     )
 
 
@@ -469,5 +475,7 @@ async def step_vector_convert(ctx: StepContext) -> StepResult:
         item_id=ctx.item_id,
         outputs={"parquet": str(output_path)},
         elapsed_seconds=time.perf_counter() - t0,
-        message=f"Converted to GeoParquet → {output_path.name} ({result.feature_count:,} features)",
+        message=(
+            f"Converted to GeoParquet → {output_path.name} ({result.feature_count:,} features)"
+        ),
     )

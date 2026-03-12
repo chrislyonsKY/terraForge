@@ -62,7 +62,7 @@ def completions(
     try:
         env = os.environ.copy()
         env[env_key] = env_val
-        result = subprocess.run(
+        result = subprocess.run(  # noqa: S603
             [sys.executable, "-m", "earthforge"],
             env=env,
             capture_output=True,
