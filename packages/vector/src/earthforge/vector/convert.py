@@ -218,7 +218,11 @@ def _convert_vector_sync(
 
     # Read all features
     arrays: dict[str, list[Any]] = {name: [] for name in field_names}
-    geometries: list[bytes] = []
+    geometries: list[bytes | None] = []
+    bbox_xmin: list[float | None] = []
+    bbox_ymin: list[float | None] = []
+    bbox_xmax: list[float | None] = []
+    bbox_ymax: list[float | None] = []
 
     layer.ResetReading()
     feature = layer.GetNextFeature()
@@ -237,12 +241,21 @@ def _convert_vector_sync(
             else:
                 arrays[name].append(feature.GetFieldAsString(i))
 
-        # Read geometry as WKB
+        # Read geometry as WKB and extract per-row bbox
         geom = feature.GetGeometryRef()
         if geom is not None:
             geometries.append(bytes(geom.ExportToWkb()))
+            env = geom.GetEnvelope()  # (xmin, xmax, ymin, ymax)
+            bbox_xmin.append(env[0])
+            bbox_ymin.append(env[2])
+            bbox_xmax.append(env[1])
+            bbox_ymax.append(env[3])
         else:
-            geometries.append(b"")
+            geometries.append(None)
+            bbox_xmin.append(None)
+            bbox_ymin.append(None)
+            bbox_xmax.append(None)
+            bbox_ymax.append(None)
 
         actual_count += 1
         feature = layer.GetNextFeature()
@@ -266,6 +279,13 @@ def _convert_vector_sync(
         pa_columns[name] = pa.array(arrays[name], type=pa_type)
 
     pa_columns["geometry"] = pa.array(geometries, type=pa.binary())
+
+    # Per-row bounding box columns for predicate pushdown (GeoParquet 1.1 covering)
+    pa_columns["bbox.xmin"] = pa.array(bbox_xmin, type=pa.float64())
+    pa_columns["bbox.ymin"] = pa.array(bbox_ymin, type=pa.float64())
+    pa_columns["bbox.xmax"] = pa.array(bbox_xmax, type=pa.float64())
+    pa_columns["bbox.ymax"] = pa.array(bbox_ymax, type=pa.float64())
+
     table = pa.table(pa_columns)
 
     # Build GeoParquet metadata
@@ -276,6 +296,14 @@ def _convert_vector_sync(
             "geometry": {
                 "encoding": "WKB",
                 "geometry_types": [geom_type],
+                "covering": {
+                    "bbox": {
+                        "xmin": ["bbox.xmin"],
+                        "ymin": ["bbox.ymin"],
+                        "xmax": ["bbox.xmax"],
+                        "ymax": ["bbox.ymax"],
+                    }
+                },
             }
         },
     }
@@ -294,9 +322,10 @@ def _convert_vector_sync(
     if output is None:
         output = str(Path(source).with_suffix(".parquet"))
 
-    # Write GeoParquet
+    # Write GeoParquet with row group size optimized for spatial queries.
+    # 128MB row groups balance between spatial locality and I/O efficiency.
     try:
-        pq.write_table(table, output, compression=compression)
+        pq.write_table(table, output, compression=compression, row_group_size=128 * 1024 * 1024)
     except Exception as exc:
         raise VectorError(f"Failed to write GeoParquet '{output}': {exc}") from exc
 

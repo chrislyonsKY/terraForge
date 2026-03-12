@@ -217,6 +217,46 @@ class TestConvertVector:
         assert info.geometry_column == "geometry"
         assert info.crs is not None
 
+    async def test_bbox_covering_columns_present(
+        self, point_shapefile: Path, tmp_path: Path
+    ) -> None:
+        """GeoParquet 1.1 covering: per-row bbox columns for predicate pushdown."""
+        output = str(tmp_path / "out.parquet")
+        await convert_vector(str(point_shapefile), output=output)
+
+        pf = pq.ParquetFile(output)
+        col_names = [pf.schema_arrow.field(i).name for i in range(len(pf.schema_arrow))]
+        for bbox_col in ("bbox.xmin", "bbox.ymin", "bbox.xmax", "bbox.ymax"):
+            assert bbox_col in col_names, f"Missing covering column: {bbox_col}"
+
+    async def test_bbox_covering_in_geo_metadata(
+        self, point_shapefile: Path, tmp_path: Path
+    ) -> None:
+        """Covering metadata must declare the bbox column mapping."""
+        output = str(tmp_path / "out.parquet")
+        await convert_vector(str(point_shapefile), output=output)
+
+        pf = pq.ParquetFile(output)
+        geo = json.loads(pf.schema_arrow.metadata[b"geo"])
+        covering = geo["columns"]["geometry"].get("covering", {})
+        bbox_covering = covering.get("bbox", {})
+        assert "xmin" in bbox_covering
+        assert "ymin" in bbox_covering
+        assert "xmax" in bbox_covering
+        assert "ymax" in bbox_covering
+
+    async def test_bbox_values_correct(self, point_shapefile: Path, tmp_path: Path) -> None:
+        """Per-row bbox values should match geometry extents."""
+        output = str(tmp_path / "out.parquet")
+        await convert_vector(str(point_shapefile), output=output)
+
+        table = pq.read_table(output)
+        xmin_col = table.column("bbox.xmin").to_pylist()
+        ymin_col = table.column("bbox.ymin").to_pylist()
+        # Point geometries: bbox min == bbox max
+        assert all(v is not None for v in xmin_col)
+        assert all(v is not None for v in ymin_col)
+
     async def test_json_serializable(self, point_shapefile: Path, tmp_path: Path) -> None:
         output = str(tmp_path / "out.parquet")
         result = await convert_vector(str(point_shapefile), output=output)

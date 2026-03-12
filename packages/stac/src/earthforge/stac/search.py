@@ -104,6 +104,8 @@ def _do_search(
     datetime_range: str | None,
     max_items: int,
     query: dict[str, object] | None,
+    filter_expr: dict[str, object] | None,
+    filter_lang: str | None,
 ) -> SearchResult:
     """Execute a STAC search synchronously via pystac-client.
 
@@ -113,7 +115,9 @@ def _do_search(
         bbox: Bounding box ``[west, south, east, north]``.
         datetime_range: ISO 8601 datetime or range (e.g. ``"2024-01-01/2024-12-31"``).
         max_items: Maximum number of items to return.
-        query: Additional query parameters for CQL2 filtering.
+        query: Legacy query parameters (deprecated in favor of CQL2).
+        filter_expr: CQL2-JSON filter expression (preferred over ``query``).
+        filter_lang: Filter language identifier (e.g. ``"cql2-json"``).
 
     Returns:
         Structured search result.
@@ -139,7 +143,12 @@ def _do_search(
             "datetime": datetime_range,
             "max_items": max_items,
         }
-        if query:
+        # Prefer CQL2 filter over legacy query parameter
+        if filter_expr:
+            search_kwargs["filter"] = filter_expr
+            if filter_lang:
+                search_kwargs["filter_lang"] = filter_lang
+        elif query:
             search_kwargs["query"] = query
         search = catalog.search(**search_kwargs)  # type: ignore[arg-type]
 
@@ -214,6 +223,8 @@ async def search_catalog(
     datetime_range: str | None = None,
     max_items: int = 10,
     query: dict[str, object] | None = None,
+    filter_expr: dict[str, object] | None = None,
+    filter_lang: str | None = "cql2-json",
 ) -> SearchResult:
     """Search a STAC catalog using the profile's configured API endpoint.
 
@@ -226,7 +237,11 @@ async def search_catalog(
         bbox: Spatial bounding box ``[west, south, east, north]`` in WGS84.
         datetime_range: Temporal filter as ISO 8601 datetime or range string.
         max_items: Maximum items to return (default: 10).
-        query: Additional CQL2 query parameters.
+        query: Legacy query parameters (deprecated — use ``filter_expr`` instead).
+        filter_expr: CQL2-JSON filter expression, preferred per STAC best practices.
+            Example: ``{"op": "<=", "args": [{"property": "eo:cloud_cover"}, 20]}``
+        filter_lang: Filter language (default: ``"cql2-json"``). Only used when
+            ``filter_expr`` is provided.
 
     Returns:
         Structured search results with items and metadata.
@@ -252,5 +267,7 @@ async def search_catalog(
             datetime_range=datetime_range,
             max_items=max_items,
             query=query,
+            filter_expr=filter_expr,
+            filter_lang=filter_lang,
         ),
     )

@@ -117,18 +117,28 @@ async def inspect_stac_item(profile: EarthForgeProfile, url: str) -> StacItemInf
     if data.get("type") != "Feature":
         raise StacError(f"URL does not point to a STAC item (type={data.get('type')!r})")
 
-    # Extract properties subset (skip internal/computed fields)
+    # Extract properties subset — include date range fields (STAC best practices)
+    # and common EO/SAR extensions
     props = data.get("properties", {})
     selected_props: dict[str, object] = {}
-    for key in (
+    prop_keys = (
+        "datetime",
+        "start_datetime",
+        "end_datetime",
         "eo:cloud_cover",
+        "eo:bands",
         "platform",
         "constellation",
+        "instruments",
         "gsd",
         "proj:epsg",
+        "proj:shape",
+        "sar:instrument_mode",
+        "sar:frequency_band",
         "created",
         "updated",
-    ):
+    )
+    for key in prop_keys:
         if key in props:
             selected_props[key] = props[key]
 
