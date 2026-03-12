@@ -1,0 +1,21 @@
+{
+  "item_id": "N097E305_2024_Season1_3IN_cog",
+  "item_url": "https://spved5ihrl.execute-api.us-west-2.amazonaws.com/collections/orthos-phase3/items/N097E305_2024_Season1_3IN_cog",
+  "output_dir": "data/kyfromabove_fetch/N097E305_2024_Season1_3IN_cog.tif",
+  "assets_requested": 1,
+  "assets_fetched": 1,
+  "assets_skipped": 0,
+  "total_bytes_downloaded": 78026,
+  "total_size_bytes": 78026,
+  "elapsed_seconds": 2.341,
+  "files": [
+    {
+      "key": "thumbnail",
+      "href": "https://kyfromabove.s3.us-west-2.amazonaws.com/stac/orthos-phase3/N097E305_2024_Season1_3IN_cog.tif/N097E305_2024_Season1_3IN_cog.png",
+      "local_path": "data/kyfromabove_fetch/N097E305_2024_Season1_3IN_cog.tif/N097E305_2024_Season1_3IN_cog.png",
+      "size_bytes": 78026,
+      "skipped": false,
+      "media_type": "image/png"
+    }
+  ]
+}

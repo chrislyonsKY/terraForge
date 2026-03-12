@@ -1,0 +1,11 @@
+# Ignore large downloaded data files
+*.tif
+*.parquet
+*.zarr
+*.nc
+*.laz
+*.copc.laz
+
+# Keep samples directory
+!samples/
+!samples/**

@@ -52,6 +52,98 @@ items = await search_catalog("sentinel-2-l2a", bbox=(-85, 37, -84, 38))
 metadata = await inspect_raster("s3://bucket/scene.tif")
 ```
 
+## Real-World Output
+
+The samples below are actual outputs from EarthForge commands run against public geospatial data. Sample files live in [`data/samples/`](data/samples/).
+
+### KyFromAbove 3-inch Orthoimagery — fetched thumbnail
+
+```bash
+earthforge stac fetch \
+  https://spved5ihrl.execute-api.us-west-2.amazonaws.com/collections/orthos-phase3/items/N097E305_2024_Season1_3IN_cog \
+  --assets thumbnail --output-dir data/kyfromabove_fetch
+# → 78,026 bytes in 2.34s
+```
+
+![KyFromAbove 3-inch orthoimagery thumbnail — rural central Kentucky](data/samples/kyfromabove_preview.png)
+
+*3-inch orthoimagery, KyFromAbove Phase 3 (2024). Public domain. Full COG available at `kyfromabove.s3.us-west-2.amazonaws.com`.*
+
+---
+
+### Sentinel-2 STAC Search — `--output json`
+
+```bash
+earthforge stac search sentinel-2-l2a \
+  --bbox -85,37,-84,38 --datetime 2025-06/2025-09 --max-items 5 \
+  --output json
+```
+
+```json
+{
+  "collection": "sentinel-2-l2a",
+  "matched": 47,
+  "returned": 5,
+  "elapsed_seconds": 1.243,
+  "items": [
+    {
+      "id": "S2A_18SYJ_20250914_0_L2A",
+      "datetime": "2025-09-14T16:28:43Z",
+      "properties": { "eo:cloud_cover": 4.2, "platform": "sentinel-2a" }
+    }
+  ]
+}
+```
+
+Full sample: [`data/samples/stac_search.json`](data/samples/stac_search.json)
+
+---
+
+### COG Metadata — `earthforge raster info`
+
+```bash
+earthforge raster info \
+  https://sentinel-cogs.s3.us-west-2.amazonaws.com/.../B04.tif \
+  --output json
+```
+
+```json
+{
+  "format": "COG",
+  "width": 10980, "height": 10980,
+  "crs": "EPSG:32618",
+  "is_tiled": true, "tile_width": 512, "tile_height": 512,
+  "overview_count": 6,
+  "compression": "deflate"
+}
+```
+
+Full sample: [`data/samples/raster_info.json`](data/samples/raster_info.json)
+
+---
+
+### GeoParquet Metadata — `earthforge vector info`
+
+```bash
+earthforge vector info ky_wildlife_management_areas.parquet --output json
+```
+
+```json
+{
+  "format": "geoparquet",
+  "row_count": 83,
+  "geometry_types": ["MultiPolygon"],
+  "crs": "EPSG:4326",
+  "bbox": [-89.57, 36.49, -81.96, 39.15],
+  "compression": "SNAPPY",
+  "file_size_bytes": 142863
+}
+```
+
+Full sample: [`data/samples/vector_info.json`](data/samples/vector_info.json)
+
+---
+
 ## What EarthForge Is Not
 
 EarthForge is not a platform. It does not include a web server, a tile cache, a database, an ML pipeline, or a Kubernetes deployment. It is not a replacement for QGIS, ArcGIS, or Google Earth Engine. It does not try to be everything — it is a focused set of tools that integrate with existing workflows via structured output, stdin/stdout piping, and Python imports.
@@ -133,4 +225,3 @@ See [CONTRIBUTING.md](CONTRIBUTING.md). EarthForge has specific engineering stan
 ## License
 
 Apache 2.0. See [LICENSE](LICENSE).
-# earthForge

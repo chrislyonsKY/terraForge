@@ -1,0 +1,39 @@
+{
+  "collection": "sentinel-2-l2a",
+  "bbox": [-85.0, 37.0, -84.0, 38.0],
+  "datetime_range": "2025-06-01/2025-09-30",
+  "matched": 47,
+  "returned": 5,
+  "elapsed_seconds": 1.243,
+  "items": [
+    {
+      "id": "S2A_18SYJ_20250914_0_L2A",
+      "datetime": "2025-09-14T16:28:43Z",
+      "bbox": [-85.063, 36.956, -83.837, 37.965],
+      "asset_count": 27,
+      "properties": {
+        "eo:cloud_cover": 4.2,
+        "platform": "sentinel-2a",
+        "processing:level": "L2A",
+        "s2:mgrs_tile": "18SYJ"
+      },
+      "assets": {
+        "B04": { "href": "https://sentinel-cogs.s3.us-west-2.amazonaws.com/sentinel-s2-l2a-cogs/18/S/YJ/2025/9/S2A_18SYJ_20250914_0_L2A/B04.tif", "type": "image/tiff; application=geotiff; profile=cloud-optimized" },
+        "B08": { "href": "https://sentinel-cogs.s3.us-west-2.amazonaws.com/sentinel-s2-l2a-cogs/18/S/YJ/2025/9/S2A_18SYJ_20250914_0_L2A/B08.tif", "type": "image/tiff; application=geotiff; profile=cloud-optimized" },
+        "thumbnail": { "href": "https://sentinel-cogs.s3.us-west-2.amazonaws.com/sentinel-s2-l2a-cogs/18/S/YJ/2025/9/S2A_18SYJ_20250914_0_L2A/thumbnail.jpg", "type": "image/jpeg", "roles": ["thumbnail"] }
+      }
+    },
+    {
+      "id": "S2B_18SYJ_20250909_0_L2A",
+      "datetime": "2025-09-09T16:28:51Z",
+      "bbox": [-85.063, 36.956, -83.837, 37.965],
+      "asset_count": 27,
+      "properties": {
+        "eo:cloud_cover": 11.8,
+        "platform": "sentinel-2b",
+        "processing:level": "L2A",
+        "s2:mgrs_tile": "18SYJ"
+      }
+    }
+  ]
+}

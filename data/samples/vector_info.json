@@ -1,0 +1,21 @@
+{
+  "source": "ky_wildlife_management_areas.parquet",
+  "format": "geoparquet",
+  "row_count": 83,
+  "num_columns": 9,
+  "geometry_column": "geometry",
+  "geometry_types": ["MultiPolygon"],
+  "crs": "EPSG:4326",
+  "bbox": [-89.57, 36.49, -81.96, 39.15],
+  "encoding": "WKB",
+  "num_row_groups": 1,
+  "compression": "SNAPPY",
+  "file_size_bytes": 142863,
+  "columns": [
+    { "name": "WMANAME",   "type": "large_string", "is_geometry": false },
+    { "name": "COUNTY",    "type": "large_string", "is_geometry": false },
+    { "name": "ACREAGE",   "type": "double",       "is_geometry": false },
+    { "name": "WMA_ID",    "type": "int64",        "is_geometry": false },
+    { "name": "geometry",  "type": "binary",       "is_geometry": true  }
+  ]
+}

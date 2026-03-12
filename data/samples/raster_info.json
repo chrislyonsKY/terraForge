@@ -1,0 +1,27 @@
+{
+  "source": "https://sentinel-cogs.s3.us-west-2.amazonaws.com/sentinel-s2-l2a-cogs/18/S/YJ/2025/9/S2A_18SYJ_20250914_0_L2A/B04.tif",
+  "format": "COG",
+  "width": 10980,
+  "height": 10980,
+  "band_count": 1,
+  "dtype": "uint16",
+  "crs": "EPSG:32618",
+  "bounds": {
+    "left": 399960.0,
+    "bottom": 4090200.0,
+    "right": 509760.0,
+    "top": 4200000.0
+  },
+  "resolution": [10.0, 10.0],
+  "is_tiled": true,
+  "tile_width": 512,
+  "tile_height": 512,
+  "overview_count": 6,
+  "overview_levels": [2, 4, 8, 16, 32, 64],
+  "compression": "deflate",
+  "nodata": null,
+  "tags": {
+    "AREA_OR_POINT": "Area",
+    "OVR_RESAMPLING_ALG": "AVERAGE"
+  }
+}
