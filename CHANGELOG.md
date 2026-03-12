@@ -9,6 +9,19 @@ Versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased] — v0.1.0
 
+### Added — M3c (Pipeline)
+
+- `packages/pipeline/` — new `earthforge-pipeline` package (pyyaml + jsonschema)
+- `earthforge.pipeline.schema` — JSON Schema (Draft 2020-12) validation for pipeline YAML
+- `earthforge.pipeline.steps` — step registry with 4 built-in steps: `stac.fetch`, `raster.calc`, `raster.convert`, `vector.convert`
+- `earthforge.pipeline.steps._safe_eval` — safe band math AST evaluator (no `eval`/`exec`)
+- `earthforge.pipeline.runner` — async executor with `asyncio.TaskGroup` + `asyncio.Semaphore`
+- `earthforge.pipeline.template` — NDVI starter template generator
+- `earthforge pipeline validate/run/list/init` CLI subcommands
+- 49 unit tests across schema, steps, and runner
+- `examples/scripts/ndvi_pipeline.yaml` — Sentinel-2 NDVI pipeline over Lexington, KY
+- `ai-dev/validation-reports/VR-M3-pipeline-run.md`
+
 ### Added — M3b (Cube)
 
 - `packages/cube/` — new `earthforge-cube` package with xarray + zarr + h5netcdf

@@ -1,0 +1,19 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "earthforge-pipeline"
+version = "0.1.0"
+description = "EarthForge declarative YAML pipeline runner for geospatial workflows."
+readme = "README.md"
+requires-python = ">=3.11"
+license = "Apache-2.0"
+dependencies = [
+    "earthforge-core>=0.1.0",
+    "pyyaml>=6.0",
+    "jsonschema>=4.21",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/earthforge"]

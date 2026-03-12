@@ -159,6 +159,7 @@ def run_command(ctx: typer.Context, coro: object) -> object:
 from earthforge.cli.commands import config_cmd as _config_cmd  # noqa: E402
 from earthforge.cli.commands import cube_cmd as _cube_cmd  # noqa: E402
 from earthforge.cli.commands import info as _info_cmd  # noqa: E402
+from earthforge.cli.commands import pipeline_cmd as _pipeline_cmd  # noqa: E402
 from earthforge.cli.commands import raster_cmd as _raster_cmd  # noqa: E402
 from earthforge.cli.commands import stac_cmd as _stac_cmd  # noqa: E402
 from earthforge.cli.commands import vector_cmd as _vector_cmd  # noqa: E402
@@ -169,3 +170,4 @@ app.add_typer(_stac_cmd.app)
 app.add_typer(_raster_cmd.app)
 app.add_typer(_vector_cmd.app)
 app.add_typer(_cube_cmd.app)
+app.add_typer(_pipeline_cmd.app)
