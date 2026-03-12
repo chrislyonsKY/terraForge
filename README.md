@@ -31,6 +31,10 @@ earthforge raster convert image.tif --to cog
 # Query GeoParquet with spatial predicate pushdown
 earthforge vector query buildings.parquet --bbox -85,37,-84,38
 
+# Inspect and slice Zarr datacubes
+earthforge cube info s3://era5-pds/zarr/2025/01/data/air_temperature_at_2_metres.zarr
+earthforge cube slice s3://era5-pds/zarr/ --var t2m --bbox -85,37,-84,38 --time 2025-06/2025-06 -o ky_june.zarr
+
 # Pipe structured JSON into other tools
 earthforge stac search sentinel-2-l2a -o json | jq '.items[].assets.B04.href'
 ```
