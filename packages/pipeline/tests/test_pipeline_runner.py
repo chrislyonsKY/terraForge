@@ -29,9 +29,7 @@ def _base_doc(**overrides) -> dict:
                     "collection": "sentinel-2-l2a",
                 }
             },
-            "steps": [
-                {"for_each_item": [{"stac.fetch": {"assets": ["B04"]}}]}
-            ],
+            "steps": [{"for_each_item": [{"stac.fetch": {"assets": ["B04"]}}]}],
         }
     }
     doc["pipeline"].update(overrides)
@@ -81,7 +79,10 @@ class TestRunPipelineDryRun:
     async def test_dry_run_no_steps_executed(self, tmp_path: Path) -> None:
         doc = _base_doc()
 
-        fake_items = [("S2A_001", "https://example.com/S2A_001"), ("S2A_002", "https://example.com/S2A_002")]
+        fake_items = [
+            ("S2A_001", "https://example.com/S2A_001"),
+            ("S2A_002", "https://example.com/S2A_002"),
+        ]
 
         with patch(
             "earthforge.pipeline.runner._fetch_stac_items",

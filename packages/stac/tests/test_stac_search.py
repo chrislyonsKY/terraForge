@@ -15,9 +15,9 @@ from earthforge.stac.errors import StacError, StacSearchError
 from earthforge.stac.search import SearchResult, search_catalog
 
 
-def _make_profile(stac_api: str | None = "https://earth-search.aws.element84.com/v1") -> (
-    EarthForgeProfile
-):
+def _make_profile(
+    stac_api: str | None = "https://earth-search.aws.element84.com/v1",
+) -> EarthForgeProfile:
     return EarthForgeProfile(name="test", stac_api=stac_api)
 
 

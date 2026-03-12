@@ -107,9 +107,7 @@ def polygon_geojson(tmp_path: Path) -> Path:
 class TestConvertVector:
     """Tests for vector format conversion to GeoParquet."""
 
-    async def test_shapefile_to_geoparquet(
-        self, point_shapefile: Path, tmp_path: Path
-    ) -> None:
+    async def test_shapefile_to_geoparquet(self, point_shapefile: Path, tmp_path: Path) -> None:
         output = str(tmp_path / "cities.parquet")
         result = await convert_vector(str(point_shapefile), output=output)
 
@@ -118,9 +116,7 @@ class TestConvertVector:
         assert result.feature_count == 3
         assert Path(output).exists()
 
-    async def test_geojson_to_geoparquet(
-        self, polygon_geojson: Path, tmp_path: Path
-    ) -> None:
+    async def test_geojson_to_geoparquet(self, polygon_geojson: Path, tmp_path: Path) -> None:
         output = str(tmp_path / "counties.parquet")
         result = await convert_vector(str(polygon_geojson), output=output)
 
@@ -128,9 +124,7 @@ class TestConvertVector:
         assert result.geometry_type == "Polygon"
         assert Path(output).exists()
 
-    async def test_output_has_geo_metadata(
-        self, point_shapefile: Path, tmp_path: Path
-    ) -> None:
+    async def test_output_has_geo_metadata(self, point_shapefile: Path, tmp_path: Path) -> None:
         output = str(tmp_path / "out.parquet")
         await convert_vector(str(point_shapefile), output=output)
 
@@ -141,9 +135,7 @@ class TestConvertVector:
         assert geo["primary_column"] == "geometry"
         assert "WKB" in geo["columns"]["geometry"]["encoding"]
 
-    async def test_crs_in_metadata(
-        self, point_shapefile: Path, tmp_path: Path
-    ) -> None:
+    async def test_crs_in_metadata(self, point_shapefile: Path, tmp_path: Path) -> None:
         output = str(tmp_path / "out.parquet")
         result = await convert_vector(str(point_shapefile), output=output)
 
@@ -156,18 +148,14 @@ class TestConvertVector:
         crs = geo["columns"]["geometry"].get("crs", {})
         assert crs  # Should have CRS PROJJSON
 
-    async def test_bbox_in_metadata(
-        self, point_shapefile: Path, tmp_path: Path
-    ) -> None:
+    async def test_bbox_in_metadata(self, point_shapefile: Path, tmp_path: Path) -> None:
         output = str(tmp_path / "out.parquet")
         result = await convert_vector(str(point_shapefile), output=output)
 
         assert result.bbox is not None
         assert len(result.bbox) == 4
 
-    async def test_geometry_column_present(
-        self, point_shapefile: Path, tmp_path: Path
-    ) -> None:
+    async def test_geometry_column_present(self, point_shapefile: Path, tmp_path: Path) -> None:
         output = str(tmp_path / "out.parquet")
         await convert_vector(str(point_shapefile), output=output)
 
@@ -186,31 +174,23 @@ class TestConvertVector:
         assert "name" in col_names
         assert "value" in col_names
 
-    async def test_auto_output_path(
-        self, point_shapefile: Path
-    ) -> None:
+    async def test_auto_output_path(self, point_shapefile: Path) -> None:
         result = await convert_vector(str(point_shapefile))
         expected = str(point_shapefile.with_suffix(".parquet"))
         assert result.output == expected
         assert Path(expected).exists()
 
-    async def test_input_format_detected(
-        self, point_shapefile: Path, tmp_path: Path
-    ) -> None:
+    async def test_input_format_detected(self, point_shapefile: Path, tmp_path: Path) -> None:
         output = str(tmp_path / "out.parquet")
         result = await convert_vector(str(point_shapefile), output=output)
         assert "Shapefile" in result.input_format
 
-    async def test_geojson_format_detected(
-        self, polygon_geojson: Path, tmp_path: Path
-    ) -> None:
+    async def test_geojson_format_detected(self, polygon_geojson: Path, tmp_path: Path) -> None:
         output = str(tmp_path / "out.parquet")
         result = await convert_vector(str(polygon_geojson), output=output)
         assert "GeoJSON" in result.input_format
 
-    async def test_file_size_recorded(
-        self, point_shapefile: Path, tmp_path: Path
-    ) -> None:
+    async def test_file_size_recorded(self, point_shapefile: Path, tmp_path: Path) -> None:
         output = str(tmp_path / "out.parquet")
         result = await convert_vector(str(point_shapefile), output=output)
         assert result.file_size_bytes is not None
@@ -220,15 +200,11 @@ class TestConvertVector:
         with pytest.raises(VectorError, match="Failed to open"):
             await convert_vector("/nonexistent/data.shp")
 
-    async def test_unsupported_target_format(
-        self, point_shapefile: Path
-    ) -> None:
+    async def test_unsupported_target_format(self, point_shapefile: Path) -> None:
         with pytest.raises(VectorError, match="Unsupported target format"):
             await convert_vector(str(point_shapefile), target_format="xlsx")
 
-    async def test_roundtrip_readable(
-        self, point_shapefile: Path, tmp_path: Path
-    ) -> None:
+    async def test_roundtrip_readable(self, point_shapefile: Path, tmp_path: Path) -> None:
         """Verify output can be read back by our own inspect_vector."""
         from earthforge.vector.info import inspect_vector
 
@@ -241,9 +217,7 @@ class TestConvertVector:
         assert info.geometry_column == "geometry"
         assert info.crs is not None
 
-    async def test_json_serializable(
-        self, point_shapefile: Path, tmp_path: Path
-    ) -> None:
+    async def test_json_serializable(self, point_shapefile: Path, tmp_path: Path) -> None:
         output = str(tmp_path / "out.parquet")
         result = await convert_vector(str(point_shapefile), output=output)
         dumped = result.model_dump(mode="json")

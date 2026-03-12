@@ -130,9 +130,7 @@ def _do_search(
     try:
         catalog = Client.open(api_url)
     except Exception as exc:
-        raise StacSearchError(
-            f"Failed to connect to STAC API at {api_url}: {exc}"
-        ) from exc
+        raise StacSearchError(f"Failed to connect to STAC API at {api_url}: {exc}") from exc
 
     try:
         search_kwargs: dict[str, object] = {
@@ -162,8 +160,10 @@ def _do_search(
         # Extract datetime
         dt_str: str | None = None
         if item.datetime is not None:
-            dt_str = item.datetime.isoformat() if isinstance(item.datetime, datetime) else str(
-                item.datetime
+            dt_str = (
+                item.datetime.isoformat()
+                if isinstance(item.datetime, datetime)
+                else str(item.datetime)
             )
         elif item.properties.get("datetime"):
             dt_str = str(item.properties["datetime"])

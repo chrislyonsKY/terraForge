@@ -125,7 +125,7 @@ def vector_query(
             t0 = time.perf_counter()
             gdf = gpd.read_parquet(source)
             west, south, east, north = bbox_tuple
-            _ = gdf.cx[west:east, south:north]
+            _ = gdf.cx[west:east, south:north]  # type: ignore[misc]
             fullscan_times.append(time.perf_counter() - t0)
             fullscan_rows = len(_)
 
@@ -134,9 +134,7 @@ def vector_query(
         total_row_groups = pf.metadata.num_row_groups
 
         speedup = (
-            round(sum(fullscan_times) / sum(pushdown_times), 2)
-            if sum(pushdown_times) > 0
-            else 0.0
+            round(sum(fullscan_times) / sum(pushdown_times), 2) if sum(pushdown_times) > 0 else 0.0
         )
 
         return BenchResult(

@@ -39,9 +39,7 @@ async def demo_list_collections() -> None:
     print("=" * 60)
 
     profile = EarthForgeProfile(name="kygeonet", stac_api=STAC_API)
-    info = await inspect_stac_collection(
-        profile, f"{STAC_API}collections/orthos-phase2"
-    )
+    info = await inspect_stac_collection(profile, f"{STAC_API}collections/orthos-phase2")
     print(f"  ID:       {info.id}")
     print(f"  Title:    {info.title}")
     print(f"  License:  {info.license}")

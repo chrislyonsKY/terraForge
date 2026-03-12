@@ -170,6 +170,7 @@ def _geometry_intersects_bbox(
 
     # Fallback: parse WKB point coordinates for simple containment check
     import struct
+
     if len(wkb) >= 21:
         try:
             byte_order = wkb[0]
@@ -199,6 +200,7 @@ def _wkb_to_wkt(wkb: bytes) -> str | None:
     """
     try:
         from shapely import from_wkb
+
         geom = from_wkb(wkb)
         return str(geom.wkt)
     except ImportError:
@@ -266,7 +268,7 @@ def _query_features_sync(
         ) from exc
 
     try:
-        pf = pq.ParquetFile(source)  # type: ignore[no-untyped-call]
+        pf = pq.ParquetFile(source)
     except Exception as exc:
         raise VectorError(f"Failed to open '{source}': {exc}") from exc
 
@@ -306,6 +308,7 @@ def _query_features_sync(
             else:
                 mask.append(True)
         import pyarrow as pa
+
         table = table.filter(pa.array(mask))
 
     # Apply limit

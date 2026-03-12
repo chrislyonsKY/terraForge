@@ -101,7 +101,7 @@ class StepResult:
 _REGISTRY: dict[str, Callable[..., Any]] = {}
 
 
-def register_step(name: str) -> Callable:
+def register_step(name: str) -> Callable[..., Any]:
     """Decorator to register an async step function under ``name``.
 
     Parameters:
@@ -112,14 +112,14 @@ def register_step(name: str) -> Callable:
         The original function, unchanged.
     """
 
-    def decorator(fn: Callable) -> Callable:
+    def decorator(fn: Callable[..., Any]) -> Callable[..., Any]:
         _REGISTRY[name] = fn
         return fn
 
     return decorator
 
 
-def get_step(name: str) -> Callable:
+def get_step(name: str) -> Callable[..., Any]:
     """Look up a registered step by name.
 
     Parameters:
@@ -134,8 +134,7 @@ def get_step(name: str) -> Callable:
     if name not in _REGISTRY:
         available = ", ".join(sorted(_REGISTRY))
         raise KeyError(
-            f"Unknown pipeline step '{name}'. "
-            f"Available steps: {available or '(none registered)'}"
+            f"Unknown pipeline step '{name}'. Available steps: {available or '(none registered)'}"
         )
     return _REGISTRY[name]
 
@@ -216,7 +215,7 @@ async def step_stac_fetch(ctx: StepContext) -> StepResult:
 # Safe expression evaluator for raster.calc
 # ---------------------------------------------------------------------------
 
-_SAFE_OPS: dict[type, Callable] = {
+_SAFE_OPS: dict[type[Any], Callable[..., Any]] = {
     ast.Add: operator.add,
     ast.Sub: operator.sub,
     ast.Mult: operator.mul,
@@ -256,7 +255,7 @@ def _safe_eval(expr_str: str, env: dict[str, Any]) -> Any:
                 raise ValueError(f"Unknown variable '{node.id}' in expression")
             return env[node.id]
         if isinstance(node, ast.BinOp):
-            op_type = type(node.op)
+            op_type: type[Any] = type(node.op)
             if op_type not in _SAFE_OPS:
                 raise ValueError(f"Unsupported operator: {op_type.__name__}")
             return _SAFE_OPS[op_type](_eval(node.left), _eval(node.right))
@@ -328,8 +327,7 @@ async def step_raster_calc(ctx: StepContext) -> StepResult:
                 raise StepError(
                     "raster.calc",
                     ctx.item_id,
-                    f"Band '{band_key}' not in asset_paths. "
-                    f"Available: {list(ctx.asset_paths)}",
+                    f"Band '{band_key}' not in asset_paths. Available: {list(ctx.asset_paths)}",
                 )
             with rasterio.open(path) as src:
                 arr = src.read(1).astype(np.float32)
@@ -428,7 +426,7 @@ async def step_raster_convert(ctx: StepContext) -> StepResult:
         elapsed_seconds=time.perf_counter() - t0,
         message=(
             f"Converted to {fmt} ({compression}) → "
-            f"{output_path.name} ({result.output_size_bytes:,} bytes)"
+            f"{output_path.name} ({result.file_size_bytes:,} bytes)"
         ),
     )
 

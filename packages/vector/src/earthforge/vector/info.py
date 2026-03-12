@@ -92,7 +92,7 @@ def _read_parquet_info(source: str) -> VectorInfo:
         raise VectorError(msg) from exc
 
     try:
-        pf = pq.ParquetFile(source)  # type: ignore[no-untyped-call]
+        pf = pq.ParquetFile(source)
     except Exception as exc:
         msg = f"Failed to read Parquet file '{source}': {exc}"
         raise VectorError(msg) from exc

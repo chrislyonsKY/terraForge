@@ -27,12 +27,12 @@ def _make_wkb_point(x: float, y: float) -> bytes:
 def geo_points(tmp_path: Path) -> Path:
     """GeoParquet with 6 points spread across Kentucky."""
     points = [
-        (-84.5, 38.0),   # Frankfort area
-        (-84.3, 38.1),   # Lexington area
-        (-85.7, 38.2),   # Louisville area
-        (-83.0, 38.4),   # Eastern KY
-        (-84.5, 37.0),   # Southern KY
-        (-88.0, 37.0),   # Western KY (Paducah)
+        (-84.5, 38.0),  # Frankfort area
+        (-84.3, 38.1),  # Lexington area
+        (-85.7, 38.2),  # Louisville area
+        (-83.0, 38.4),  # Eastern KY
+        (-84.5, 37.0),  # Southern KY
+        (-88.0, 37.0),  # Western KY (Paducah)
     ]
     names = ["Frankfort", "Lexington", "Louisville", "Ashland", "Somerset", "Paducah"]
     populations = [28602, 322570, 633045, 20000, 11352, 27137]
@@ -54,13 +54,13 @@ def geo_points(tmp_path: Path) -> Path:
         },
     }
 
-    table = pa.table({
-        "name": pa.array(names, type=pa.string()),
-        "population": pa.array(populations, type=pa.int64()),
-        "geometry": pa.array(
-            [_make_wkb_point(x, y) for x, y in points], type=pa.binary()
-        ),
-    })
+    table = pa.table(
+        {
+            "name": pa.array(names, type=pa.string()),
+            "population": pa.array(populations, type=pa.int64()),
+            "geometry": pa.array([_make_wkb_point(x, y) for x, y in points], type=pa.binary()),
+        }
+    )
 
     existing = table.schema.metadata or {}
     existing[b"geo"] = json.dumps(geo_metadata).encode()
@@ -74,11 +74,13 @@ def geo_points(tmp_path: Path) -> Path:
 @pytest.fixture()
 def plain_parquet(tmp_path: Path) -> Path:
     """Plain Parquet with no geometry — for testing non-geo queries."""
-    table = pa.table({
-        "id": pa.array([1, 2, 3, 4, 5], type=pa.int64()),
-        "category": pa.array(["A", "B", "A", "C", "B"], type=pa.string()),
-        "value": pa.array([10.0, 20.0, 30.0, 40.0, 50.0], type=pa.float64()),
-    })
+    table = pa.table(
+        {
+            "id": pa.array([1, 2, 3, 4, 5], type=pa.int64()),
+            "category": pa.array(["A", "B", "A", "C", "B"], type=pa.string()),
+            "value": pa.array([10.0, 20.0, 30.0, 40.0, 50.0], type=pa.float64()),
+        }
+    )
     path = tmp_path / "data.parquet"
     pq.write_table(table, str(path))
     return path
@@ -95,9 +97,7 @@ class TestQueryFeatures:
 
     async def test_bbox_filter_reduces_results(self, geo_points: Path) -> None:
         # Bbox around Frankfort/Lexington area
-        result = await query_features(
-            str(geo_points), bbox=[-85.0, 37.9, -84.0, 38.2]
-        )
+        result = await query_features(str(geo_points), bbox=[-85.0, 37.9, -84.0, 38.2])
         # Should get Frankfort (-84.5, 38.0) and Lexington (-84.3, 38.1)
         assert result.feature_count == 2
         names = [f["name"] for f in result.features]
@@ -106,9 +106,7 @@ class TestQueryFeatures:
 
     async def test_bbox_filter_empty_result(self, geo_points: Path) -> None:
         # Bbox in the ocean — no points
-        result = await query_features(
-            str(geo_points), bbox=[-90.0, 40.0, -89.0, 41.0]
-        )
+        result = await query_features(str(geo_points), bbox=[-90.0, 40.0, -89.0, 41.0])
         assert result.feature_count == 0
         assert result.features == []
 
@@ -118,9 +116,7 @@ class TestQueryFeatures:
         assert result.bbox_filter == bbox
 
     async def test_column_selection(self, geo_points: Path) -> None:
-        result = await query_features(
-            str(geo_points), columns=["name", "population"]
-        )
+        result = await query_features(str(geo_points), columns=["name", "population"])
         assert result.feature_count == 6
         # Should have name, population, and geometry_wkt
         for f in result.features:
@@ -140,9 +136,7 @@ class TestQueryFeatures:
         assert result.feature_count == 2
 
     async def test_no_geometry_in_output(self, geo_points: Path) -> None:
-        result = await query_features(
-            str(geo_points), include_geometry=False, limit=1
-        )
+        result = await query_features(str(geo_points), include_geometry=False, limit=1)
         assert result.feature_count == 1
         feat = result.features[0]
         assert "geometry_wkt" not in feat
@@ -166,9 +160,7 @@ class TestQueryFeatures:
         assert result.source == str(geo_points)
 
     async def test_total_rows_vs_filtered(self, geo_points: Path) -> None:
-        result = await query_features(
-            str(geo_points), bbox=[-85.0, 37.9, -84.0, 38.2]
-        )
+        result = await query_features(str(geo_points), bbox=[-85.0, 37.9, -84.0, 38.2])
         assert result.total_rows == 6
         assert result.feature_count < result.total_rows
 

@@ -251,11 +251,7 @@ def _build_cube_info(source: str, fmt: str, ds: Any) -> CubeInfo:
 
     # Data variables (not coordinate variables)
     coord_names = set(ds.coords)
-    variables = [
-        _extract_variable_info(ds, v)
-        for v in ds.data_vars
-        if v not in coord_names
-    ]
+    variables = [_extract_variable_info(ds, v) for v in ds.data_vars if v not in coord_names]
 
     # Global attributes — keep only JSON-serializable scalars/strings
     global_attrs: dict[str, Any] = {}

@@ -45,8 +45,7 @@ def completions(
     """
     if shell not in _SUPPORTED_SHELLS:
         typer.echo(
-            f"Error: unsupported shell '{shell}'. "
-            f"Supported: {', '.join(_SUPPORTED_SHELLS)}",
+            f"Error: unsupported shell '{shell}'. Supported: {', '.join(_SUPPORTED_SHELLS)}",
             err=True,
         )
         raise typer.Exit(code=1)

@@ -26,8 +26,6 @@ sys.path.insert(0, "packages/core/src")
 sys.path.insert(0, "packages/cube/src")
 
 from earthforge.cube.info import inspect_cube
-from earthforge.cube.slice import slice_cube
-
 
 ERA5_STORE = "s3://era5-pds/zarr/2025/01/data/air_temperature_at_2_metres.zarr"
 KY_BBOX = (-85.5, 37.0, -84.0, 38.5)

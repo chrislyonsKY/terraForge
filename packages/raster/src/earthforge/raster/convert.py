@@ -138,6 +138,7 @@ def _convert_to_cog_sync(
     # ordering, and overview generation in a single pass)
     try:
         from osgeo import gdal
+
         gdal.UseExceptions()
 
         compression_map = {

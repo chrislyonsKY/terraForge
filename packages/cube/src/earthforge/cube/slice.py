@@ -155,10 +155,7 @@ def _apply_bbox(ds: Any, bbox: tuple[float, float, float, float]) -> Any:
             lon_vals = ds.coords[lon_dim]
             lat_vals = ds.coords[lat_dim]
             mask = (
-                (lon_vals >= west)
-                & (lon_vals <= east)
-                & (lat_vals >= south)
-                & (lat_vals <= north)
+                (lon_vals >= west) & (lon_vals <= east) & (lat_vals >= south) & (lat_vals <= north)
             )
             return ds.where(mask, drop=True)
         except Exception as exc:
@@ -235,10 +232,7 @@ def _slice_cube_sync(
             available = list(ds.data_vars)
             missing = [v for v in variables if v not in available]
             if missing:
-                raise CubeError(
-                    f"Variables not found in store: {missing}. "
-                    f"Available: {available}"
-                )
+                raise CubeError(f"Variables not found in store: {missing}. Available: {available}")
             ds = ds[variables]
 
         # Apply spatial filter

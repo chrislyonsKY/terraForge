@@ -107,8 +107,7 @@ def validate_pipeline_doc(doc: dict[str, Any]) -> None:
         import jsonschema
     except ImportError as exc:
         raise PipelineValidationError(
-            "jsonschema is required for pipeline validation: "
-            "pip install earthforge[pipeline]"
+            "jsonschema is required for pipeline validation: pip install earthforge[pipeline]"
         ) from exc
 
     validator = jsonschema.Draft202012Validator(PIPELINE_SCHEMA)

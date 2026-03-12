@@ -21,16 +21,13 @@ Usage::
 from __future__ import annotations
 
 import logging
-from typing import TYPE_CHECKING, Any, ClassVar
+from typing import Any, ClassVar
 
 from textual import work
 from textual.app import App, ComposeResult
 from textual.binding import Binding
 from textual.containers import Horizontal, Vertical
 from textual.widgets import DataTable, Footer, Header, Label, ListItem, ListView, Markdown, Static
-
-if TYPE_CHECKING:
-    pass
 
 logger = logging.getLogger(__name__)
 
@@ -84,7 +81,7 @@ class _CollectionItem(ListItem):
         self.collection_id = collection_id
 
 
-class ExploreApp(App[None]):  # type: ignore[type-arg]
+class ExploreApp(App[None]):
     """Interactive STAC catalog explorer.
 
     Three-panel layout: Collections | Items | Item Detail.
@@ -99,7 +96,7 @@ class ExploreApp(App[None]):  # type: ignore[type-arg]
     TITLE = "EarthForge Explorer"
     CSS = _CSS
 
-    BINDINGS: ClassVar[list[Binding]] = [
+    BINDINGS: ClassVar[list[Binding | tuple[str, str] | tuple[str, str, str]]] = [
         Binding("q", "quit", "Quit"),
         Binding("r", "refresh", "Refresh"),
         Binding("/", "filter", "Filter"),
@@ -160,7 +157,7 @@ class ExploreApp(App[None]):  # type: ignore[type-arg]
         ``call_from_thread``. On failure, updates the status bar.
         """
         try:
-            from pystac_client import Client  # type: ignore[import-untyped]
+            from pystac_client import Client
         except ImportError:
             self.call_from_thread(
                 self._set_status,
@@ -228,7 +225,7 @@ class ExploreApp(App[None]):  # type: ignore[type-arg]
             collection_id: The STAC collection to query.
         """
         try:
-            from pystac_client import Client  # type: ignore[import-untyped]
+            from pystac_client import Client
         except ImportError:
             return
 
@@ -317,10 +314,10 @@ class ExploreApp(App[None]):  # type: ignore[type-arg]
             item_dict: JSON-serialisable item dict from :meth:`_item_to_dict`.
         """
         item_id = item_dict.get("id", "Unknown")
-        props: dict[str, Any] = item_dict.get("properties", {})  # type: ignore[assignment]
+        props: dict[str, Any] = item_dict.get("properties", {})
         bbox = item_dict.get("bbox")
-        links: list[Any] = item_dict.get("links", [])  # type: ignore[assignment]
-        assets: dict[str, Any] = item_dict.get("assets", {})  # type: ignore[assignment]
+        links: list[Any] = item_dict.get("links", [])
+        assets: dict[str, Any] = item_dict.get("assets", {})
 
         lines = [f"## {item_id}", ""]
 

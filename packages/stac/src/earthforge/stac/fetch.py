@@ -287,9 +287,7 @@ async def fetch_assets(
     async with managed_client(profile) as client:
         async with asyncio.TaskGroup() as tg:
             tasks = {
-                key: tg.create_task(
-                    _download_asset(client, semaphore, key, asset, out_dir)
-                )
+                key: tg.create_task(_download_asset(client, semaphore, key, asset, out_dir))
                 for key, asset in selected.items()
             }
 

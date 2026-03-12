@@ -97,9 +97,7 @@ class TestVariableSelection:
         assert result.variables_selected == ["temperature"]
 
     @pytest.mark.asyncio
-    async def test_select_all_variables_when_none(
-        self, zarr_store: str, tmp_path: Path
-    ) -> None:
+    async def test_select_all_variables_when_none(self, zarr_store: str, tmp_path: Path) -> None:
         out = str(tmp_path / "out.zarr")
         result = await slice_cube(zarr_store, variables=None, output=out)
         assert "temperature" in result.variables_selected
@@ -119,9 +117,7 @@ class TestVariableSelection:
 
 class TestTimeFiltering:
     @pytest.mark.asyncio
-    async def test_time_range_reduces_time_dim(
-        self, zarr_store: str, tmp_path: Path
-    ) -> None:
+    async def test_time_range_reduces_time_dim(self, zarr_store: str, tmp_path: Path) -> None:
         out = str(tmp_path / "out.zarr")
         result = await slice_cube(
             zarr_store,
@@ -131,9 +127,7 @@ class TestTimeFiltering:
         assert result.shape.get("time", 0) <= 6
 
     @pytest.mark.asyncio
-    async def test_time_range_recorded_in_result(
-        self, zarr_store: str, tmp_path: Path
-    ) -> None:
+    async def test_time_range_recorded_in_result(self, zarr_store: str, tmp_path: Path) -> None:
         out = str(tmp_path / "out.zarr")
         result = await slice_cube(
             zarr_store,
@@ -143,9 +137,7 @@ class TestTimeFiltering:
         assert result.time_range == ["2025-01-01", "2025-06-30"]
 
     @pytest.mark.asyncio
-    async def test_invalid_time_range_raises(
-        self, zarr_store: str, tmp_path: Path
-    ) -> None:
+    async def test_invalid_time_range_raises(self, zarr_store: str, tmp_path: Path) -> None:
         out = str(tmp_path / "out.zarr")
         with pytest.raises(CubeError, match="Invalid time_range"):
             await slice_cube(zarr_store, time_range="bad-format", output=out)
@@ -158,9 +150,7 @@ class TestTimeFiltering:
 
 class TestBboxFiltering:
     @pytest.mark.asyncio
-    async def test_bbox_reduces_spatial_dims(
-        self, zarr_store: str, tmp_path: Path
-    ) -> None:
+    async def test_bbox_reduces_spatial_dims(self, zarr_store: str, tmp_path: Path) -> None:
         out = str(tmp_path / "out.zarr")
         # Full extent is lon -85 to -84, lat 37 to 38
         result = await slice_cube(
@@ -173,9 +163,7 @@ class TestBboxFiltering:
         assert result.shape.get("latitude", 10) <= 10
 
     @pytest.mark.asyncio
-    async def test_bbox_recorded_in_result(
-        self, zarr_store: str, tmp_path: Path
-    ) -> None:
+    async def test_bbox_recorded_in_result(self, zarr_store: str, tmp_path: Path) -> None:
         out = str(tmp_path / "out.zarr")
         bbox = (-85.0, 37.0, -84.5, 37.5)
         result = await slice_cube(zarr_store, bbox=bbox, output=out)
@@ -223,9 +211,7 @@ class TestOutputFormat:
 
 class TestCombinedFilters:
     @pytest.mark.asyncio
-    async def test_variable_plus_time_plus_bbox(
-        self, zarr_store: str, tmp_path: Path
-    ) -> None:
+    async def test_variable_plus_time_plus_bbox(self, zarr_store: str, tmp_path: Path) -> None:
         out = str(tmp_path / "result.zarr")
         result = await slice_cube(
             zarr_store,
