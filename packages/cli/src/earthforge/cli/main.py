@@ -156,6 +156,8 @@ def run_command(ctx: typer.Context, coro: object) -> object:
 # Import and register subcommand modules. These are guarded imports so the CLI
 # can still show --help even if an optional domain package is not installed.
 
+from earthforge.cli.commands import bench_cmd as _bench_cmd  # noqa: E402
+from earthforge.cli.commands import completions_cmd as _completions_cmd  # noqa: E402
 from earthforge.cli.commands import config_cmd as _config_cmd  # noqa: E402
 from earthforge.cli.commands import cube_cmd as _cube_cmd  # noqa: E402
 from earthforge.cli.commands import info as _info_cmd  # noqa: E402
@@ -165,9 +167,13 @@ from earthforge.cli.commands import stac_cmd as _stac_cmd  # noqa: E402
 from earthforge.cli.commands import vector_cmd as _vector_cmd  # noqa: E402
 
 app.command(name="info", help="Inspect a geospatial file (auto-detects format).")(_info_cmd.info)
+app.command(name="completions", help="Print a shell completion script (bash/zsh/fish).")(
+    _completions_cmd.completions
+)
 app.add_typer(_config_cmd.app)
 app.add_typer(_stac_cmd.app)
 app.add_typer(_raster_cmd.app)
 app.add_typer(_vector_cmd.app)
 app.add_typer(_cube_cmd.app)
 app.add_typer(_pipeline_cmd.app)
+app.add_typer(_bench_cmd.app)
