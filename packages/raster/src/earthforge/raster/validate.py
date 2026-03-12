@@ -107,7 +107,7 @@ def _validate_cog_sync(source: str) -> CogValidationResult:
             be opened or validated.
     """
     try:
-        from rio_cogeo.cogeo import cog_validate as _rio_validate  # type: ignore[import-untyped]
+        from rio_cogeo.cogeo import cog_validate as _rio_validate
     except ImportError as exc:
         raise RasterError(
             "rio-cogeo is required for COG validation: pip install earthforge[raster]"
@@ -125,19 +125,24 @@ def _validate_cog_sync(source: str) -> CogValidationResult:
         name = _classify_message(err)
         named[name] = ValidationCheck(name=name, passed=False, message=err)
 
-    # rio-cogeo warnings → informational checks (passed, with warning prefix)
+    # rio-cogeo warnings → failed if they concern a core COG check, otherwise
+    # informational (passed). Missing overviews is reported as a warning by
+    # rio-cogeo even with strict=True, but should still fail validation.
     for warn in warnings:
         name = _classify_message(warn)
         if name not in named:
+            is_core = name in _COG_CHECK_NAMES
             named[name] = ValidationCheck(
-                name=name, passed=True, message=f"Warning: {warn}"
+                name=name,
+                passed=not is_core,
+                message=warn if is_core else f"Warning: {warn}",
             )
 
     # Supplementary rasterio checks for geotiff driver and compression.
     # rio-cogeo does not surface these as structured named checks, but they
     # are important for users to see in the output.
     try:
-        import rasterio  # type: ignore[import-untyped]
+        import rasterio
 
         with rasterio.open(source) as ds:
             if "geotiff" not in named:
@@ -202,9 +207,7 @@ def _validate_cog_sync(source: str) -> CogValidationResult:
         else f"Not a valid COG ({passed_count}/{total_count} checks passed)"
     )
 
-    return CogValidationResult(
-        source=source, is_valid=is_valid, checks=checks, summary=summary
-    )
+    return CogValidationResult(source=source, is_valid=is_valid, checks=checks, summary=summary)
 
 
 async def validate_cog(source: str) -> CogValidationResult:

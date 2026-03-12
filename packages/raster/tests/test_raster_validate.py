@@ -172,9 +172,7 @@ class TestValidateCog:
     async def test_all_standard_checks_present(self, strip_geotiff: Path) -> None:
         result = await validate_cog(str(strip_geotiff))
         check_names = {c.name for c in result.checks}
-        assert {"geotiff", "tiled", "overviews", "compression", "ifd_order"}.issubset(
-            check_names
-        )
+        assert {"geotiff", "tiled", "overviews", "compression", "ifd_order"}.issubset(check_names)
 
     async def test_nonexistent_file_raises(self) -> None:
         with pytest.raises(RasterError, match="Failed to validate"):
