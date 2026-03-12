@@ -7553,7 +7553,7 @@ compression and format detection.</p>
    resolution data in the file (rio-cogeo byte-level check).</li>
 <li><strong>compression</strong> — Data is compressed (rasterio).</li>
 </ol>
-<p>rio-cogeo is the authoritative source for checks 2–4. Its byte-level IFD
+<p>rio-cogeo is the authoritative source for checks 2-4. Its byte-level IFD
 ordering check catches files that appear valid from rasterio metadata alone
 but have incorrect internal structure. Using <code>strict=True</code> treats missing
 overviews as a validation error rather than a warning.</p>
