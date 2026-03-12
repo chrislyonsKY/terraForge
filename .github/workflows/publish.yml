@@ -34,19 +34,15 @@ jobs:
 
       - name: Build all workspace packages
         run: |
-          for pkg in packages/*/; do
-            echo "Building $pkg"
-            hatch build --clean -t wheel -t sdist "$pkg"
+          for pkg in packages/core packages/stac packages/raster packages/vector packages/cli packages/cube packages/pipeline; do
+            echo "── Building $pkg ──"
+            (cd "$pkg" && hatch build --clean -t wheel -t sdist)
           done
-
-          # Build the meta-package at the root
-          hatch build --clean -t wheel -t sdist
 
       - name: Collect dist artifacts
         run: |
           mkdir -p dist_all
-          find packages/*/dist -name "*.whl" -o -name "*.tar.gz" | xargs -I{} cp {} dist_all/
-          cp dist/*.whl dist/*.tar.gz dist_all/ 2>/dev/null || true
+          find packages/*/dist \( -name "*.whl" -o -name "*.tar.gz" \) -exec cp {} dist_all/ \;
           ls -lh dist_all/
 
       - uses: actions/upload-artifact@v4
