@@ -22,9 +22,7 @@ def _base_doc(**overrides) -> dict:
                     "collection": "sentinel-2-l2a",
                 }
             },
-            "steps": [
-                {"for_each_item": [{"stac.fetch": {"assets": ["B04"]}}]}
-            ],
+            "steps": [{"for_each_item": [{"stac.fetch": {"assets": ["B04"]}}]}],
         }
     }
     doc["pipeline"].update(overrides)
@@ -67,10 +65,12 @@ class TestValidDocuments:
             {
                 "for_each_item": [
                     {"stac.fetch": {"assets": ["B04", "B08"]}},
-                    {"raster.calc": {
-                        "expression": "(B08 - B04) / (B08 + B04)",
-                        "output": "ndvi_{item_id}.tif",
-                    }},
+                    {
+                        "raster.calc": {
+                            "expression": "(B08 - B04) / (B08 + B04)",
+                            "output": "ndvi_{item_id}.tif",
+                        }
+                    },
                     {"raster.convert": {"format": "COG"}},
                 ]
             }

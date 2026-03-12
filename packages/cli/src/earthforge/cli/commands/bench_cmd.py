@@ -134,9 +134,7 @@ def vector_query(
         total_row_groups = pf.metadata.num_row_groups
 
         speedup = (
-            round(sum(fullscan_times) / sum(pushdown_times), 2)
-            if sum(pushdown_times) > 0
-            else 0.0
+            round(sum(fullscan_times) / sum(pushdown_times), 2) if sum(pushdown_times) > 0 else 0.0
         )
 
         return BenchResult(

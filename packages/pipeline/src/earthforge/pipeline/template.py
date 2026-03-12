@@ -77,7 +77,5 @@ def get_template(template_name: str = "ndvi") -> str:
     templates = {"ndvi": NDVI_TEMPLATE}
     if template_name not in templates:
         available = ", ".join(templates)
-        raise ValueError(
-            f"Unknown template '{template_name}'. Available: {available}"
-        )
+        raise ValueError(f"Unknown template '{template_name}'. Available: {available}")
     return templates[template_name]

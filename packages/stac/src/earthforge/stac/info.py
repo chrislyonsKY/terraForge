@@ -120,8 +120,15 @@ async def inspect_stac_item(profile: EarthForgeProfile, url: str) -> StacItemInf
     # Extract properties subset (skip internal/computed fields)
     props = data.get("properties", {})
     selected_props: dict[str, object] = {}
-    for key in ("eo:cloud_cover", "platform", "constellation", "gsd",
-                "proj:epsg", "created", "updated"):
+    for key in (
+        "eo:cloud_cover",
+        "platform",
+        "constellation",
+        "gsd",
+        "proj:epsg",
+        "created",
+        "updated",
+    ):
         if key in props:
             selected_props[key] = props[key]
 
@@ -154,9 +161,7 @@ async def inspect_stac_item(profile: EarthForgeProfile, url: str) -> StacItemInf
     )
 
 
-async def inspect_stac_collection(
-    profile: EarthForgeProfile, url: str
-) -> StacCollectionInfo:
+async def inspect_stac_collection(profile: EarthForgeProfile, url: str) -> StacCollectionInfo:
     """Fetch and parse a STAC collection from a URL.
 
     Parameters:
@@ -176,9 +181,7 @@ async def inspect_stac_collection(
         raise StacError(f"Failed to fetch STAC collection from {url}: {exc}") from exc
 
     if data.get("type") not in ("Collection", None):
-        raise StacError(
-            f"URL does not point to a STAC collection (type={data.get('type')!r})"
-        )
+        raise StacError(f"URL does not point to a STAC collection (type={data.get('type')!r})")
 
     # Extract extents
     extent = data.get("extent", {})

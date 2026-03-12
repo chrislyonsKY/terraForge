@@ -62,9 +62,7 @@ def rgb_geotiff(tmp_path: Path) -> Path:
         transform=transform,
     ) as ds:
         for i in range(1, 4):
-            ds.write(
-                np.random.randint(0, 255, (height, width), dtype=np.uint8), i
-            )
+            ds.write(np.random.randint(0, 255, (height, width), dtype=np.uint8), i)
 
     return path
 
@@ -72,9 +70,7 @@ def rgb_geotiff(tmp_path: Path) -> Path:
 class TestConvertToCog:
     """Tests for GeoTIFF → COG conversion."""
 
-    async def test_basic_conversion(
-        self, strip_geotiff: Path, tmp_path: Path
-    ) -> None:
+    async def test_basic_conversion(self, strip_geotiff: Path, tmp_path: Path) -> None:
         output = str(tmp_path / "output.tif")
         result = await convert_to_cog(str(strip_geotiff), output=output)
 
@@ -83,9 +79,7 @@ class TestConvertToCog:
         assert result.width == 2048
         assert result.height == 2048
 
-    async def test_output_is_tiled(
-        self, strip_geotiff: Path, tmp_path: Path
-    ) -> None:
+    async def test_output_is_tiled(self, strip_geotiff: Path, tmp_path: Path) -> None:
         output = str(tmp_path / "output.tif")
         await convert_to_cog(str(strip_geotiff), output=output)
 
@@ -95,21 +89,15 @@ class TestConvertToCog:
             assert block_w == 512  # Default blocksize
             assert block_h == 512
 
-    async def test_output_is_compressed(
-        self, strip_geotiff: Path, tmp_path: Path
-    ) -> None:
+    async def test_output_is_compressed(self, strip_geotiff: Path, tmp_path: Path) -> None:
         output = str(tmp_path / "output.tif")
-        result = await convert_to_cog(
-            str(strip_geotiff), output=output, compression="deflate"
-        )
+        result = await convert_to_cog(str(strip_geotiff), output=output, compression="deflate")
 
         assert result.compression == "deflate"
         with rasterio.open(output) as ds:
             assert ds.compression is not None
 
-    async def test_overviews_generated(
-        self, strip_geotiff: Path, tmp_path: Path
-    ) -> None:
+    async def test_overviews_generated(self, strip_geotiff: Path, tmp_path: Path) -> None:
         output = str(tmp_path / "output.tif")
         result = await convert_to_cog(str(strip_geotiff), output=output)
 
@@ -119,9 +107,7 @@ class TestConvertToCog:
 
         assert len(result.overview_levels) > 0
 
-    async def test_crs_preserved(
-        self, strip_geotiff: Path, tmp_path: Path
-    ) -> None:
+    async def test_crs_preserved(self, strip_geotiff: Path, tmp_path: Path) -> None:
         output = str(tmp_path / "output.tif")
         result = await convert_to_cog(str(strip_geotiff), output=output)
 
@@ -132,9 +118,7 @@ class TestConvertToCog:
             assert ds.crs is not None
             assert ds.crs.to_epsg() == 4326
 
-    async def test_rgb_conversion(
-        self, rgb_geotiff: Path, tmp_path: Path
-    ) -> None:
+    async def test_rgb_conversion(self, rgb_geotiff: Path, tmp_path: Path) -> None:
         output = str(tmp_path / "output.tif")
         result = await convert_to_cog(str(rgb_geotiff), output=output)
 
@@ -142,13 +126,9 @@ class TestConvertToCog:
         with rasterio.open(output) as ds:
             assert ds.count == 3
 
-    async def test_custom_blocksize(
-        self, strip_geotiff: Path, tmp_path: Path
-    ) -> None:
+    async def test_custom_blocksize(self, strip_geotiff: Path, tmp_path: Path) -> None:
         output = str(tmp_path / "output.tif")
-        result = await convert_to_cog(
-            str(strip_geotiff), output=output, blocksize=256
-        )
+        result = await convert_to_cog(str(strip_geotiff), output=output, blocksize=256)
 
         assert result.blocksize == 256
         with rasterio.open(output) as ds:
@@ -156,13 +136,9 @@ class TestConvertToCog:
             assert block_w == 256
             assert block_h == 256
 
-    async def test_custom_compression(
-        self, strip_geotiff: Path, tmp_path: Path
-    ) -> None:
+    async def test_custom_compression(self, strip_geotiff: Path, tmp_path: Path) -> None:
         output = str(tmp_path / "output.tif")
-        result = await convert_to_cog(
-            str(strip_geotiff), output=output, compression="lzw"
-        )
+        result = await convert_to_cog(str(strip_geotiff), output=output, compression="lzw")
 
         assert result.compression == "lzw"
 
@@ -172,9 +148,7 @@ class TestConvertToCog:
         assert result.output == expected
         assert Path(expected).exists()
 
-    async def test_file_size_recorded(
-        self, strip_geotiff: Path, tmp_path: Path
-    ) -> None:
+    async def test_file_size_recorded(self, strip_geotiff: Path, tmp_path: Path) -> None:
         output = str(tmp_path / "output.tif")
         result = await convert_to_cog(str(strip_geotiff), output=output)
 
@@ -185,9 +159,7 @@ class TestConvertToCog:
         with pytest.raises(RasterError, match="Failed to open"):
             await convert_to_cog("/nonexistent/file.tif")
 
-    async def test_validates_as_cog(
-        self, strip_geotiff: Path, tmp_path: Path
-    ) -> None:
+    async def test_validates_as_cog(self, strip_geotiff: Path, tmp_path: Path) -> None:
         """Verify the output passes our own COG validation."""
         from earthforge.raster.validate import validate_cog
 
@@ -197,9 +169,7 @@ class TestConvertToCog:
         validation = await validate_cog(output)
         assert validation.is_valid
 
-    async def test_json_serializable(
-        self, strip_geotiff: Path, tmp_path: Path
-    ) -> None:
+    async def test_json_serializable(self, strip_geotiff: Path, tmp_path: Path) -> None:
         output = str(tmp_path / "output.tif")
         result = await convert_to_cog(str(strip_geotiff), output=output)
 

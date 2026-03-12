@@ -134,8 +134,7 @@ def get_step(name: str) -> Callable[..., Any]:
     if name not in _REGISTRY:
         available = ", ".join(sorted(_REGISTRY))
         raise KeyError(
-            f"Unknown pipeline step '{name}'. "
-            f"Available steps: {available or '(none registered)'}"
+            f"Unknown pipeline step '{name}'. Available steps: {available or '(none registered)'}"
         )
     return _REGISTRY[name]
 
@@ -328,8 +327,7 @@ async def step_raster_calc(ctx: StepContext) -> StepResult:
                 raise StepError(
                     "raster.calc",
                     ctx.item_id,
-                    f"Band '{band_key}' not in asset_paths. "
-                    f"Available: {list(ctx.asset_paths)}",
+                    f"Band '{band_key}' not in asset_paths. Available: {list(ctx.asset_paths)}",
                 )
             with rasterio.open(path) as src:
                 arr = src.read(1).astype(np.float32)

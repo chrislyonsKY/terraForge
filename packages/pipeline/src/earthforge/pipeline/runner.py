@@ -152,9 +152,7 @@ async def _fetch_stac_items(
     )
 
     if not results.items:
-        raise PipelineError(
-            f"STAC search returned no items for collection '{collection}'"
-        )
+        raise PipelineError(f"STAC search returned no items for collection '{collection}'")
 
     # Build item URL from self link
     pairs: list[tuple[str, str]] = []
@@ -337,9 +335,7 @@ async def run_pipeline(
 
     async def _bounded(item_id: str, item_url: str) -> ItemResult:
         async with semaphore:
-            return await _run_for_each_item(
-                for_each_steps, item_id, item_url, out_dir, profile
-            )
+            return await _run_for_each_item(for_each_steps, item_id, item_url, out_dir, profile)
 
     async with asyncio.TaskGroup() as tg:
         tasks = [tg.create_task(_bounded(iid, iurl)) for iid, iurl in items]

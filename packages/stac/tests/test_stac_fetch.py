@@ -235,9 +235,7 @@ class TestFetchAssets:
         respx.get(ITEM_URL).mock(return_value=Response(200, json=ITEM_JSON))
 
         with pytest.raises(StacError, match="No matching assets"):
-            await fetch_assets(
-                PROFILE, ITEM_URL, output_dir=str(tmp_path), assets=["nir", "swir"]
-            )
+            await fetch_assets(PROFILE, ITEM_URL, output_dir=str(tmp_path), assets=["nir", "swir"])
 
     @respx.mock
     async def test_elapsed_seconds_recorded(self, tmp_path: Path) -> None:
@@ -263,9 +261,7 @@ class TestFetchAssets:
         )
         respx.get(url).mock(return_value=Response(200, content=FAKE_TIFF))
 
-        result = await fetch_assets(
-            PROFILE, ITEM_URL, output_dir=str(tmp_path), assets=["green"]
-        )
+        result = await fetch_assets(PROFILE, ITEM_URL, output_dir=str(tmp_path), assets=["green"])
 
         assert len(result.files) == 1
         assert Path(result.files[0].local_path).exists()

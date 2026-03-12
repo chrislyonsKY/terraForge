@@ -87,42 +87,55 @@ def _validate_cog_sync(source: str) -> CogValidationResult:
     with ds:
         # Check 1: Is it a GeoTIFF?
         is_geotiff = ds.driver == "GTiff"
-        checks.append(ValidationCheck(
-            name="geotiff",
-            passed=is_geotiff,
-            message="File is a GeoTIFF" if is_geotiff else f"Not a GeoTIFF (driver={ds.driver})",
-        ))
+        checks.append(
+            ValidationCheck(
+                name="geotiff",
+                passed=is_geotiff,
+                message="File is a GeoTIFF"
+                if is_geotiff
+                else f"Not a GeoTIFF (driver={ds.driver})",
+            )
+        )
 
         # Check 2: Tiled layout
         # Use the profile's tiled flag to avoid the deprecated is_tiled property.
         block_shapes = ds.block_shapes
         is_tiled = bool(ds.profile.get("tiled", False))
-        checks.append(ValidationCheck(
-            name="tiled",
-            passed=is_tiled,
-            message=f"Tiled layout (block={block_shapes[0]})"
-            if is_tiled else "Strip layout — not tiled",
-        ))
+        checks.append(
+            ValidationCheck(
+                name="tiled",
+                passed=is_tiled,
+                message=f"Tiled layout (block={block_shapes[0]})"
+                if is_tiled
+                else "Strip layout — not tiled",
+            )
+        )
 
         # Check 3: Overviews
         overviews = ds.overviews(1) if ds.count > 0 else []
         has_overviews = len(overviews) > 0
-        checks.append(ValidationCheck(
-            name="overviews",
-            passed=has_overviews,
-            message=f"Overviews present (levels={overviews})" if has_overviews
-            else "No overviews — should have at least one",
-        ))
+        checks.append(
+            ValidationCheck(
+                name="overviews",
+                passed=has_overviews,
+                message=f"Overviews present (levels={overviews})"
+                if has_overviews
+                else "No overviews — should have at least one",
+            )
+        )
 
         # Check 4: Compression
         compression = ds.compression
         has_compression = compression is not None
-        checks.append(ValidationCheck(
-            name="compression",
-            passed=has_compression,
-            message=f"Compressed ({compression.value})" if has_compression
-            else "Uncompressed — compression recommended",
-        ))
+        checks.append(
+            ValidationCheck(
+                name="compression",
+                passed=has_compression,
+                message=f"Compressed ({compression.value})"
+                if has_compression
+                else "Uncompressed — compression recommended",
+            )
+        )
 
         # Check 5: IFD ordering (main image before overviews)
         # In a COG, the first IFD should contain the full-resolution image.
@@ -137,11 +150,13 @@ def _validate_cog_sync(source: str) -> CogValidationResult:
             except Exception:
                 ifd_order_ok = False
 
-        checks.append(ValidationCheck(
-            name="ifd_order",
-            passed=ifd_order_ok,
-            message="IFD ordering OK" if ifd_order_ok else "IFD ordering may be incorrect",
-        ))
+        checks.append(
+            ValidationCheck(
+                name="ifd_order",
+                passed=ifd_order_ok,
+                message="IFD ordering OK" if ifd_order_ok else "IFD ordering may be incorrect",
+            )
+        )
 
     is_valid = all(c.passed for c in checks)
     passed_count = sum(1 for c in checks if c.passed)

@@ -106,35 +106,27 @@ class TestValidateCog:
         assert result.is_valid
         assert "Valid COG" in result.summary
 
-    async def test_strip_layout_fails_tiled_check(
-        self, strip_geotiff: Path
-    ) -> None:
+    async def test_strip_layout_fails_tiled_check(self, strip_geotiff: Path) -> None:
         result = await validate_cog(str(strip_geotiff))
         assert not result.is_valid
 
         tiled_check = next(c for c in result.checks if c.name == "tiled")
         assert not tiled_check.passed
 
-    async def test_missing_overviews_detected(
-        self, tiled_no_overviews: Path
-    ) -> None:
+    async def test_missing_overviews_detected(self, tiled_no_overviews: Path) -> None:
         result = await validate_cog(str(tiled_no_overviews))
         assert not result.is_valid
 
         ovr_check = next(c for c in result.checks if c.name == "overviews")
         assert not ovr_check.passed
 
-    async def test_compression_detected(
-        self, tiled_compressed_geotiff: Path
-    ) -> None:
+    async def test_compression_detected(self, tiled_compressed_geotiff: Path) -> None:
         result = await validate_cog(str(tiled_compressed_geotiff))
         comp_check = next(c for c in result.checks if c.name == "compression")
         assert comp_check.passed
         assert "deflate" in comp_check.message.lower()
 
-    async def test_no_compression_detected(
-        self, strip_geotiff: Path
-    ) -> None:
+    async def test_no_compression_detected(self, strip_geotiff: Path) -> None:
         result = await validate_cog(str(strip_geotiff))
         comp_check = next(c for c in result.checks if c.name == "compression")
         assert not comp_check.passed
@@ -144,16 +136,12 @@ class TestValidateCog:
         gtiff_check = next(c for c in result.checks if c.name == "geotiff")
         assert gtiff_check.passed
 
-    async def test_ifd_order_check_present(
-        self, tiled_compressed_geotiff: Path
-    ) -> None:
+    async def test_ifd_order_check_present(self, tiled_compressed_geotiff: Path) -> None:
         result = await validate_cog(str(tiled_compressed_geotiff))
         ifd_check = next(c for c in result.checks if c.name == "ifd_order")
         assert ifd_check.passed
 
-    async def test_summary_includes_counts(
-        self, strip_geotiff: Path
-    ) -> None:
+    async def test_summary_includes_counts(self, strip_geotiff: Path) -> None:
         result = await validate_cog(str(strip_geotiff))
         assert "/" in result.summary  # e.g. "2/5 checks passed"
 
@@ -170,9 +158,7 @@ class TestValidateCog:
         result = await validate_cog(str(strip_geotiff))
         assert result.source == str(strip_geotiff)
 
-    async def test_json_serializable(
-        self, tiled_compressed_geotiff: Path
-    ) -> None:
+    async def test_json_serializable(self, tiled_compressed_geotiff: Path) -> None:
         import json
 
         result = await validate_cog(str(tiled_compressed_geotiff))

@@ -21,7 +21,6 @@ Usage::
 from __future__ import annotations
 
 import logging
-from collections.abc import Sequence
 from typing import Any, ClassVar
 
 from textual import work
@@ -97,7 +96,7 @@ class ExploreApp(App[None]):
     TITLE = "EarthForge Explorer"
     CSS = _CSS
 
-    BINDINGS: ClassVar[Sequence[Binding | tuple[str, str] | tuple[str, str, str]]] = [
+    BINDINGS: ClassVar[list[Binding | tuple[str, str] | tuple[str, str, str]]] = [
         Binding("q", "quit", "Quit"),
         Binding("r", "refresh", "Refresh"),
         Binding("/", "filter", "Filter"),

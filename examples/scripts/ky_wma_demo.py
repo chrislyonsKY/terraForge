@@ -95,11 +95,13 @@ def fetch_wma_geojson(max_features: int = 500) -> dict:
     for feat in esri_json.get("features", []):
         attrs = feat.get("attributes", {})
         geom = feat.get("geometry", {})
-        features.append({
-            "type": "Feature",
-            "properties": attrs,
-            "geometry": _esri_polygon_to_geojson_geometry(geom),
-        })
+        features.append(
+            {
+                "type": "Feature",
+                "properties": attrs,
+                "geometry": _esri_polygon_to_geojson_geometry(geom),
+            }
+        )
 
     return {"type": "FeatureCollection", "features": features}
 
@@ -123,10 +125,7 @@ async def main() -> None:
         print(f"  Fetched:    {feature_count} wildlife management areas")
 
         # Show a sample of area names
-        sample_names = [
-            f["properties"].get("AREANAME", "?")
-            for f in geojson["features"][:5]
-        ]
+        sample_names = [f["properties"].get("AREANAME", "?") for f in geojson["features"][:5]]
         print(f"  Sample:     {', '.join(sample_names)}")
 
         # Write GeoJSON to disk
@@ -175,13 +174,8 @@ async def main() -> None:
         print("QUERY: WMAs in Eastern Kentucky")
         print("=" * 55)
         print(f"  BBox:       {eastern_ky_bbox}")
-        query_result = await query_features(
-            parquet_path, bbox=eastern_ky_bbox
-        )
-        print(
-            f"  Matched:    {query_result.feature_count}"
-            f" / {query_result.total_rows}"
-        )
+        query_result = await query_features(parquet_path, bbox=eastern_ky_bbox)
+        print(f"  Matched:    {query_result.feature_count} / {query_result.total_rows}")
         for f in query_result.features:
             name = f.get("AREANAME", "?")
             acres = f.get("ACRES_CAL", 0)
@@ -196,7 +190,11 @@ async def main() -> None:
         all_result = await query_features(
             parquet_path,
             columns=[
-                "AREANAME", "ACRES_CAL", "WILDMGTREG", "MANAGER", "Counties",
+                "AREANAME",
+                "ACRES_CAL",
+                "WILDMGTREG",
+                "MANAGER",
+                "Counties",
             ],
             include_geometry=False,
         )
@@ -212,10 +210,7 @@ async def main() -> None:
             acres = f.get("ACRES_CAL", 0) or 0
             region = f.get("WILDMGTREG", "?")
             manager = f.get("MANAGER", "?")
-            print(
-                f"    {name[:30]:30s} | {acres:>10,.0f} ac"
-                f" | {region[:12]:12s} | {manager}"
-            )
+            print(f"    {name[:30]:30s} | {acres:>10,.0f} ac | {region[:12]:12s} | {manager}")
         print()
 
         # Step 6: Query by region — Bluegrass WMAs
@@ -227,10 +222,7 @@ async def main() -> None:
             columns=["AREANAME", "ACRES_CAL", "WILDMGTREG", "Counties"],
             include_geometry=False,
         )
-        bluegrass = [
-            f for f in all_result2.features
-            if "Bluegrass" in (f.get("WILDMGTREG") or "")
-        ]
+        bluegrass = [f for f in all_result2.features if "Bluegrass" in (f.get("WILDMGTREG") or "")]
         print(f"  Bluegrass WMAs: {len(bluegrass)}")
         for f in bluegrass:
             name = f.get("AREANAME", "?")

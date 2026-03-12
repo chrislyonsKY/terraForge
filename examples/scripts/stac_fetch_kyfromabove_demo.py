@@ -101,8 +101,7 @@ async def main() -> None:
         fetch_keys = [first_item.assets[0].key]
 
     item_url = (
-        f"{KYFROMABOVE_STAC.rstrip('/')}/collections/{first_item.collection}"
-        f"/items/{first_item.id}"
+        f"{KYFROMABOVE_STAC.rstrip('/')}/collections/{first_item.collection}/items/{first_item.id}"
     )
 
     print(f"\nFetching {fetch_keys} from {first_item.id}...")
