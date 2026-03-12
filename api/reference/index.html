@@ -7539,16 +7539,24 @@ print(info.width, info.height, info.crs)
 
     <div class="doc doc-contents first">
 
-        <p>COG compliance validation.</p>
-<p>Checks whether a GeoTIFF file meets Cloud Optimized GeoTIFF (COG) requirements:</p>
+        <p>COG compliance validation backed by rio-cogeo.</p>
+<p>Delegates structural validation to <code>rio-cogeo</code>, the community-standard
+COG validation library, and supplements with rasterio-based checks for
+compression and format detection.</p>
+<p>Checks performed:</p>
 <ol>
-<li><strong>Tiled layout</strong> — Data must be stored in tiles, not strips.</li>
-<li><strong>Overviews present</strong> — At least one overview level should exist.</li>
-<li><strong>IFD ordering</strong> — The main IFD should come before overview IFDs in the file.</li>
-<li><strong>Compression</strong> — Data should be compressed.</li>
+<li><strong>geotiff</strong> — File is a GeoTIFF (rasterio driver check).</li>
+<li><strong>tiled</strong> — Data is stored in tiles, not strips (rio-cogeo).</li>
+<li><strong>overviews</strong> — At least one overview level is present (rio-cogeo strict
+   mode + rasterio fallback).</li>
+<li><strong>ifd_order</strong> — IFD ordering is correct: overview data precedes full-
+   resolution data in the file (rio-cogeo byte-level check).</li>
+<li><strong>compression</strong> — Data is compressed (rasterio).</li>
 </ol>
-<p>These checks follow the COG specification as implemented by <code>rio cogeo validate</code>
-and GDAL's COG driver requirements.</p>
+<p>rio-cogeo is the authoritative source for checks 2–4. Its byte-level IFD
+ordering check catches files that appear valid from rasterio metadata alone
+but have incorrect internal structure. Using <code>strict=True</code> treats missing
+overviews as a validation error rather than a warning.</p>
 <p>Usage::</p>
 <div class="highlight"><pre><span></span><code>from earthforge.raster.validate import validate_cog
 
@@ -7793,7 +7801,9 @@ assert result.is_valid
     <div class="doc doc-contents ">
 
         <p>Validate COG compliance for a raster file.</p>
-<p>Runs the synchronous rasterio validation in a thread executor.</p>
+<p>Delegates to rio-cogeo for byte-level IFD ordering and structural
+validation, which catches files that appear valid from metadata alone
+but have incorrect internal structure.</p>
 
 
 <p><span class="doc-section-title">Parameters:</span></p>
@@ -7816,7 +7826,7 @@ assert result.is_valid
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Path to a GeoTIFF file.</p>
+                <p>Path or URL to a GeoTIFF file.</p>
               </div>
             </td>
             <td>
@@ -7842,7 +7852,7 @@ assert result.is_valid
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Structured validation result.</p>
+                <p>Structured validation result with named per-check results.</p>
               </div>
             </td>
           </tr>
@@ -7865,17 +7875,8 @@ assert result.is_valid
             </td>
             <td>
               <div class="doc-md-description">
-                <p>If the file cannot be opened.</p>
-              </div>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                  <code><span title="CogValidationError">CogValidationError</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>If the file is not COG-compliant (when strict mode is used).</p>
+                <p>If rio-cogeo is not installed, or the file cannot
+be opened.</p>
               </div>
             </td>
           </tr>
