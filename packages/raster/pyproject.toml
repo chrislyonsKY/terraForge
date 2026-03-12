@@ -13,6 +13,7 @@ dependencies = [
     "earthforge-core>=0.1.0",
     "rasterio>=1.3",
     "numpy>=1.24",
+    "rio-cogeo>=3.0",
 ]
 
 [tool.hatch.build.targets.wheel]

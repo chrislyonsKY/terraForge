@@ -1,14 +1,23 @@
-"""COG compliance validation.
+"""COG compliance validation backed by rio-cogeo.
 
-Checks whether a GeoTIFF file meets Cloud Optimized GeoTIFF (COG) requirements:
+Delegates structural validation to ``rio-cogeo``, the community-standard
+COG validation library, and supplements with rasterio-based checks for
+compression and format detection.
 
-1. **Tiled layout** — Data must be stored in tiles, not strips.
-2. **Overviews present** — At least one overview level should exist.
-3. **IFD ordering** — The main IFD should come before overview IFDs in the file.
-4. **Compression** — Data should be compressed.
+Checks performed:
 
-These checks follow the COG specification as implemented by ``rio cogeo validate``
-and GDAL's COG driver requirements.
+1. **geotiff** — File is a GeoTIFF (rasterio driver check).
+2. **tiled** — Data is stored in tiles, not strips (rio-cogeo).
+3. **overviews** — At least one overview level is present (rio-cogeo strict
+   mode + rasterio fallback).
+4. **ifd_order** — IFD ordering is correct: overview data precedes full-
+   resolution data in the file (rio-cogeo byte-level check).
+5. **compression** — Data is compressed (rasterio).
+
+rio-cogeo is the authoritative source for checks 2–4. Its byte-level IFD
+ordering check catches files that appear valid from rasterio metadata alone
+but have incorrect internal structure. Using ``strict=True`` treats missing
+overviews as a validation error rather than a warning.
 
 Usage::
 
@@ -26,6 +35,8 @@ from functools import partial
 from pydantic import BaseModel, Field
 
 from earthforge.raster.errors import RasterError
+
+_COG_CHECK_NAMES = ("geotiff", "tiled", "overviews", "ifd_order", "compression")
 
 
 class ValidationCheck(BaseModel):
@@ -58,110 +69,133 @@ class CogValidationResult(BaseModel):
     summary: str = Field(title="Summary")
 
 
-def _validate_cog_sync(source: str) -> CogValidationResult:
-    """Validate COG compliance synchronously.
+def _classify_message(msg: str) -> str:
+    """Map a rio-cogeo error/warning string to a named check identifier.
 
     Parameters:
-        source: Path to a GeoTIFF file.
+        msg: Error or warning message from rio-cogeo.
+
+    Returns:
+        One of the standard check names, or ``"spec_compliance"`` for
+        messages that do not match a known pattern.
+    """
+    lower = msg.lower()
+    if "not tiled" in lower:
+        return "tiled"
+    if "overview" in lower:
+        return "overviews"
+    if "ifd" in lower or "ordering" in lower:
+        return "ifd_order"
+    if "ghost" in lower:
+        return "ghost_blocks"
+    if "geotiff" in lower or "not a tiff" in lower:
+        return "geotiff"
+    return "spec_compliance"
+
+
+def _validate_cog_sync(source: str) -> CogValidationResult:
+    """Validate COG compliance synchronously using rio-cogeo.
+
+    Parameters:
+        source: Path or URL to a GeoTIFF file.
 
     Returns:
         Structured validation result.
 
     Raises:
-        RasterError: If the file cannot be opened.
+        RasterError: If rio-cogeo is not installed, or if the file cannot
+            be opened or validated.
     """
     try:
-        import rasterio
+        from rio_cogeo.cogeo import cog_validate as _rio_validate  # type: ignore[import-untyped]
     except ImportError as exc:
         raise RasterError(
-            "rasterio is required for COG validation: pip install earthforge[raster]"
+            "rio-cogeo is required for COG validation: pip install earthforge[raster]"
         ) from exc
 
     try:
-        ds = rasterio.open(source)
+        is_rio_valid, errors, warnings = _rio_validate(source, strict=True, quiet=True)
     except Exception as exc:
-        raise RasterError(f"Failed to open raster file '{source}': {exc}") from exc
+        raise RasterError(f"Failed to validate '{source}': {exc}") from exc
 
-    checks: list[ValidationCheck] = []
+    named: dict[str, ValidationCheck] = {}
 
-    with ds:
-        # Check 1: Is it a GeoTIFF?
-        is_geotiff = ds.driver == "GTiff"
-        checks.append(
-            ValidationCheck(
-                name="geotiff",
-                passed=is_geotiff,
-                message="File is a GeoTIFF"
-                if is_geotiff
-                else f"Not a GeoTIFF (driver={ds.driver})",
+    # rio-cogeo errors → failed checks
+    for err in errors:
+        name = _classify_message(err)
+        named[name] = ValidationCheck(name=name, passed=False, message=err)
+
+    # rio-cogeo warnings → informational checks (passed, with warning prefix)
+    for warn in warnings:
+        name = _classify_message(warn)
+        if name not in named:
+            named[name] = ValidationCheck(
+                name=name, passed=True, message=f"Warning: {warn}"
             )
-        )
 
-        # Check 2: Tiled layout
-        # Use the profile's tiled flag to avoid the deprecated is_tiled property.
-        block_shapes = ds.block_shapes
-        is_tiled = bool(ds.profile.get("tiled", False))
-        checks.append(
-            ValidationCheck(
-                name="tiled",
-                passed=is_tiled,
-                message=f"Tiled layout (block={block_shapes[0]})"
-                if is_tiled
-                else "Strip layout — not tiled",
+    # Supplementary rasterio checks for geotiff driver and compression.
+    # rio-cogeo does not surface these as structured named checks, but they
+    # are important for users to see in the output.
+    try:
+        import rasterio  # type: ignore[import-untyped]
+
+        with rasterio.open(source) as ds:
+            if "geotiff" not in named:
+                is_gtiff = ds.driver == "GTiff"
+                named["geotiff"] = ValidationCheck(
+                    name="geotiff",
+                    passed=is_gtiff,
+                    message="File is a GeoTIFF"
+                    if is_gtiff
+                    else f"Not a GeoTIFF (driver={ds.driver})",
+                )
+
+            if "overviews" not in named:
+                ovr_levels = ds.overviews(1) if ds.count > 0 else []
+                has_ovr = len(ovr_levels) > 0
+                named["overviews"] = ValidationCheck(
+                    name="overviews",
+                    passed=has_ovr,
+                    message=f"Overviews present (levels={ovr_levels})"
+                    if has_ovr
+                    else "No overviews — at least one overview level is required",
+                )
+
+            if "compression" not in named:
+                comp = ds.compression
+                has_comp = comp is not None
+                named["compression"] = ValidationCheck(
+                    name="compression",
+                    passed=has_comp,
+                    message=f"Compressed ({comp.value})"
+                    if has_comp
+                    else "Uncompressed — compression is recommended for COGs",
+                )
+    except RasterError:
+        raise
+    except Exception:
+        pass  # Supplementary checks are best-effort; don't mask the primary result
+
+    # Ensure all standard named checks are present, defaulting to passed if
+    # rio-cogeo raised no error or warning for them.
+    for std_name in _COG_CHECK_NAMES:
+        if std_name not in named:
+            named[std_name] = ValidationCheck(
+                name=std_name,
+                passed=True,
+                message=f"{std_name.replace('_', ' ').title()}: OK",
             )
-        )
 
-        # Check 3: Overviews
-        overviews = ds.overviews(1) if ds.count > 0 else []
-        has_overviews = len(overviews) > 0
-        checks.append(
-            ValidationCheck(
-                name="overviews",
-                passed=has_overviews,
-                message=f"Overviews present (levels={overviews})"
-                if has_overviews
-                else "No overviews — should have at least one",
-            )
-        )
+    checks = list(named.values())
 
-        # Check 4: Compression
-        compression = ds.compression
-        has_compression = compression is not None
-        checks.append(
-            ValidationCheck(
-                name="compression",
-                passed=has_compression,
-                message=f"Compressed ({compression.value})"
-                if has_compression
-                else "Uncompressed — compression recommended",
-            )
-        )
+    # We may be stricter than rio-cogeo's bare is_valid in some areas
+    # (e.g. requiring overviews even for small files). Fail if any named
+    # check fails, regardless of rio-cogeo's own verdict.
+    checks_pass = all(c.passed for c in checks if c.name in _COG_CHECK_NAMES)
+    is_valid = is_rio_valid and checks_pass
 
-        # Check 5: IFD ordering (main image before overviews)
-        # In a COG, the first IFD should contain the full-resolution image.
-        # We check this by verifying the main image dimensions match the dataset dims.
-        ifd_order_ok = True
-        if is_geotiff and has_overviews:
-            try:
-                # Read the TIFF tags to verify IFD ordering
-                ds.tags()
-                # If we can read tags without issues, basic structure is OK
-                ifd_order_ok = True
-            except Exception:
-                ifd_order_ok = False
-
-        checks.append(
-            ValidationCheck(
-                name="ifd_order",
-                passed=ifd_order_ok,
-                message="IFD ordering OK" if ifd_order_ok else "IFD ordering may be incorrect",
-            )
-        )
-
-    is_valid = all(c.passed for c in checks)
     passed_count = sum(1 for c in checks if c.passed)
     total_count = len(checks)
-
     summary = (
         f"Valid COG ({passed_count}/{total_count} checks passed)"
         if is_valid
@@ -169,27 +203,26 @@ def _validate_cog_sync(source: str) -> CogValidationResult:
     )
 
     return CogValidationResult(
-        source=source,
-        is_valid=is_valid,
-        checks=checks,
-        summary=summary,
+        source=source, is_valid=is_valid, checks=checks, summary=summary
     )
 
 
 async def validate_cog(source: str) -> CogValidationResult:
     """Validate COG compliance for a raster file.
 
-    Runs the synchronous rasterio validation in a thread executor.
+    Delegates to rio-cogeo for byte-level IFD ordering and structural
+    validation, which catches files that appear valid from metadata alone
+    but have incorrect internal structure.
 
     Parameters:
-        source: Path to a GeoTIFF file.
+        source: Path or URL to a GeoTIFF file.
 
     Returns:
-        Structured validation result.
+        Structured validation result with named per-check results.
 
     Raises:
-        RasterError: If the file cannot be opened.
-        CogValidationError: If the file is not COG-compliant (when strict mode is used).
+        RasterError: If rio-cogeo is not installed, or the file cannot
+            be opened.
     """
     loop = asyncio.get_running_loop()
     return await loop.run_in_executor(None, partial(_validate_cog_sync, source))

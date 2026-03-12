@@ -109,6 +109,7 @@ mypy_path = "packages/core/src:packages/cli/src:packages/raster/src:packages/vec
 [[tool.mypy.overrides]]
 module = [
     "rasterio.*",
+    "rio_cogeo.*",
     "pyarrow.*",
     "obstore.*",
     "pystac.*",
