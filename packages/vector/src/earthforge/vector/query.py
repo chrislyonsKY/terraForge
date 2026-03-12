@@ -177,7 +177,7 @@ def _geometry_intersects_bbox(
             wkb_type = struct.unpack(f"{fmt}I", wkb[1:5])[0]
             if wkb_type == 1:  # Point
                 x, y = struct.unpack(f"{fmt}dd", wkb[5:21])
-                return west <= x <= east and south <= y <= north
+                return bool(west <= x <= east and south <= y <= north)
         except (struct.error, IndexError):
             pass
 
