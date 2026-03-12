@@ -87,6 +87,7 @@ ignore = [
 "tests/**/*.py" = ["S101", "T20"]
 "packages/cli/**/*.py" = ["T20", "B008"]
 "examples/**/*.py" = ["T20"]
+"examples/**/*.ipynb" = ["T20", "I001", "E402", "F401"]
 
 [tool.ruff.lint.isort]
 known-first-party = ["earthforge"]
@@ -116,6 +117,11 @@ module = [
     "osgeo.*",
     "geopandas.*",
     "textual.*",
+    "xarray.*",
+    "zarr.*",
+    "pandas.*",
+    "jsonschema.*",
+    "yaml.*",
 ]
 ignore_missing_imports = true
 

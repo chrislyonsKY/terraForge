@@ -125,7 +125,7 @@ def vector_query(
             t0 = time.perf_counter()
             gdf = gpd.read_parquet(source)
             west, south, east, north = bbox_tuple
-            _ = gdf.cx[west:east, south:north]
+            _ = gdf.cx[west:east, south:north]  # type: ignore[misc]
             fullscan_times.append(time.perf_counter() - t0)
             fullscan_rows = len(_)
 

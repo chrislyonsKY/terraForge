@@ -71,10 +71,14 @@ async def main() -> None:
         print(f"               {asset.href[:80]}...")
 
     # Step 3: Pick what to fetch
-    # Thumbnail is small (~50–200 KB) — good for demo without pulling a full COG
+    # Thumbnail is small (~50-200 KB) - good for demo without pulling a full COG
     # Data asset is the full 3-inch COG (can be hundreds of MB)
     thumbnail_key = next(
-        (a.key for a in first_item.assets if a.key == "thumbnail" or "png" in (a.media_type or "")),
+        (
+            a.key
+            for a in first_item.assets
+            if a.key == "thumbnail" or "png" in (a.media_type or "")
+        ),
         None,
     )
     data_key = next(

@@ -266,7 +266,7 @@ def _query_features_sync(
         ) from exc
 
     try:
-        pf = pq.ParquetFile(source)  # type: ignore[no-untyped-call]
+        pf = pq.ParquetFile(source)
     except Exception as exc:
         raise VectorError(f"Failed to open '{source}': {exc}") from exc
 
