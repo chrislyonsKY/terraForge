@@ -248,14 +248,14 @@ async def main() -> None:
         nir_asset = next((a for a in item.assets if a.key in ("nir", "B08")), None)
 
         if not red_asset or not nir_asset:
-            print(f"    Skipping — missing red/NIR bands")
+            print("    Skipping — missing red/NIR bands")
             continue
 
         # Read spatial windows from remote COGs
-        print(f"    Reading Red band (range request)...")
+        print("    Reading Red band (range request)...")
         red = await read_band_window(red_asset.href, STUDY_BBOX)
 
-        print(f"    Reading NIR band (range request)...")
+        print("    Reading NIR band (range request)...")
         nir = await read_band_window(nir_asset.href, STUDY_BBOX)
 
         if red is None or nir is None:
@@ -319,7 +319,7 @@ async def main() -> None:
         print()
 
         # Also save individual frames as PNG for inspection
-        for i, (frame, label) in enumerate(zip(pil_frames, frame_labels)):
+        for i, (frame, _label) in enumerate(zip(pil_frames, frame_labels, strict=True)):
             frame_path = OUTPUT_DIR / f"ndvi_frame_{i:02d}.png"
             frame.save(str(frame_path))
 

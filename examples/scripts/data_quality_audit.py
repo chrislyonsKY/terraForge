@@ -266,7 +266,10 @@ async def audit_item(
             result.checks.append(QualityCheck(
                 name="raster_tiled",
                 passed=raster_info.is_tiled,
-                message=f"Tiled: {raster_info.is_tiled} ({raster_info.tile_width}x{raster_info.tile_height})",
+                message=(
+                    f"Tiled: {raster_info.is_tiled}"
+                    f" ({raster_info.tile_width}x{raster_info.tile_height})"
+                ),
             ))
 
             # Check overviews
@@ -278,7 +281,10 @@ async def audit_item(
             ))
 
             # Check compression
-            has_compression = raster_info.compression is not None and raster_info.compression != "none"
+            has_compression = (
+                raster_info.compression is not None
+                and raster_info.compression != "none"
+            )
             result.checks.append(QualityCheck(
                 name="raster_compressed",
                 passed=has_compression,
