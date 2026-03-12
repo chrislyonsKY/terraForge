@@ -49,7 +49,7 @@ Repository = "https://github.com/earthforge-geo/earthforge"
 Documentation = "https://earthforge-geo.github.io/earthforge"
 
 [tool.hatch.build.targets.wheel]
-only-include = []  # meta-package: no Python source, only dependency metadata
+only-include = ["LICENSE"]  # meta-package: ships only license, no Python source
 
 # ---------------------------------------------------------------------------
 # Hatch workspace: each package under packages/ is a separate editable install
