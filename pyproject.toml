@@ -45,8 +45,8 @@ dev = [
 ]
 
 [project.urls]
-Repository = "https://github.com/earthforge-geo/earthforge"
-Documentation = "https://earthforge-geo.github.io/earthforge"
+Repository = "https://github.com/chrislyonsKY/earthForge"
+Documentation = "https://chrislyonsky.github.io/earthForge/"
 
 [tool.hatch.build.targets.wheel]
 only-include = ["LICENSE"]  # meta-package: ships only license, no Python source
