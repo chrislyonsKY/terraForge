@@ -1,0 +1,92 @@
+site_name: EarthForge
+site_description: Cloud-native geospatial developer toolkit
+site_url: https://chrislyonsKY.github.io/earthForge
+repo_url: https://github.com/chrislyonsKY/earthForge
+repo_name: chrislyonsKY/earthForge
+edit_uri: edit/main/docs/
+
+theme:
+  name: material
+  palette:
+    - scheme: slate
+      primary: teal
+      accent: light green
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+    - scheme: default
+      primary: teal
+      accent: teal
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - search.highlight
+    - search.suggest
+    - content.code.copy
+    - content.code.annotate
+  icon:
+    repo: fontawesome/brands/github
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            docstring_style: google
+            show_source: true
+            show_root_heading: true
+            members_order: source
+            paths:
+              - packages/core/src
+              - packages/stac/src
+              - packages/raster/src
+              - packages/vector/src
+              - packages/cube/src
+              - packages/cli/src
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - attr_list
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+
+nav:
+  - Home: index.md
+  - Getting Started: getting-started.md
+  - Architecture: architecture.md
+  - Tutorials:
+    - DEM Hillshade (Frankfort): tutorials/dem-hillshade.md
+    - LiDAR Access (COPC): tutorials/lidar-access.md
+    - Web Maps (TiTiler): tutorials/titiler-maps.md
+    - ArcGIS Pro Integration: tutorials/arcgis-pro.md
+  - KyFromAbove Collections: stac-collections.md
+  - API Reference: api/reference.md
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/chrislyonsKY/earthForge
+  version:
+    provider: mike

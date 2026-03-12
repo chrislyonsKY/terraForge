@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EarthForge — TiTiler COG Viewer</title>
+
+  <!-- MapLibre GL JS -->
+  <script src="https://unpkg.com/maplibre-gl@4/dist/maplibre-gl.js"></script>
+  <link href="https://unpkg.com/maplibre-gl@4/dist/maplibre-gl.css" rel="stylesheet" />
+
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #0f1117;
+      color: #e0e0e0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      padding: 12px 16px;
+      background: #1a1d27;
+      border-bottom: 1px solid #2a2d3a;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-shrink: 0;
+    }
+
+    header h1 {
+      font-size: 16px;
+      font-weight: 600;
+      color: #4db6ac;
+    }
+
+    header span {
+      font-size: 12px;
+      color: #7a7f99;
+    }
+
+    .controls {
+      padding: 10px 16px;
+      background: #1a1d27;
+      border-bottom: 1px solid #2a2d3a;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+      flex-shrink: 0;
+    }
+
+    .controls label {
+      font-size: 12px;
+      color: #9ca3af;
+      white-space: nowrap;
+    }
+
+    .controls input[type="text"] {
+      flex: 1;
+      min-width: 300px;
+      padding: 6px 10px;
+      background: #0f1117;
+      border: 1px solid #2a2d3a;
+      border-radius: 4px;
+      color: #e0e0e0;
+      font-size: 13px;
+      font-family: monospace;
+    }
+
+    .controls input[type="text"]:focus {
+      outline: none;
+      border-color: #4db6ac;
+    }
+
+    button {
+      padding: 6px 14px;
+      background: #4db6ac;
+      border: none;
+      border-radius: 4px;
+      color: #0f1117;
+      font-weight: 600;
+      font-size: 13px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    button:hover { background: #80cbc4; }
+
+    .presets {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .preset-btn {
+      padding: 4px 10px;
+      background: transparent;
+      border: 1px solid #2a2d3a;
+      border-radius: 4px;
+      color: #9ca3af;
+      font-size: 11px;
+      font-weight: 400;
+      cursor: pointer;
+    }
+
+    .preset-btn:hover {
+      border-color: #4db6ac;
+      color: #4db6ac;
+      background: transparent;
+    }
+
+    #map { flex: 1; }
+
+    #status {
+      position: absolute;
+      bottom: 12px;
+      left: 12px;
+      background: rgba(15,17,23,0.85);
+      padding: 6px 10px;
+      border-radius: 4px;
+      font-size: 11px;
+      color: #9ca3af;
+      pointer-events: none;
+    }
+
+    #status.error { color: #f87171; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>EarthForge COG Viewer</h1>
+  <span>Powered by TiTiler + MapLibre GL</span>
+</header>
+
+<div class="controls">
+  <label>COG URL:</label>
+  <input type="text" id="cogUrl"
+    placeholder="https://example.s3.amazonaws.com/scene.tif"
+    value="" />
+  <button onclick="loadCog()">Load</button>
+
+  <div class="presets">
+    <span style="font-size:11px;color:#7a7f99;align-self:center;">Presets:</span>
+    <button class="preset-btn" onclick="loadPreset('kyfromabove-ortho')">KY Ortho (Phase 3)</button>
+    <button class="preset-btn" onclick="loadPreset('kyfromabove-dem')">KY DEM (Phase 3)</button>
+    <button class="preset-btn" onclick="loadPreset('sentinel2')">Sentinel-2 (B04)</button>
+    <button class="preset-btn" onclick="loadPreset('cop-dem')">Copernicus DEM</button>
+  </div>
+</div>
+
+<div style="position:relative;flex:1;display:flex;flex-direction:column;">
+  <div id="map"></div>
+  <div id="status">Ready — paste a COG URL and click Load</div>
+</div>
+
+<script>
+  // -----------------------------------------------------------------------
+  // Config — point this at your local TiTiler instance
+  // Run: docker compose up   (from examples/web/)
+  // -----------------------------------------------------------------------
+  const TITILER = "http://localhost:8000";
+
+  // Preset COG URLs (public, no auth required)
+  const PRESETS = {
+    "kyfromabove-ortho": {
+      url: "https://kyfromabove.s3.us-west-2.amazonaws.com/imagery/orthos/Phase3/KY_KYAPED_2024_Season1_3IN_COG/N097E305_2024_Season1_3IN_cog.tif",
+      center: [-84.495, 38.049],
+      zoom: 14,
+      bidx: "1,2,3",
+      rescale: "0,255",
+    },
+    "kyfromabove-dem": {
+      url: "https://kyfromabove.s3.us-west-2.amazonaws.com/elevation/DEM/Phase3/N097E305_DEM_Phase3.tif",
+      center: [-84.495, 38.049],
+      zoom: 12,
+      bidx: "1",
+      rescale: "400,1200",
+      colormap_name: "terrain",
+    },
+    "sentinel2": {
+      url: "https://sentinel-cogs.s3.us-west-2.amazonaws.com/sentinel-s2-l2a-cogs/18/S/TJ/2024/6/S2A_18STJ_20240601_0_L2A/B04.tif",
+      center: [-84.5, 38.0],
+      zoom: 10,
+      bidx: "1",
+      rescale: "0,3000",
+    },
+    "cop-dem": {
+      url: "https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_N37_00_W085_00_DEM/Copernicus_DSM_COG_10_N37_00_W085_00_DEM.tif",
+      center: [-84.5, 37.5],
+      zoom: 8,
+      bidx: "1",
+      rescale: "100,600",
+      colormap_name: "terrain",
+    },
+  };
+
+  // -----------------------------------------------------------------------
+  // Map init
+  // -----------------------------------------------------------------------
+  const map = new maplibregl.Map({
+    container: "map",
+    style: {
+      version: 8,
+      sources: {
+        osm: {
+          type: "raster",
+          tiles: ["https://tile.openstreetmap.org/{z}/{x}/{y}.png"],
+          tileSize: 256,
+          attribution: "© OpenStreetMap contributors",
+        },
+      },
+      layers: [{ id: "osm", type: "raster", source: "osm" }],
+    },
+    center: [-84.5, 38.0],
+    zoom: 7,
+  });
+
+  map.addControl(new maplibregl.NavigationControl());
+  map.addControl(new maplibregl.ScaleControl());
+
+  const status = document.getElementById("status");
+
+  function setStatus(msg, isError = false) {
+    status.textContent = msg;
+    status.className = isError ? "error" : "";
+  }
+
+  // -----------------------------------------------------------------------
+  // Load a COG via TiTiler
+  // -----------------------------------------------------------------------
+  async function loadCog(options = {}) {
+    const url = options.url || document.getElementById("cogUrl").value.trim();
+    if (!url) { setStatus("Paste a COG URL first", true); return; }
+
+    setStatus("Loading COG info...");
+
+    const params = new URLSearchParams({
+      url,
+      bidx: options.bidx || "1,2,3",
+      rescale: options.rescale || "0,255",
+    });
+    if (options.colormap_name) params.set("colormap_name", options.colormap_name);
+
+    const tileUrl = `${TITILER}/cog/tiles/WebMercatorQuad/{z}/{x}/{y}.png?${params}`;
+
+    // Get bounds from TiTiler info endpoint
+    let bounds = null;
+    try {
+      const infoResp = await fetch(`${TITILER}/cog/info?url=${encodeURIComponent(url)}`);
+      if (infoResp.ok) {
+        const info = await infoResp.json();
+        bounds = info.bounds; // [minx, miny, maxx, maxy] in WGS84
+        setStatus(`Loaded: ${info.width}×${info.height}px, ${info.count} band(s), ${info.crs}`);
+      }
+    } catch (e) {
+      setStatus(`TiTiler not reachable at ${TITILER} — is docker compose up?`, true);
+      return;
+    }
+
+    // Remove previous COG layer if present
+    if (map.getLayer("cog-layer")) map.removeLayer("cog-layer");
+    if (map.getSource("cog")) map.removeSource("cog");
+
+    map.addSource("cog", {
+      type: "raster",
+      tiles: [tileUrl],
+      tileSize: 256,
+    });
+
+    map.addLayer({
+      id: "cog-layer",
+      type: "raster",
+      source: "cog",
+      paint: { "raster-opacity": 0.9 },
+    });
+
+    // Zoom to bounds
+    if (bounds) {
+      map.fitBounds([[bounds[0], bounds[1]], [bounds[2], bounds[3]]], { padding: 40 });
+    } else if (options.center) {
+      map.flyTo({ center: options.center, zoom: options.zoom || 12 });
+    }
+  }
+
+  function loadPreset(name) {
+    const preset = PRESETS[name];
+    if (!preset) return;
+    document.getElementById("cogUrl").value = preset.url;
+    loadCog(preset);
+  }
+
+  // Allow Enter key in URL field
+  document.getElementById("cogUrl").addEventListener("keydown", (e) => {
+    if (e.key === "Enter") loadCog();
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,44 @@
+version: "3.8"
+
+# Local TiTiler instance for development.
+# Serves COGs over HTTP so you can visualize them in the browser
+# without deploying to a cloud environment.
+#
+# Usage:
+#   docker compose up
+#   Open http://localhost:8000/docs for the TiTiler API
+#   Open examples/web/titiler_map.html in your browser
+
+services:
+  titiler:
+    image: ghcr.io/developmentseed/titiler:latest
+    ports:
+      - "8000:80"
+    environment:
+      # CORS — allow the local HTML file to call the API
+      - TITILER_API_CORS_ORIGINS=*
+      # Increase workers for local testing
+      - WEB_CONCURRENCY=2
+      # Cache tile responses in memory (256MB)
+      - GDAL_CACHEMAX=256
+      - VSI_CACHE=TRUE
+      - VSI_CACHE_SIZE=25000000
+      # Disable Planetary Computer token signing (not needed for public COGs)
+      - TITILER_API_DISABLE_STAC_SEARCH=false
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80/healthz"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  # Optional: nginx to serve the static HTML map file
+  # Access the map at http://localhost:8080
+  map:
+    image: nginx:alpine
+    ports:
+      - "8080:80"
+    volumes:
+      - ./titiler_map.html:/usr/share/nginx/html/index.html:ro
+    depends_on:
+      - titiler
