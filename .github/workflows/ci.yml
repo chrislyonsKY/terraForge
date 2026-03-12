@@ -1,0 +1,188 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+# Cancel in-progress runs for the same branch on new push
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # Lint — ruff only, no geo deps, completes in ~10s
+  # ---------------------------------------------------------------------------
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install ruff
+        run: pip install "ruff>=0.4"
+
+      - name: ruff check
+        run: ruff check .
+
+      - name: ruff format
+        run: ruff format --check .
+
+  # ---------------------------------------------------------------------------
+  # Type check — mypy strict
+  # ignore_missing_imports covers rasterio/pyarrow/obstore stubs so
+  # no conda / heavy geo deps needed here.
+  # ---------------------------------------------------------------------------
+  typecheck:
+    name: Type Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install Python dependencies
+        run: |
+          pip install \
+            "httpx>=0.27" \
+            "pydantic>=2.0" \
+            "rich>=13.0" \
+            "orjson>=3.9" \
+            "typer>=0.9" \
+            "pystac>=1.9" \
+            "pystac-client>=0.8" \
+            "numpy>=1.24" \
+            "mypy>=1.10"
+
+      - name: Install earthforge packages (editable, no geo deps)
+        run: |
+          pip install -e packages/core
+          pip install -e packages/stac
+          pip install -e packages/raster
+          pip install -e packages/vector
+          pip install -e packages/cli
+
+      - name: mypy strict
+        run: |
+          mypy \
+            packages/core/src \
+            packages/stac/src \
+            packages/raster/src \
+            packages/vector/src \
+            packages/cli/src
+
+  # ---------------------------------------------------------------------------
+  # Test — pytest unit tests (no network calls)
+  # Uses conda for GDAL, rasterio, pyarrow — these are difficult to install
+  # reliably via pip on CI runners. conda-forge gives consistent binary builds.
+  # Integration-marked tests (real network) are excluded from CI runs.
+  # ---------------------------------------------------------------------------
+  test:
+    name: Test (Python ${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash -el {0}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: conda-incubator/setup-miniconda@v3
+        with:
+          python-version: ${{ matrix.python-version }}
+          channels: conda-forge,defaults
+          channel-priority: strict
+          activate-environment: earthforge-ci
+
+      - name: Install geospatial dependencies via conda
+        run: conda install -y gdal rasterio pyarrow
+
+      - name: Install Python dependencies via pip
+        run: |
+          pip install \
+            "httpx>=0.27" \
+            "pydantic>=2.0" \
+            "rich>=13.0" \
+            "orjson>=3.9" \
+            "typer>=0.9" \
+            "pystac>=1.9" \
+            "pystac-client>=0.8" \
+            "numpy>=1.24" \
+            "obstore>=0.3" \
+            "respx>=0.21" \
+            "pytest>=8.0" \
+            "pytest-asyncio>=0.23" \
+            "coverage>=7.0"
+
+      - name: Install earthforge packages (editable)
+        run: |
+          pip install -e packages/core
+          pip install -e packages/stac
+          pip install -e packages/raster
+          pip install -e packages/vector
+          pip install -e packages/cli
+
+      - name: Run unit tests (no network)
+        run: |
+          pytest -m "not integration" \
+            --tb=short \
+            -q \
+            --cov=packages/core/src \
+            --cov=packages/stac/src \
+            --cov=packages/raster/src \
+            --cov=packages/vector/src \
+            --cov-report=term-missing \
+            --cov-report=xml
+
+      - name: Upload coverage
+        uses: actions/upload-artifact@v4
+        if: matrix.python-version == '3.11'
+        with:
+          name: coverage-report
+          path: coverage.xml
+
+  # ---------------------------------------------------------------------------
+  # Build — hatch build for each package
+  # Verifies every package produces a valid wheel. Does not publish.
+  # ---------------------------------------------------------------------------
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install hatch
+        run: pip install "hatch>=1.7"
+
+      - name: Build all packages
+        run: |
+          for pkg in packages/core packages/stac packages/raster packages/vector packages/cli; do
+            echo "── Building $pkg ──"
+            (cd "$pkg" && hatch build -t wheel)
+          done
+
+      - name: Upload wheels
+        uses: actions/upload-artifact@v4
+        with:
+          name: wheels
+          path: packages/*/dist/*.whl
