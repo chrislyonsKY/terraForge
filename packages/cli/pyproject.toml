@@ -7,7 +7,7 @@ name = "earthforge-cli"
 version = "0.1.0"
 description = "EarthForge CLI — thin Typer dispatch layer for cloud-native geospatial operations"
 readme = "README.md"
-license = "Apache-2.0"
+license = "GPL-3.0-or-later"
 requires-python = ">=3.11"
 dependencies = [
     "earthforge-core>=0.1.0",
