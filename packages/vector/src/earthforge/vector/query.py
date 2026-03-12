@@ -104,10 +104,19 @@ def _build_bbox_filter(
     covering = col_meta.get("covering", {})
     bbox_covering = covering.get("bbox", {})
 
-    xmin_col = bbox_covering.get("xmin")
-    ymin_col = bbox_covering.get("ymin")
-    xmax_col = bbox_covering.get("xmax")
-    ymax_col = bbox_covering.get("ymax")
+    # GeoParquet 1.1 covering values are lists (column path for nested structs)
+    # e.g. ["bbox", "xmin"] or ["bbox.xmin"]. Extract the column name.
+    def _col_name(val: object) -> str | None:
+        if isinstance(val, list) and val:
+            return str(val[-1])
+        if isinstance(val, str):
+            return val
+        return None
+
+    xmin_col = _col_name(bbox_covering.get("xmin"))
+    ymin_col = _col_name(bbox_covering.get("ymin"))
+    xmax_col = _col_name(bbox_covering.get("xmax"))
+    ymax_col = _col_name(bbox_covering.get("ymax"))
 
     if all([xmin_col, ymin_col, xmax_col, ymax_col]):
         # Use covering columns for pushdown: feature bbox intersects query bbox
