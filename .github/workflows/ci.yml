@@ -127,6 +127,7 @@ jobs:
             "respx>=0.21" \
             "pytest>=8.0" \
             "pytest-asyncio>=0.23" \
+            "pytest-cov>=4.0" \
             "coverage>=7.0"
 
       - name: Install earthforge packages (editable)

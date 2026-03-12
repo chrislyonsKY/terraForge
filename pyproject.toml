@@ -103,12 +103,25 @@ disallow_untyped_defs = true
 disallow_incomplete_defs = true
 namespace_packages = true
 explicit_package_bases = true
-mypy_path = "packages/core/src:packages/cli/src:packages/raster/src:packages/vector/src:packages/stac/src"
+mypy_path = "packages/core/src:packages/cli/src:packages/raster/src:packages/vector/src:packages/stac/src:packages/cube/src:packages/pipeline/src"
 
 [[tool.mypy.overrides]]
-module = ["rasterio.*", "pyarrow.*", "obstore.*", "pystac.*", "pystac_client.*"]
+module = [
+    "rasterio.*",
+    "pyarrow.*",
+    "obstore.*",
+    "pystac.*",
+    "pystac_client.*",
+    "shapely.*",
+    "osgeo.*",
+    "geopandas.*",
+    "textual.*",
+]
 ignore_missing_imports = true
-follow_untyped_imports = true
+
+[[tool.mypy.overrides]]
+module = ["earthforge.cube.*", "earthforge.pipeline.*"]
+ignore_missing_imports = true
 
 # ---------------------------------------------------------------------------
 # Pytest

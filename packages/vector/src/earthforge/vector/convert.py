@@ -253,7 +253,7 @@ def _convert_vector_sync(
         feature_count = actual_count
 
     # Build pyarrow table
-    pa_columns: dict[str, pa.Array] = {}
+    pa_columns: dict[str, Any] = {}
     for name, arrow_type in zip(field_names, field_types, strict=True):
         type_map = {
             "int32": pa.int32(),

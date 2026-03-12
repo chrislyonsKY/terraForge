@@ -160,6 +160,7 @@ from earthforge.cli.commands import bench_cmd as _bench_cmd  # noqa: E402
 from earthforge.cli.commands import completions_cmd as _completions_cmd  # noqa: E402
 from earthforge.cli.commands import config_cmd as _config_cmd  # noqa: E402
 from earthforge.cli.commands import cube_cmd as _cube_cmd  # noqa: E402
+from earthforge.cli.commands import explore_cmd as _explore_cmd  # noqa: E402
 from earthforge.cli.commands import info as _info_cmd  # noqa: E402
 from earthforge.cli.commands import pipeline_cmd as _pipeline_cmd  # noqa: E402
 from earthforge.cli.commands import raster_cmd as _raster_cmd  # noqa: E402
@@ -177,3 +178,4 @@ app.add_typer(_vector_cmd.app)
 app.add_typer(_cube_cmd.app)
 app.add_typer(_pipeline_cmd.app)
 app.add_typer(_bench_cmd.app)
+app.add_typer(_explore_cmd.app)

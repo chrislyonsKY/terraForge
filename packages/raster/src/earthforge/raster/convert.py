@@ -86,7 +86,7 @@ def _convert_to_cog_sync(
     output: str | None = None,
     compression: str = "deflate",
     blocksize: int = 512,
-    resampling: str = "nearest",
+    resampling: str = "average",
     overview_levels: list[int] | None = None,
 ) -> CogConvertResult:
     """Convert a GeoTIFF to COG synchronously.
@@ -96,7 +96,7 @@ def _convert_to_cog_sync(
         output: Output COG path. If ``None``, appends ``_cog`` to the stem.
         compression: Compression codec (``"deflate"``, ``"lzw"``, ``"zstd"``).
         blocksize: Tile size in pixels (default: 512).
-        resampling: Resampling method for overviews (default: ``"nearest"``).
+        resampling: Resampling method for overviews (default: ``"average"``).
         overview_levels: Explicit overview levels. If ``None``, auto-computed.
 
     Returns:
@@ -158,13 +158,22 @@ def _convert_to_cog_sync(
         }
         gdal_resamp = resampling_map.get(resampling.lower(), "NEAREST")
 
+        # PREDICTOR=2 (horizontal differencing) improves DEFLATE/LZW compression
+        # by 30-40% for integer/byte imagery — standard COG best practice.
+        # Only applies to lossless codecs; skipped for NONE/ZSTD to avoid
+        # GDAL warnings on unsupported codec+predictor combinations.
+        predictor_codecs = {"DEFLATE", "LZW", "LZMA"}
+        creation_options = [
+            f"COMPRESS={gdal_compress}",
+            f"BLOCKSIZE={blocksize}",
+            f"OVERVIEW_RESAMPLING={gdal_resamp}",
+        ]
+        if gdal_compress in predictor_codecs:
+            creation_options.append("PREDICTOR=2")
+
         translate_options = gdal.TranslateOptions(
             format="COG",
-            creationOptions=[
-                f"COMPRESS={gdal_compress}",
-                f"BLOCKSIZE={blocksize}",
-                f"OVERVIEW_RESAMPLING={gdal_resamp}",
-            ],
+            creationOptions=creation_options,
         )
 
         result_ds = gdal.Translate(output, source, options=translate_options)
@@ -214,7 +223,7 @@ async def convert_to_cog(
     output: str | None = None,
     compression: str = "deflate",
     blocksize: int = 512,
-    resampling: str = "nearest",
+    resampling: str = "average",
     overview_levels: list[int] | None = None,
 ) -> CogConvertResult:
     """Convert a GeoTIFF to Cloud-Optimized GeoTIFF (COG).

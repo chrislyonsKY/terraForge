@@ -12,6 +12,7 @@ requires-python = ">=3.11"
 dependencies = [
     "earthforge-core>=0.1.0",
     "typer>=0.9",
+    "textual>=0.52",
 ]
 
 [project.scripts]
