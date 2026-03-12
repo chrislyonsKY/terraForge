@@ -15,6 +15,12 @@ dependencies = [
     "textual>=0.52",
 ]
 
+[project.urls]
+Homepage = "https://github.com/chrislyonsKY/earthForge"
+Repository = "https://github.com/chrislyonsKY/earthForge"
+Documentation = "https://chrislyonsky.github.io/earthForge/"
+Issues = "https://github.com/chrislyonsKY/earthForge/issues"
+
 [project.scripts]
 earthforge = "earthforge.cli.main:app"
 tf = "earthforge.cli.main:app"
