@@ -2,7 +2,7 @@
 
 ![EarthForge Banner](branding/earthforge-banner.png)
 
-[![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![License: GPL v3](https://img.shields.io)](https://www.gnu.org/licenses/gpl-3.0.html)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![CI](https://img.shields.io/github/actions/workflow/status/chrislyonsKY/earthforge/ci.yml?branch=main&label=CI)](https://github.com/chrislyonsKY/earthforge/actions)
 [![PyPI](https://img.shields.io/pypi/v/earthforge.svg)](https://pypi.org/project/earthforge/)
