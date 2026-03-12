@@ -45,6 +45,8 @@ jobs:
           pip install -e packages/raster
           pip install -e packages/vector
           pip install -e packages/cli
+          pip install -e packages/cube
+          pip install -e packages/pipeline
 
       - name: Build and deploy to GitHub Pages
         run: mkdocs gh-deploy --force
