@@ -104,6 +104,7 @@ jobs:
         with:
           packages-dir: dist_all/
           password: ${{ secrets.PIPY_API_TOKEN }}
+          skip-existing: true
           verbose: true
 
   # ---------------------------------------------------------------------------
