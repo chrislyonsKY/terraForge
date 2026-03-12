@@ -8,7 +8,7 @@ version = "0.1.0"
 description = "EarthForge datacube operations — Zarr and NetCDF inspection and slicing."
 readme = "README.md"
 requires-python = ">=3.11"
-license = "GNU GLP v3"
+license = "GPL-3.0-or-later"
 dependencies = [
     "earthforge-core>=0.1.0",
     "xarray>=2024.1",

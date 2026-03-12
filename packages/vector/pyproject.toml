@@ -8,7 +8,7 @@ version = "0.1.0"
 description = "EarthForge vector format inspection (GeoParquet, FlatGeobuf, GeoJSON)."
 readme = "README.md"
 requires-python = ">=3.11"
-license = "Apache-2.0"
+license = "GPL-3.0-or-later"
 dependencies = [
     "earthforge-core>=0.1.0",
     "pyarrow>=14.0",

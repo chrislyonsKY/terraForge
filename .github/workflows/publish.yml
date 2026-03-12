@@ -9,7 +9,6 @@ on:
 
 permissions:
   contents: read
-  id-token: write   # Required for OIDC trusted publishing
 
 concurrency:
   group: publish-${{ github.ref }}
@@ -83,7 +82,7 @@ jobs:
           python -c "from earthforge.core import __version__; print('Version:', __version__)"
 
   # ---------------------------------------------------------------------------
-  # Publish to PyPI via OIDC trusted publishing (no API token stored)
+  # Publish to PyPI via API token stored in repo secrets
   # ---------------------------------------------------------------------------
   publish:
     name: Publish to PyPI
@@ -103,6 +102,7 @@ jobs:
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           packages-dir: dist_all/
+          password: ${{ secrets.PIPY_API_TOKEN }}
           verbose: true
 
   # ---------------------------------------------------------------------------

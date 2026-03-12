@@ -7,7 +7,7 @@ name = "earthforge-raster"
 version = "0.1.0"
 description = "EarthForge raster operations: COG info, validation, conversion, preview"
 readme = "README.md"
-license = "Apache-2.0"
+license = "GPL-3.0-or-later"
 requires-python = ">=3.11"
 dependencies = [
     "earthforge-core>=0.1.0",
