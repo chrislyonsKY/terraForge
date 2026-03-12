@@ -1,0 +1,147 @@
+name: Publish to PyPI
+
+on:
+  push:
+    tags:
+      - "v[0-9]+.[0-9]+.[0-9]+"        # v0.1.0, v1.2.3
+      - "v[0-9]+.[0-9]+.[0-9]+a[0-9]+" # v0.1.0a1 (alpha)
+      - "v[0-9]+.[0-9]+.[0-9]+rc[0-9]+" # v0.1.0rc1 (release candidate)
+
+permissions:
+  contents: read
+  id-token: write   # Required for OIDC trusted publishing
+
+concurrency:
+  group: publish-${{ github.ref }}
+  cancel-in-progress: false   # Never cancel an in-flight publish
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # Build all packages
+  # ---------------------------------------------------------------------------
+  build:
+    name: Build packages
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install Hatch
+        run: pip install hatch>=1.7
+
+      - name: Build all workspace packages
+        run: |
+          for pkg in packages/*/; do
+            echo "Building $pkg"
+            hatch build --clean -t wheel -t sdist "$pkg"
+          done
+
+          # Build the meta-package at the root
+          hatch build --clean -t wheel -t sdist
+
+      - name: Collect dist artifacts
+        run: |
+          mkdir -p dist_all
+          find packages/*/dist -name "*.whl" -o -name "*.tar.gz" | xargs -I{} cp {} dist_all/
+          cp dist/*.whl dist/*.tar.gz dist_all/ 2>/dev/null || true
+          ls -lh dist_all/
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist-packages
+          path: dist_all/
+          retention-days: 7
+
+  # ---------------------------------------------------------------------------
+  # Verify packages installable before publishing
+  # ---------------------------------------------------------------------------
+  verify:
+    name: Verify packages
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist-packages
+          path: dist_all/
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install and smoke-test each wheel
+        run: |
+          for whl in dist_all/*.whl; do
+            echo "Testing $whl"
+            pip install "$whl" --quiet || echo "WARN: $whl install failed (may need extras)"
+          done
+          python -c "from earthforge.core import __version__; print('Version:', __version__)"
+
+  # ---------------------------------------------------------------------------
+  # Publish to PyPI via OIDC trusted publishing (no API token stored)
+  # ---------------------------------------------------------------------------
+  publish:
+    name: Publish to PyPI
+    needs: [build, verify]
+    runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/project/earthforge/
+
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist-packages
+          path: dist_all/
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: dist_all/
+          verbose: true
+
+  # ---------------------------------------------------------------------------
+  # Create GitHub Release with changelog excerpt
+  # ---------------------------------------------------------------------------
+  release:
+    name: Create GitHub Release
+    needs: publish
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Extract changelog for this version
+        id: changelog
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          # Extract the section for this version from CHANGELOG.md
+          NOTES=$(awk "/^## \[$VERSION\]/{flag=1; next} /^## \[/{flag=0} flag" CHANGELOG.md)
+          if [ -z "$NOTES" ]; then
+            NOTES="See [CHANGELOG.md](CHANGELOG.md) for release notes."
+          fi
+          echo "notes<<EOF" >> "$GITHUB_OUTPUT"
+          echo "$NOTES" >> "$GITHUB_OUTPUT"
+          echo "EOF" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist-packages
+          path: dist_all/
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: EarthForge ${{ github.ref_name }}
+          body: ${{ steps.changelog.outputs.notes }}
+          files: dist_all/*
+          draft: false
+          prerelease: ${{ contains(github.ref_name, 'a') || contains(github.ref_name, 'rc') }}

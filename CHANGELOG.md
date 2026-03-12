@@ -9,6 +9,13 @@ Versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased] — v0.1.0
 
+### Added — M4 (Polish)
+
+- `earthforge completions bash|zsh|fish` — shell completion script generation
+- `earthforge bench vector-query` — GeoParquet predicate pushdown vs. full scan benchmark
+- `earthforge bench raster-info` — COG header range-request timing benchmark
+- `.github/workflows/publish.yml` — PyPI publish pipeline triggered on semver tags; OIDC trusted publishing (no stored API token); builds all workspace packages; creates GitHub Release with changelog excerpt
+
 ### Added — M3c (Pipeline)
 
 - `packages/pipeline/` — new `earthforge-pipeline` package (pyyaml + jsonschema)
