@@ -19,3 +19,15 @@ class VectorError(EarthForgeError):
 
     def __init__(self, message: str, *, exit_code: int = 20) -> None:
         super().__init__(message, exit_code=exit_code)
+
+
+class VectorValidationError(VectorError):
+    """Error during GeoParquet or vector file validation.
+
+    Parameters:
+        message: Human-readable error description.
+        exit_code: Process exit code (default: 21).
+    """
+
+    def __init__(self, message: str, *, exit_code: int = 21) -> None:
+        super().__init__(message, exit_code=exit_code)

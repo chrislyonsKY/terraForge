@@ -125,6 +125,28 @@ EarthForge is a composable CLI toolkit for cloud-native geospatial data. Contrib
 
 These boundaries are deliberate, not gaps waiting to be filled. If you think the scope should expand, make the case in an issue — don't submit a PR that assumes the answer is yes.
 
+## Accessibility Standards
+
+All output — CLI tables, generated images, documentation — must meet WCAG 2.1 AA:
+
+- **Color is never the sole indicator.** Status uses text markers (`[PASS]`/`[FAIL]`/`[WARN]`) alongside color. Use `StatusMarker` from `earthforge.core.output`.
+- **Contrast ratios.** Text meets 4.5:1 against the background. Use `--high-contrast` mode for testing.
+- **Colorblind-safe palettes.** All visualizations use palettes from `earthforge.core.palettes` (viridis, cividis, BrBG, Set2, Paired).
+- **`NO_COLOR` / `FORCE_COLOR`.** Respect both environment variables. `NO_COLOR` always wins.
+- **TUI accessibility.** All containers have `name` attributes. Focus indicators meet 3:1 contrast.
+
+## Data Citation Standards
+
+Every output that uses real-world data must include provenance:
+
+- **Data source**: Provider name, dataset name, URL
+- **Access date**: When the data was retrieved
+- **License**: The data's license terms
+- **Spatial/temporal extent**: What subset was used
+- **Generation metadata**: EarthForge version, script path, parameters
+
+Output images get a `.txt` sidecar file with alt text and this metadata. Validation reports cite all data sources in their "Data Sources" section.
+
 ## Questions
 
 Open an issue or start a discussion. We'd rather answer questions before you write code than review a PR that went in the wrong direction.

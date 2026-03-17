@@ -1,0 +1,27 @@
+[build-system]
+requires = ["maturin>=1.0,<2.0"]
+build-backend = "maturin"
+
+[project]
+name = "earthforge-rs"
+version = "1.0.0"
+description = "Rust acceleration extensions for EarthForge"
+readme = "README.md"
+license = "GPL-3.0-or-later"
+requires-python = ">=3.11"
+authors = [{ name = "EarthForge Contributors" }]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Rust",
+    "Topic :: Scientific/Engineering :: GIS",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0", "pyarrow>=14.0"]
+
+[tool.maturin]
+features = ["pyo3/extension-module"]
+module-name = "earthforge_rs"

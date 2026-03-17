@@ -5,4 +5,4 @@ depend on. It wraps third-party libraries (httpx, obstore, rich) behind stable
 interfaces so domain code never imports them directly.
 """
 
-__version__ = "0.1.1"
+__version__ = "1.0.0"

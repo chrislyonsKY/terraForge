@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "earthforge-raster"
-version = "0.1.1"
+version = "1.0.0"
 description = "EarthForge raster operations: COG info, validation, conversion, preview"
 readme = "README.md"
 license = "GPL-3.0-or-later"

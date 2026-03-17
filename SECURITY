@@ -1,0 +1,98 @@
+# Security Policy
+
+## Supported Versions
+
+| Version | Supported          |
+|---------|--------------------|
+| 0.2.x   | Yes                |
+| 0.1.x   | Security fixes only|
+| < 0.1   | No                 |
+
+## Reporting a Vulnerability
+
+If you discover a security vulnerability in EarthForge, please report it responsibly. **Do not open a public GitHub issue.**
+
+**Email:** Send a detailed report to the maintainers via the contact information in the repository. If no security-specific contact is listed, use the primary maintainer's email from `pyproject.toml`.
+
+**Include in your report:**
+
+- Description of the vulnerability
+- Steps to reproduce
+- Affected versions
+- Potential impact
+- Suggested fix (if any)
+
+**Response timeline:**
+
+- **Acknowledgment:** Within 48 hours of receipt
+- **Initial assessment:** Within 7 days
+- **Fix or mitigation:** Within 30 days for confirmed vulnerabilities
+- **Public disclosure:** Coordinated with the reporter after a fix is available
+
+## Security Design Principles
+
+EarthForge processes geospatial data from remote sources (STAC APIs, cloud storage, HTTP endpoints). The following principles guide its security posture.
+
+### No Arbitrary Code Execution
+
+- Band math expressions are evaluated via a safe AST walker (`earthforge.core.expression`). Only whitelisted arithmetic operators and functions are permitted.
+- `eval()` and `exec()` are **never** used anywhere in the codebase. This is enforced by linting rules and documented in CLAUDE.md.
+- Pipeline YAML documents are parsed with `yaml.safe_load()` — never `yaml.load()`.
+
+### Input Validation
+
+- All user-supplied file paths are validated before use. Path traversal attacks (e.g., `../../etc/passwd`) are mitigated by resolving paths before I/O operations.
+- HTTP URLs are validated to use `http://` or `https://` schemes only.
+- Bounding box coordinates are validated as numeric 4-tuples before being passed to APIs.
+- STAC item JSON is validated against the STAC specification schema before processing.
+
+### Credential Handling
+
+- EarthForge never hardcodes credentials. All authentication flows through profile-based configuration (`~/.earthforge/config.toml`).
+- Cloud storage credentials (AWS keys, GCS tokens, Azure SAS) are read from environment variables or profile configuration — never from command-line arguments that would appear in shell history or process listings.
+- The configuration file should have restricted permissions (`chmod 600` on Unix systems). EarthForge does not enforce this but documents it as a recommendation.
+
+### Network Security
+
+- All HTTP communication uses `httpx` with TLS verification enabled by default.
+- Redirect following is enabled but limited to prevent redirect loops.
+- Timeout values are set on all HTTP clients to prevent hanging connections.
+- No STAC API URLs or cloud endpoints are hardcoded; all are configurable via profiles.
+
+### Dependency Security
+
+- Dependencies are pinned to minimum versions in `pyproject.toml` with explicit compatibility ranges.
+- The Rust extension (`packages/rs/`) uses `PyO3` with safe Rust by default. Any `unsafe` blocks require documented justification.
+- `ruff` security rules (S-prefix) are enabled in the linting configuration to catch common issues: hardcoded passwords, use of `subprocess` with `shell=True`, insecure hash functions, etc.
+
+### Data Handling
+
+- EarthForge processes geospatial data but does not store user data, telemetry, or analytics.
+- Temporary files created during processing (tile generation, format conversion) are written to the system temp directory or user-specified output directories. No implicit cleanup daemon runs; users control their output.
+- No data is transmitted to third parties unless the user explicitly configures a remote STAC API or cloud storage endpoint.
+
+## Known Security Boundaries
+
+These are areas where EarthForge trusts external inputs by design:
+
+1. **STAC API responses** — EarthForge trusts that STAC API responses conform to the STAC specification. Malformed responses may cause errors but should not enable code execution.
+
+2. **Raster/vector file contents** — File parsing is delegated to GDAL (via rasterio), pyarrow, and xarray. Vulnerabilities in these libraries' file parsers could affect EarthForge. Keep dependencies updated.
+
+3. **Pipeline YAML** — While parsed safely, pipeline documents can specify arbitrary file paths and URLs. A malicious pipeline document could cause EarthForge to read/write unexpected locations or make requests to arbitrary URLs. Treat pipeline documents with the same trust level as shell scripts.
+
+4. **Tippecanoe subprocess** — When `tippecanoe` is available on PATH, EarthForge invokes it as a subprocess for vector tile generation. The input is a temporary GeoJSON file, not user-supplied command strings. `shell=True` is never used.
+
+## Security Checklist for Contributors
+
+Before submitting code, verify:
+
+- [ ] No use of `eval()`, `exec()`, or `compile()` with dynamic input
+- [ ] No use of `yaml.load()` — use `yaml.safe_load()` instead
+- [ ] No use of `subprocess` with `shell=True`
+- [ ] No hardcoded credentials, API keys, or tokens
+- [ ] No use of `pickle` for deserializing untrusted data
+- [ ] All HTTP clients have explicit timeouts
+- [ ] All file paths from user input are validated/resolved
+- [ ] `ruff check` passes with security rules enabled (S rules)
+- [ ] New dependencies are reviewed for known vulnerabilities

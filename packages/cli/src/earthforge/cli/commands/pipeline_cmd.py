@@ -69,7 +69,11 @@ def run(
         run_pipeline(doc, output_dir=output_dir, profile=profile, dry_run=dry_run),
     )
     if isinstance(result, BaseModel):
-        render_to_console(result, state.output, no_color=state.no_color)
+        render_to_console(
+            result, state.output,
+            no_color=state.no_color,
+            high_contrast=state.high_contrast,
+        )
 
 
 def list_steps(

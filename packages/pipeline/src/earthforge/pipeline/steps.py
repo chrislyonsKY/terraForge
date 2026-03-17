@@ -31,16 +31,15 @@ vector.convert
 
 from __future__ import annotations
 
-import ast
 import asyncio
 import logging
-import operator
 import time
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
+from earthforge.core.expression import extract_variables, safe_eval
 from earthforge.pipeline.errors import StepError
 
 logger = logging.getLogger(__name__)
@@ -211,69 +210,6 @@ async def step_stac_fetch(ctx: StepContext) -> StepResult:
     )
 
 
-# ---------------------------------------------------------------------------
-# Safe expression evaluator for raster.calc
-# ---------------------------------------------------------------------------
-
-_SAFE_OPS: dict[type[Any], Callable[..., Any]] = {
-    ast.Add: operator.add,
-    ast.Sub: operator.sub,
-    ast.Mult: operator.mul,
-    ast.Div: operator.truediv,
-    ast.Pow: operator.pow,
-    ast.USub: operator.neg,
-    ast.UAdd: operator.pos,
-}
-
-
-def _safe_eval(expr_str: str, env: dict[str, Any]) -> Any:
-    """Evaluate a band math expression using a safe AST walker.
-
-    Only arithmetic operators (+, -, *, /, **) and names present in ``env``
-    are permitted. No builtins, attribute access, subscripts, or function
-    calls are allowed. This prevents arbitrary code execution without
-    resorting to ``eval()`` or ``exec()``.
-
-    Parameters:
-        expr_str: Band math expression string (e.g. ``"(B08 - B04) / (B08 + B04)"``).
-        env: Variable bindings (band name → array).
-
-    Returns:
-        Result of evaluating the expression.
-
-    Raises:
-        ValueError: If the expression contains unsupported constructs.
-    """
-
-    def _eval(node: ast.expr) -> Any:
-        if isinstance(node, ast.Constant):
-            if not isinstance(node.value, (int, float)):
-                raise ValueError(f"Unsupported constant type: {type(node.value)}")
-            return node.value
-        if isinstance(node, ast.Name):
-            if node.id not in env:
-                raise ValueError(f"Unknown variable '{node.id}' in expression")
-            return env[node.id]
-        if isinstance(node, ast.BinOp):
-            op_type: type[Any] = type(node.op)
-            if op_type not in _SAFE_OPS:
-                raise ValueError(f"Unsupported operator: {op_type.__name__}")
-            return _SAFE_OPS[op_type](_eval(node.left), _eval(node.right))
-        if isinstance(node, ast.UnaryOp):
-            op_type = type(node.op)
-            if op_type not in _SAFE_OPS:
-                raise ValueError(f"Unsupported unary operator: {op_type.__name__}")
-            return _SAFE_OPS[op_type](_eval(node.operand))
-        raise ValueError(f"Unsupported expression node: {type(node).__name__}")
-
-    try:
-        tree = ast.parse(expr_str, mode="eval")
-    except SyntaxError as exc:
-        raise ValueError(f"Invalid expression syntax: {exc}") from exc
-
-    return _eval(tree.body)
-
-
 @register_step("raster.calc")
 async def step_raster_calc(ctx: StepContext) -> StepResult:
     """Evaluate a band math expression over GeoTIFF bands.
@@ -313,13 +249,11 @@ async def step_raster_calc(ctx: StepContext) -> StepResult:
         env: dict[str, Any] = {}
         profile_out: dict[str, Any] = {}
 
-        # Parse expression AST to find referenced names
+        # Find referenced variable names via the shared expression module
         try:
-            tree = ast.parse(expression, mode="eval")
-        except SyntaxError as exc:
-            raise StepError("raster.calc", ctx.item_id, f"Invalid expression: {exc}") from exc
-
-        needed = {n.id for n in ast.walk(tree) if isinstance(n, ast.Name)}
+            needed = extract_variables(expression)
+        except ValueError as exc:
+            raise StepError("raster.calc", ctx.item_id, str(exc)) from exc
 
         for band_key in needed:
             path = ctx.asset_paths.get(band_key)
@@ -336,7 +270,7 @@ async def step_raster_calc(ctx: StepContext) -> StepResult:
                     profile_out = src.profile.copy()
 
         # Evaluate expression safely
-        result_arr = _safe_eval(expression, env)
+        result_arr = safe_eval(expression, env)
         result_arr = result_arr.astype(dtype)
 
         profile_out.update(

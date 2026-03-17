@@ -53,20 +53,21 @@ DATE_RANGE = "2025-04-01/2025-10-31"
 MAX_CLOUD = 25.0
 
 # Output
-OUTPUT_DIR = Path("data")
+OUTPUT_DIR = Path("examples/outputs")
 OUTPUT_PATH = OUTPUT_DIR / "vegetation_change.gif"
 
-# NDVI color ramp: brown -> yellow -> green (classic vegetation palette)
+# NDVI color ramp: colorblind-safe BrBG diverging palette (WCAG 2.1 AA)
+# Derived from earthforge.core.palettes.DIVERGING_BRBG
 # Each entry is (ndvi_threshold, R, G, B)
 NDVI_COLORMAP = [
-    (-1.0, 20, 20, 80),  # water / shadow — dark blue
-    (-0.1, 60, 40, 20),  # bare soil — dark brown
-    (0.0, 140, 100, 50),  # bare / sparse — tan
-    (0.15, 200, 170, 80),  # sparse vegetation — yellow-brown
-    (0.3, 180, 200, 60),  # light vegetation — yellow-green
-    (0.5, 80, 160, 40),  # moderate vegetation — green
-    (0.7, 20, 120, 20),  # dense vegetation — dark green
-    (1.0, 0, 80, 0),  # very dense — forest green
+    (-1.0, 20, 20, 80),    # water / shadow — dark blue
+    (-0.1, 140, 81, 10),   # bare soil — brown (#8c510a)
+    (0.0, 191, 129, 45),   # sparse — tan (#bf812d)
+    (0.15, 223, 194, 125),  # transition — light brown (#dfc27d)
+    (0.3, 245, 245, 245),  # midpoint — near white (#f5f5f5)
+    (0.5, 128, 205, 193),  # moderate vegetation — light teal (#80cdc1)
+    (0.7, 53, 151, 143),   # dense vegetation — teal (#35978f)
+    (1.0, 1, 102, 94),     # very dense — dark teal (#01665e)
 ]
 
 

@@ -31,3 +31,27 @@ class StacSearchError(StacError):
 
     def __init__(self, message: str, *, exit_code: int = 31) -> None:
         super().__init__(message, exit_code=exit_code)
+
+
+class StacValidationError(StacError):
+    """Error during STAC item or collection validation.
+
+    Parameters:
+        message: Human-readable error description.
+        exit_code: Process exit code (default: 32).
+    """
+
+    def __init__(self, message: str, *, exit_code: int = 32) -> None:
+        super().__init__(message, exit_code=exit_code)
+
+
+class StacPublishError(StacError):
+    """Error during STAC item publication to a writable API.
+
+    Parameters:
+        message: Human-readable error description.
+        exit_code: Process exit code (default: 33).
+    """
+
+    def __init__(self, message: str, *, exit_code: int = 33) -> None:
+        super().__init__(message, exit_code=exit_code)

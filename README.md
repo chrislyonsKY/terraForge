@@ -8,6 +8,7 @@
 [![PyPI](https://img.shields.io/pypi/v/earthForge.svg)](https://pypi.org/project/earthForge/) 
 [![Hatch](https://img.shields.io/badge/build-hatch-4051b5.svg)](https://hatch.pypa.io/)
 
+
 Working with cloud-native geospatial data means juggling `gdalinfo` for COGs, `stac-client` for discovery, `geopandas` for GeoParquet, `xarray` for Zarr, and a collection of one-off scripts to glue them together. Each tool has its own CLI conventions, its own output format, and its own assumptions about how you authenticate to cloud storage.
 
 EarthForge is a single composable toolkit that unifies these workflows. One CLI. One config system. One output contract. Every command works locally, against S3, GCS, or Azure — and every command produces both human-readable tables and machine-parseable JSON.
@@ -144,6 +145,72 @@ Full sample: [`data/samples/vector_info.json`](data/samples/vector_info.json)
 
 ---
 
+## Output Gallery
+
+All images below were generated from real-world data using EarthForge example scripts. No synthetic or simulated data. Each output includes a `.txt` sidecar with alt text, data provenance, and generation metadata. See [`examples/outputs/`](examples/outputs/) for full details.
+
+### Grand Canyon — DEM with Hillshade + Cross-Section
+
+SRTM 30m elevation data via OpenTopography API. Shows 1,844m of relief from river to rim with elevation cross-section profile.
+
+![Elevation map of the Grand Canyon from SRTM 30m DEM with cividis palette and hillshade overlay. Top panel shows terrain from 728m at river level to 2572m at the rim. A high-contrast orange cross-section line with black outline is drawn at the midpoint. Bottom panel shows the east-west elevation profile revealing the canyon's V-shaped depth.](examples/outputs/opentopo_grand_canyon_dem.png)
+
+### Swiss Alps — Matterhorn/Zermatt Elevation Analysis
+
+Copernicus DEM 30m via OpenTopography. Elevations from 1,868m (valley) to 4,330m (peaks) with statistics sidebar.
+
+![Elevation map of the Swiss Alps near the Matterhorn and Zermatt from Copernicus DEM 30m. Viridis palette shows valleys at 1868m in dark purple and alpine peaks at 4330m in bright yellow. Hillshade overlay reveals glacial valleys and ridgelines. Statistics sidebar lists min, max, mean, median, and standard deviation.](examples/outputs/opentopo_swiss_alps_dem.png)
+
+### Colorado Front Range — Sentinel-2 NDVI
+
+Vegetation gradient from plains to alpine tundra, showing elevation-driven ecology. BrBG colorblind-safe diverging palette.
+
+![NDVI map of the Colorado Front Range from Boulder to Rocky Mountain National Park. Brown-white-teal BrBG diverging palette shows urban and bare areas in brown, transitional zones in white, and dense montane forest in teal. The elevation-driven vegetation gradient is clearly visible from east (plains) to west (alpine).](examples/outputs/ndvi_colorado_front_range.png)
+
+### Netherlands — Urban/Water/Vegetation NDVI
+
+Sentinel-2 scene over Rotterdam/Delft showing water (NDVI < 0), urban (low NDVI), and agricultural areas (high NDVI).
+
+![NDVI map of Rotterdam and Delft in the Netherlands showing three distinct land cover classes: water bodies with negative NDVI in brown, urban areas with low NDVI in light brown, and agricultural fields with high NDVI in teal. BrBG diverging palette. Water covers 7.8 percent, urban 18.9 percent, vegetation 63.3 percent of the scene.](examples/outputs/ndvi_netherlands_rotterdam.png)
+
+### Amazon Rainforest — Tropical NDVI
+
+Sentinel-2 scene near Manaus, Brazil showing dense tropical forest canopy with uniformly high NDVI.
+
+![NDVI map of the Amazon rainforest near Manaus, Brazil from Sentinel-2 imagery. The dense tropical canopy shows uniformly high NDVI values (mean 0.42) in teal and dark teal. River channels and cleared areas appear in brown. BrBG colorblind-safe diverging palette.](examples/outputs/ndvi_amazon_manaus.png)
+
+### Copernicus DEM — Elevation Statistics + Histogram
+
+Raster statistics computed from a Copernicus DEM 30m tile with elevation distribution histogram. Viridis colorblind-safe palette.
+
+![Elevation histogram and summary statistics from a Copernicus DEM 30m tile. Left panel shows the distribution of elevation values from 94m to 377m with viridis-colored bars. Right panel lists summary statistics: min 94m, max 377m, mean 216m, median 221m, std 43m, computed from 12.96 million valid pixels.](examples/outputs/raster_stats_dem_histogram.png)
+
+### Yellowstone — Landsat STAC Search Footprints
+
+Landsat Collection 2 Level-2 scene footprints from Earth Search, color-coded by cloud cover percentage.
+
+![Map of 40 Landsat Collection 2 Level-2 scene footprints over Yellowstone National Park from a STAC search. Footprints are rectangles colored by cloud cover percentage using a reversed viridis palette where bright colors indicate low cloud cover and dark colors indicate high cloud cover.](examples/outputs/stac_landsat_yellowstone.png)
+
+### Yosemite — Multi-Collection STAC Query
+
+Two-panel figure querying both Sentinel-2 scenes and Copernicus DEM tiles from a single STAC API.
+
+![Two-panel figure showing a multi-collection STAC query over Yosemite National Park. Left panel displays Sentinel-2 scene footprints colored by cloud cover. Right panel shows a Copernicus DEM elevation map with hillshade, elevations from 543m to 3547m in viridis palette.](examples/outputs/stac_multi_collection_yosemite.png)
+
+### STAC-to-NDVI Pipeline
+
+Complete pipeline workflow: STAC search, range-read Sentinel-2 bands, NDVI computation via safe expression evaluator, rendered output with pipeline summary.
+
+![NDVI map produced by an automated STAC-to-NDVI pipeline workflow. Left panel shows the computed NDVI using BrBG diverging palette with brown for bare areas and teal for vegetation. Right panel lists the 4-step pipeline: STAC search, range-read B04 and B08 bands, NDVI computation, and render output, with NDVI statistics.](examples/outputs/pipeline_ndvi_output.png)
+
+### Format Detection Matrix
+
+EarthForge's three-stage format detection chain (magic bytes, extension, content inspection) tested across 12 geospatial file formats.
+
+![Table showing EarthForge format detection results for 12 geospatial file types. Each row shows the file type, extension, detected format, detection method, and pass or miss status. Seven of twelve formats are correctly detected via magic bytes. Results use ColorBrewer Set2 palette with teal for PASS and orange for MISS.](examples/outputs/format_detection_matrix.png)
+
+---
+
 ## What EarthForge Is Not
 
 EarthForge is not a platform. It does not include a web server, a tile cache, a database, an ML pipeline, or a Kubernetes deployment. It is not a replacement for QGIS, ArcGIS, or Google Earth Engine. It does not try to be everything — it is a focused set of tools that integrate with existing workflows via structured output, stdin/stdout piping, and Python imports.
@@ -221,6 +288,14 @@ Key architectural decisions:
 ## Contributing
 
 See [CONTRIBUTING.md](CONTRIBUTING.md). EarthForge has specific engineering standards — please read the contribution guide before opening a PR.
+
+## Code of Conduct
+
+See[CODE_OF_CONDUCT](CODE_OF_CONDUCT)
+
+## Security
+
+See [SECURITY](SECURITY)
 
 ## License
 

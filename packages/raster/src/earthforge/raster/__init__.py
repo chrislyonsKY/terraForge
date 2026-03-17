@@ -4,4 +4,4 @@ This package provides async-first APIs for working with Cloud Optimized GeoTIFFs
 and other raster formats. All I/O goes through ``earthforge.core`` wrappers.
 """
 
-__version__ = "0.1.1"
+__version__ = "1.0.0"

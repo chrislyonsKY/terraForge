@@ -6,10 +6,10 @@ from pathlib import Path
 
 import pytest
 
+from earthforge.core.expression import safe_eval as _safe_eval
 from earthforge.pipeline.errors import StepError
 from earthforge.pipeline.steps import (
     StepContext,
-    _safe_eval,
     get_step,
     list_steps,
     register_step,
@@ -86,9 +86,13 @@ class TestSafeEval:
         with pytest.raises(ValueError, match="Unknown variable"):
             _safe_eval("x + y", {"x": 1})
 
-    def test_function_call_rejected(self) -> None:
-        with pytest.raises(ValueError, match="Unsupported expression node"):
-            _safe_eval("abs(x)", {"x": -1})
+    def test_safe_function_allowed(self) -> None:
+        result = _safe_eval("abs(x)", {"x": -5})
+        assert result == 5
+
+    def test_unsafe_function_rejected(self) -> None:
+        with pytest.raises(ValueError, match="Unknown function"):
+            _safe_eval("exec('bad')", {})
 
     def test_attribute_access_rejected(self) -> None:
         with pytest.raises(ValueError, match="Unsupported expression node"):

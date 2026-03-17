@@ -62,7 +62,11 @@ def show(
             storage_backend=result.storage_backend,
             storage_options=result.storage_options,
         )
-        render_to_console(view, state.output, no_color=state.no_color)
+        render_to_console(
+            view, state.output,
+            no_color=state.no_color,
+            high_contrast=state.high_contrast,
+        )
 
 
 app.command(name="init", help="Create a default configuration file.")(init)

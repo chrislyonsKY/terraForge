@@ -70,6 +70,8 @@ jobs:
           pip install -e packages/stac
           pip install -e packages/raster
           pip install -e packages/vector
+          pip install -e packages/cube
+          pip install -e packages/pipeline
           pip install -e packages/cli
 
       - name: mypy strict
@@ -79,6 +81,8 @@ jobs:
             packages/stac/src \
             packages/raster/src \
             packages/vector/src \
+            packages/cube/src \
+            packages/pipeline/src \
             packages/cli/src
 
   # ---------------------------------------------------------------------------
@@ -97,7 +101,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.11", "3.12"]
+        python-version: ["3.11", "3.12", "3.13"]
 
     steps:
       - uses: actions/checkout@v4
@@ -125,6 +129,16 @@ jobs:
             "numpy>=1.24" \
             "obstore>=0.3" \
             "rio-cogeo>=3.0" \
+            "xarray>=2024.1" \
+            "zarr>=2.18" \
+            "h5netcdf>=1.3" \
+            "h5py>=3.10" \
+            "dask" \
+            "geopandas>=0.14" \
+            "shapely>=2.0" \
+            "jsonschema>=4.21" \
+            "pyyaml>=6.0" \
+            "textual>=0.52" \
             "respx>=0.21" \
             "pytest>=8.0" \
             "pytest-asyncio>=0.23" \
@@ -137,6 +151,8 @@ jobs:
           pip install -e packages/stac
           pip install -e packages/raster
           pip install -e packages/vector
+          pip install -e packages/cube
+          pip install -e packages/pipeline
           pip install -e packages/cli
 
       - name: Run unit tests (no network)
@@ -148,8 +164,11 @@ jobs:
             --cov=packages/stac/src \
             --cov=packages/raster/src \
             --cov=packages/vector/src \
+            --cov=packages/cube/src \
+            --cov=packages/pipeline/src \
             --cov-report=term-missing \
-            --cov-report=xml
+            --cov-report=xml \
+            --cov-fail-under=80
 
       - name: Upload coverage
         uses: actions/upload-artifact@v4
@@ -178,7 +197,7 @@ jobs:
 
       - name: Build all packages
         run: |
-          for pkg in packages/core packages/stac packages/raster packages/vector packages/cli; do
+          for pkg in packages/core packages/stac packages/raster packages/vector packages/cube packages/pipeline packages/cli; do
             echo "── Building $pkg ──"
             (cd "$pkg" && hatch build -t wheel)
           done

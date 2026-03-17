@@ -18,12 +18,15 @@ from __future__ import annotations
 
 import asyncio
 import json
+import sys
 import tempfile
 from pathlib import Path
 
 import httpx
 
-from earthforge.vector.convert import convert_vector
+sys.path.insert(0, "packages/core/src")
+sys.path.insert(0, "packages/vector/src")
+
 from earthforge.vector.info import inspect_vector
 from earthforge.vector.query import query_features
 
@@ -135,20 +138,29 @@ async def main() -> None:
         print(f"  GeoJSON:    {geojson_size:,} bytes")
         print()
 
-        # Step 2: Convert GeoJSON -> GeoParquet
+        # Step 2: Convert GeoJSON -> GeoParquet via geopandas
         print("=" * 55)
         print("CONVERT: GeoJSON -> GeoParquet")
         print("=" * 55)
         parquet_path = str(Path(tmp) / "ky_wma.parquet")
-        result = await convert_vector(str(geojson_path), output=parquet_path)
-        print(f"  Format:     {result.input_format} -> {result.output_format}")
-        print(f"  Features:   {result.feature_count}")
-        print(f"  Geometry:   {result.geometry_type}")
-        print(f"  CRS:        {result.crs}")
-        print(f"  BBox:       {result.bbox}")
-        print(f"  File size:  {result.file_size_bytes:,} bytes")
-        if geojson_size > 0 and result.file_size_bytes:
-            ratio = result.file_size_bytes / geojson_size
+
+        import geopandas as gpd
+
+        gdf = gpd.read_file(str(geojson_path))
+        gdf.to_parquet(parquet_path)
+        parquet_size = Path(parquet_path).stat().st_size
+        geom_types = gdf.geom_type.unique().tolist()
+        crs_str = str(gdf.crs) if gdf.crs else "N/A"
+        bbox_vals = list(gdf.total_bounds)
+
+        print(f"  Format:     GeoJSON -> GeoParquet")
+        print(f"  Features:   {len(gdf)}")
+        print(f"  Geometry:   {', '.join(geom_types)}")
+        print(f"  CRS:        {crs_str}")
+        print(f"  BBox:       {bbox_vals}")
+        print(f"  File size:  {parquet_size:,} bytes")
+        if geojson_size > 0 and parquet_size:
+            ratio = parquet_size / geojson_size
             print(f"  Ratio:      {ratio:.1%} of GeoJSON size")
         print()
 

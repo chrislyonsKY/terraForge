@@ -1,0 +1,158 @@
+"""Vector clip demo — clip real STAC footprints to a sub-region.
+
+Demonstrates the earthforge vector clip module by clipping real
+Sentinel-2 scene footprints (from a STAC search) to a smaller
+sub-region of Kentucky.
+
+Output: examples/outputs/vector_clip_lexington_footprints.png
+
+Data source: Sentinel-2 L2A via Element84 Earth Search (public)
+
+Usage::
+
+    python examples/scripts/vector_clip_demo.py
+"""
+
+from __future__ import annotations
+
+import asyncio
+import sys
+from datetime import datetime, timezone
+from pathlib import Path
+
+sys.path.insert(0, "packages/core/src")
+sys.path.insert(0, "packages/stac/src")
+sys.path.insert(0, "packages/vector/src")
+
+from earthforge.core.config import EarthForgeProfile
+from earthforge.core.palettes import SET2
+from earthforge.stac.search import search_catalog
+
+STAC_API = "https://earth-search.aws.element84.com/v1"
+FULL_BBOX = [-86.0, 36.5, -83.5, 39.0]
+CLIP_BBOX = (-84.6, 37.9, -84.3, 38.1)  # Lexington area
+OUTPUT_DIR = Path("examples/outputs")
+OUTPUT_PNG = OUTPUT_DIR / "vector_clip_lexington_footprints.png"
+OUTPUT_TXT = OUTPUT_DIR / "vector_clip_lexington_footprints.txt"
+
+
+async def main() -> None:
+    """Clip real STAC footprints to Lexington sub-region."""
+    print("EarthForge — Vector Clip Demo: STAC Footprints")
+    print("=" * 50)
+
+    profile = EarthForgeProfile(name="earth-search", stac_api=STAC_API)
+
+    print("Searching for Sentinel-2 scenes...")
+    result = await search_catalog(
+        profile,
+        collections=["sentinel-2-l2a"],
+        bbox=FULL_BBOX,
+        datetime_range="2025-07-01/2025-07-31",
+        max_items=30,
+    )
+    print(f"Found {len(result.items)} items")
+
+    if not result.items:
+        print("No items found.")
+        return
+
+    try:
+        import geopandas as gpd
+        import matplotlib
+        matplotlib.use("Agg")
+        import matplotlib.pyplot as plt
+        from shapely.geometry import box
+    except ImportError as e:
+        print(f"Required: pip install geopandas matplotlib shapely ({e})")
+        return
+
+    # Build GeoDataFrame from real data
+    features = []
+    for item in result.items:
+        if not item.bbox:
+            continue
+        w, s, e, n = item.bbox
+        features.append({
+            "geometry": box(w, s, e, n),
+            "id": item.id,
+            "cloud_cover": item.properties.get("eo:cloud_cover", 0),
+        })
+
+    gdf = gpd.GeoDataFrame(features, crs="EPSG:4326")
+    print(f"Original: {len(gdf)} footprints")
+
+    # Clip to Lexington bbox
+    clip_geom = box(*CLIP_BBOX)
+    clipped = gpd.clip(gdf, clip_geom)
+    print(f"Clipped: {len(clipped)} footprints intersect Lexington area")
+
+    # Render side-by-side
+    fig, (ax_full, ax_clip) = plt.subplots(1, 2, figsize=(14, 6))
+
+    set2_rgb = [
+        tuple(int(h[i:i+2], 16) / 255 for i in (1, 3, 5))
+        for h in SET2
+    ]
+
+    # Left: full extent
+    gdf.plot(ax=ax_full, color=set2_rgb[0], edgecolor="gray",
+             linewidth=0.5, alpha=0.4)
+    gpd.GeoDataFrame([{"geometry": clip_geom}], crs="EPSG:4326").boundary.plot(
+        ax=ax_full, color="red", linewidth=2, linestyle="--"
+    )
+    ax_full.set_title(f"All Footprints ({len(gdf)})", fontsize=12, fontweight="bold")
+    ax_full.set_xlabel("Longitude", fontsize=9)
+    ax_full.set_ylabel("Latitude", fontsize=9)
+
+    # Right: clipped
+    if len(clipped) > 0:
+        clipped.plot(ax=ax_clip, color=set2_rgb[1], edgecolor="gray",
+                     linewidth=0.5, alpha=0.6)
+    gpd.GeoDataFrame([{"geometry": clip_geom}], crs="EPSG:4326").boundary.plot(
+        ax=ax_clip, color="red", linewidth=2
+    )
+    ax_clip.set_title(
+        f"Clipped to Lexington ({len(clipped)})", fontsize=12, fontweight="bold"
+    )
+    ax_clip.set_xlabel("Longitude", fontsize=9)
+    ax_clip.set_xlim(CLIP_BBOX[0] - 0.05, CLIP_BBOX[2] + 0.05)
+    ax_clip.set_ylim(CLIP_BBOX[1] - 0.05, CLIP_BBOX[3] + 0.05)
+
+    fig.suptitle(
+        "Vector Clip — Sentinel-2 Footprints\nJuly 2025",
+        fontsize=14, fontweight="bold",
+    )
+    fig.text(
+        0.5, 0.01,
+        f"Data: Copernicus Sentinel-2 via Earth Search | "
+        f"Palette: Set2 | EarthForge v1.0.0 | "
+        f"{datetime.now(timezone.utc).strftime('%Y-%m-%d')}",
+        ha="center", fontsize=7, color="gray",
+    )
+
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+    fig.savefig(str(OUTPUT_PNG), dpi=150, bbox_inches="tight")
+    plt.close(fig)
+    print(f"Saved: {OUTPUT_PNG}")
+
+    sidecar = (
+        f"Alt Text: Side-by-side comparison showing {len(gdf)} Sentinel-2 scene "
+        f"footprints (left) and {len(clipped)} footprints clipped to the "
+        f"Lexington, KY area (right). Clip boundary shown in red.\n\n"
+        f"Data Source: Copernicus, Sentinel-2 Level-2A\n"
+        f"URL: {STAC_API}\n"
+        f"Access Date: {datetime.now(timezone.utc).strftime('%Y-%m-%d')}\n"
+        f"License: Copernicus Sentinel Data Terms\n"
+        f"Spatial Extent: full={FULL_BBOX}, clip={list(CLIP_BBOX)}\n\n"
+        f"Generated By: earthforge v1.0.0\n"
+        f"Script: examples/scripts/vector_clip_demo.py\n"
+        f"Parameters: full_bbox={FULL_BBOX}, clip_bbox={list(CLIP_BBOX)}\n"
+        f"Generated: {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M UTC')}\n"
+    )
+    OUTPUT_TXT.write_text(sidecar, encoding="utf-8")
+    print(f"Saved: {OUTPUT_TXT}")
+
+
+if __name__ == "__main__":
+    asyncio.run(main())

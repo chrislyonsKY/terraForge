@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "earthforge"
-version = "0.1.1"
+version = "1.0.0"
 description = "Cloud-native geospatial developer toolkit"
 readme = "README.md"
 license = "GPL-3.0-or-later"
@@ -12,7 +12,7 @@ requires-python = ">=3.11"
 authors = [{ name = "EarthForge Contributors" }]
 keywords = ["geospatial", "cloud-native", "stac", "cog", "geoparquet", "cli"]
 classifiers = [
-    "Development Status :: 3 - Alpha",
+    "Development Status :: 5 - Production/Stable",
     "Environment :: Console",
     "Intended Audience :: Developers",
     "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
@@ -137,7 +137,7 @@ ignore_missing_imports = true
 # Pytest
 # ---------------------------------------------------------------------------
 [tool.pytest.ini_options]
-testpaths = ["packages/core/tests", "packages/cli/tests", "packages/raster/tests", "packages/vector/tests", "packages/stac/tests"]
+testpaths = ["packages/core/tests", "packages/cli/tests", "packages/raster/tests", "packages/vector/tests", "packages/stac/tests", "packages/cube/tests", "packages/pipeline/tests"]
 asyncio_mode = "auto"
 markers = [
     "integration: marks tests requiring real network access (deselect with '-m not integration')",

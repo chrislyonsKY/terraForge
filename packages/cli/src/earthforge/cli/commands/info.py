@@ -133,4 +133,8 @@ def info(
     result = run_command(ctx, _info(source, state.profile))
 
     if isinstance(result, BaseModel):
-        render_to_console(result, state.output, no_color=state.no_color)
+        render_to_console(
+            result, state.output,
+            no_color=state.no_color,
+            high_contrast=state.high_contrast,
+        )

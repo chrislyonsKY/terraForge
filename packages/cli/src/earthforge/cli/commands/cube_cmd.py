@@ -33,7 +33,11 @@ def info(
     state = get_state(ctx)
     result = run_command(ctx, inspect_cube(source))
     if isinstance(result, BaseModel):
-        render_to_console(result, state.output, no_color=state.no_color)
+        render_to_console(
+            result, state.output,
+            no_color=state.no_color,
+            high_contrast=state.high_contrast,
+        )
 
 
 def slice_cmd(
@@ -97,8 +101,119 @@ def slice_cmd(
         ),
     )
     if isinstance(result, BaseModel):
-        render_to_console(result, state.output, no_color=state.no_color)
+        render_to_console(
+            result, state.output,
+            no_color=state.no_color,
+            high_contrast=state.high_contrast,
+        )
+
+
+def validate(
+    ctx: typer.Context,
+    source: str = typer.Argument(
+        help="Zarr store path/URL or NetCDF file path.",
+    ),
+) -> None:
+    """Validate datacube structure (chunks, CF-convention, CRS, coordinates)."""
+    from earthforge.cli.main import get_state, run_command
+    from earthforge.cube.validate import validate_cube
+
+    state = get_state(ctx)
+    result = run_command(ctx, validate_cube(source))
+    if isinstance(result, BaseModel):
+        render_to_console(
+            result, state.output,
+            no_color=state.no_color,
+            high_contrast=state.high_contrast,
+        )
+
+
+def convert(
+    ctx: typer.Context,
+    source: str = typer.Argument(help="Input Zarr or NetCDF path."),
+    output: str = typer.Option(
+        ...,
+        "--out",
+        "-O",
+        help="Output path (.zarr for Zarr, .nc for NetCDF).",
+    ),
+    chunks: str | None = typer.Option(
+        None,
+        "--chunks",
+        help="Rechunk spec: dim=size,dim=size (e.g. time=10,lat=100).",
+    ),
+) -> None:
+    """Convert between NetCDF and Zarr formats."""
+    from earthforge.cli.main import get_state, run_command
+    from earthforge.cube.convert import convert_cube
+
+    state = get_state(ctx)
+
+    chunk_dict: dict[str, int] | None = None
+    if chunks:
+        chunk_dict = {}
+        for pair in chunks.split(","):
+            k, v = pair.split("=")
+            chunk_dict[k.strip()] = int(v.strip())
+
+    result = run_command(ctx, convert_cube(source, output, chunks=chunk_dict))
+    if isinstance(result, BaseModel):
+        render_to_console(
+            result, state.output,
+            no_color=state.no_color,
+            high_contrast=state.high_contrast,
+        )
+
+
+def stats(
+    ctx: typer.Context,
+    source: str = typer.Argument(help="Zarr or NetCDF path."),
+    variable: str = typer.Option(
+        ...,
+        "--var",
+        help="Variable name to compute stats for.",
+    ),
+    reduce_dims: str | None = typer.Option(
+        None,
+        "--dims",
+        help="Comma-separated dimensions to reduce over. Default: all.",
+    ),
+    operation: str = typer.Option(
+        "mean",
+        "--op",
+        help="Operation: mean, min, max, std, sum.",
+    ),
+    output: str | None = typer.Option(
+        None,
+        "--out",
+        "-O",
+        help="Output path to save the reduced dataset.",
+    ),
+) -> None:
+    """Compute aggregate statistics along datacube dimensions."""
+    from earthforge.cli.main import get_state, run_command
+    from earthforge.cube.stats import cube_stats
+
+    state = get_state(ctx)
+
+    dim_list: list[str] | None = None
+    if reduce_dims:
+        dim_list = [d.strip() for d in reduce_dims.split(",")]
+
+    result = run_command(
+        ctx,
+        cube_stats(source, variable, reduce_dims=dim_list, operation=operation, output=output),
+    )
+    if isinstance(result, BaseModel):
+        render_to_console(
+            result, state.output,
+            no_color=state.no_color,
+            high_contrast=state.high_contrast,
+        )
 
 
 app.command(name="info", help="Inspect datacube metadata.")(info)
 app.command(name="slice", help="Slice a datacube by variables, bbox, and time.")(slice_cmd)
+app.command(name="validate", help="Validate datacube structure.")(validate)
+app.command(name="convert", help="Convert between NetCDF and Zarr.")(convert)
+app.command(name="stats", help="Compute aggregate statistics.")(stats)

@@ -43,6 +43,7 @@ class GlobalState:
         output: Output format (default: ``"table"``).
         verbose: Verbosity level (0 = normal, 1+ = debug).
         no_color: Whether to disable colored output.
+        high_contrast: Whether to use high-contrast styling (WCAG 4.5:1).
     """
 
     def __init__(self) -> None:
@@ -50,6 +51,7 @@ class GlobalState:
         self.output: OutputFormat = OutputFormat.TABLE
         self.verbose: int = 0
         self.no_color: bool = False
+        self.high_contrast: bool = False
 
 
 @app.callback(invoke_without_command=True)
@@ -85,6 +87,11 @@ def main(
         "--no-color",
         help="Disable colored output.",
     ),
+    high_contrast: bool = typer.Option(
+        False,
+        "--high-contrast",
+        help="Use high-contrast styling for accessibility (WCAG 4.5:1).",
+    ),
 ) -> None:
     """Cloud-native geospatial developer toolkit."""
     if version:
@@ -96,6 +103,7 @@ def main(
     state.output = output
     state.verbose = verbose
     state.no_color = no_color
+    state.high_contrast = high_contrast
     ctx.ensure_object(dict)
     ctx.obj = state
 

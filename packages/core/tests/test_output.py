@@ -7,7 +7,13 @@ import json
 import pytest
 from pydantic import BaseModel
 
-from earthforge.core.output import OutputFormat, render, render_to_console
+from earthforge.core.output import (
+    OutputFormat,
+    StatusMarker,
+    format_status,
+    render,
+    render_to_console,
+)
 
 # ---------------------------------------------------------------------------
 # Test models
@@ -201,3 +207,100 @@ class TestRenderToConsole:
         info = SampleInfo(name="test.tif", size=0)
         render_to_console(info, OutputFormat.TABLE, no_color=True)
         # Should not raise; exact output depends on terminal
+
+    def test_high_contrast_flag(self, capsys: pytest.CaptureFixture[str]) -> None:
+        info = SampleInfo(name="test.tif", size=0)
+        render_to_console(info, OutputFormat.TABLE, high_contrast=True)
+        # Should not raise; high-contrast uses bold white headers
+
+
+# ---------------------------------------------------------------------------
+# StatusMarker
+# ---------------------------------------------------------------------------
+
+
+class TestStatusMarker:
+    """Tests for the StatusMarker enum and format_status helper."""
+
+    def test_marker_values(self) -> None:
+        assert StatusMarker.PASS == "[PASS]"  # noqa: S105
+        assert StatusMarker.FAIL == "[FAIL]"
+        assert StatusMarker.WARN == "[WARN]"
+        assert StatusMarker.INFO == "[INFO]"
+        assert StatusMarker.SKIP == "[SKIP]"
+
+    def test_format_status_with_message(self) -> None:
+        result = format_status(StatusMarker.PASS, "All checks passed")
+        assert result == "[PASS] All checks passed"
+
+    def test_format_status_without_message(self) -> None:
+        result = format_status(StatusMarker.FAIL)
+        assert result == "[FAIL]"
+
+    def test_format_status_warn(self) -> None:
+        result = format_status(StatusMarker.WARN, "Missing overviews")
+        assert result == "[WARN] Missing overviews"
+
+
+# ---------------------------------------------------------------------------
+# FORCE_COLOR / NO_COLOR interaction
+# ---------------------------------------------------------------------------
+
+
+class TestColorEnvironment:
+    """Tests for NO_COLOR and FORCE_COLOR environment variable handling."""
+
+    def test_no_color_disables(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        monkeypatch.setenv("NO_COLOR", "1")
+        from earthforge.core.output import _should_use_color
+
+        assert _should_use_color() is False
+
+    def test_force_color_enables(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        monkeypatch.delenv("NO_COLOR", raising=False)
+        monkeypatch.setenv("FORCE_COLOR", "1")
+        from earthforge.core.output import _should_use_color
+
+        assert _should_use_color() is True
+
+    def test_no_color_wins_over_force_color(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        monkeypatch.setenv("NO_COLOR", "1")
+        monkeypatch.setenv("FORCE_COLOR", "1")
+        from earthforge.core.output import _should_use_color
+
+        assert _should_use_color() is False
+
+    def test_default_uses_color(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        monkeypatch.delenv("NO_COLOR", raising=False)
+        monkeypatch.delenv("FORCE_COLOR", raising=False)
+        from earthforge.core.output import _should_use_color
+
+        assert _should_use_color() is True
+
+    def test_force_no_color_param(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        monkeypatch.delenv("NO_COLOR", raising=False)
+        monkeypatch.delenv("FORCE_COLOR", raising=False)
+        from earthforge.core.output import _should_use_color
+
+        assert _should_use_color(force_no_color=True) is False
+
+
+# ---------------------------------------------------------------------------
+# High-contrast rendering
+# ---------------------------------------------------------------------------
+
+
+class TestHighContrastRendering:
+    """Tests for high-contrast mode in table rendering."""
+
+    def test_render_high_contrast_contains_values(self) -> None:
+        info = SampleInfo(name="test.tif", size=1024, crs="EPSG:4326")
+        result = render(info, OutputFormat.TABLE, high_contrast=True)
+        assert "test.tif" in result
+        assert "1024" in result
+
+    def test_render_high_contrast_json_unaffected(self) -> None:
+        info = SampleInfo(name="test.tif", size=0)
+        normal = render(info, OutputFormat.JSON)
+        hc = render(info, OutputFormat.JSON, high_contrast=True)
+        assert normal == hc

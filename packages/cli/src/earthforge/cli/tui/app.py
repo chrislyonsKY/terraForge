@@ -65,6 +65,10 @@ Screen {
     padding: 0 1;
     color: $text-muted;
 }
+/* WCAG 2.1 AA: focus indicator contrast >= 3:1 */
+*:focus {
+    border: wide $accent;
+}
 """
 
 
@@ -118,19 +122,19 @@ class ExploreApp(App[None]):
         self._items_data: list[dict[str, Any]] = []
 
     def compose(self) -> ComposeResult:
-        """Build the three-panel layout."""
+        """Build the three-panel layout with accessible names."""
         yield Header()
-        with Horizontal(id="explorer"):
-            with Vertical(id="collections"):
+        with Horizontal(id="explorer", name="STAC Explorer"):
+            with Vertical(id="collections", name="Collections Panel"):
                 yield Label(" Collections", classes="panel-title")
-                yield ListView(id="collection-list")
-            with Vertical(id="items"):
+                yield ListView(id="collection-list", name="Collection List")
+            with Vertical(id="items", name="Items Panel"):
                 yield Label(" Items", classes="panel-title")
-                yield DataTable(id="item-table", zebra_stripes=True)
-            with Vertical(id="detail"):
+                yield DataTable(id="item-table", zebra_stripes=True, name="Items Table")
+            with Vertical(id="detail", name="Detail Panel"):
                 yield Label(" Detail", classes="panel-title")
-                yield Markdown("", id="item-detail")
-        yield Static("", id="status")
+                yield Markdown("", id="item-detail", name="Item Detail")
+        yield Static("", id="status", name="Status Bar")
         yield Footer()
 
     def on_mount(self) -> None:
@@ -201,6 +205,10 @@ class ExploreApp(App[None]):
 
     def on_list_view_selected(self, event: ListView.Selected) -> None:
         """Load items when a collection is selected from the browser.
+
+        After loading completes, focus moves to the items table so keyboard
+        users can immediately browse results (WCAG 2.1 guideline 2.4.3
+        Focus Order).
 
         Parameters:
             event: Textual selection event carrying the selected ListItem.
@@ -281,6 +289,9 @@ class ExploreApp(App[None]):
         coll = self._current_collection or "?"
         bbox_note = " (bbox filtered)" if self.bbox else ""
         self._set_status(f"{count} item{'s' if count != 1 else ''} in {coll}{bbox_note}")
+
+        # Move focus to items table so keyboard users can browse results
+        table.focus()
 
     @staticmethod
     def _item_to_dict(item: Any) -> dict[str, Any]:

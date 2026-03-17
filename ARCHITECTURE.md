@@ -22,37 +22,48 @@ earthforge (meta-package)
 │   ├── config      — Profile management, config.toml parsing
 │   ├── storage     — S3/GCS/Azure/local via obstore (DL-003)
 │   ├── http        — Async HTTP client (httpx wrapper)
-│   ├── output      — Structured rendering: json, table, csv, quiet
+│   ├── output      — Structured rendering: json, table, csv, quiet (WCAG 2.1 AA)
 │   ├── formats     — Format detection chain
 │   ├── errors      — Exception hierarchy
-│   └── types       — Shared types: BBox, CRS, TimeRange
+│   ├── expression  — Safe AST-walking band math evaluator
+│   └── palettes    — Colorblind-safe palette constants
 ├── earthforge-cli (optional: pip install earthforge[cli])
 │   └── Typer app   — Thin dispatch, no business logic
 ├── earthforge-stac (optional: pip install earthforge[stac])
 │   ├── search      — pystac-client wrapper with async + profiles
 │   ├── info        — Item/collection/catalog inspection
-│   ├── validate    — STAC spec validation
-│   └── fetch       — Parallel asset download with resume
+│   ├── validate    — STAC spec validation via pystac
+│   ├── fetch       — Parallel asset download with resume
+│   └── publish     — Item publication via Transaction Extension
 ├── earthforge-raster (optional: pip install earthforge[raster])
 │   ├── info        — COG metadata via rasterio
 │   ├── validate    — COG compliance checking
 │   ├── convert     — GeoTIFF → COG with sensible defaults
 │   ├── preview     — Quicklook PNG via HTTP range requests
-│   └── calc        — Band math with safe expression parsing
+│   ├── stats       — Global/zonal statistics, histograms
+│   ├── calc        — Band math with safe expression parsing
+│   └── tile        — XYZ/TMS static tile generation
 ├── earthforge-vector (optional: pip install earthforge[vector])
 │   ├── info        — GeoParquet schema, CRS, feature count
 │   ├── validate    — GeoParquet schema compliance
 │   ├── convert     — Shapefile/GeoJSON → GeoParquet/FlatGeobuf
-│   └── query       — Spatial/attribute filtering with predicate pushdown
+│   ├── query       — Spatial/attribute filtering with predicate pushdown
+│   ├── clip        — Spatial clipping by bbox or geometry
+│   └── tile        — GeoParquet → PMTiles
 ├── earthforge-cube (optional: pip install earthforge[cube])
 │   ├── info        — Zarr dimensions, variables, chunks
-│   ├── validate    — Zarr structure compliance
+│   ├── validate    — Zarr/NetCDF structure compliance
 │   ├── convert     — NetCDF ↔ Zarr, rechunk
-│   └── slice       — Spatiotemporal extraction
+│   ├── slice       — Spatiotemporal extraction
+│   └── stats       — Aggregate statistics along dimensions
+├── earthforge-pipeline (optional)
+│   ├── schema      — Pipeline YAML validation
+│   ├── runner      — Concurrent per-item processing
+│   └── steps       — Step registry (stac.fetch, raster.calc, etc.)
 └── earthforge-rs (optional, Rust acceleration)
-    ├── format detection  — Magic byte sniffing
-    ├── range reads       — Parallel HTTP range assembly
-    └── parquet I/O       — geoarrow-rs acceleration
+    ├── format detection  — Rayon-parallel magic byte sniffing
+    ├── range reads       — Tokio concurrent HTTP range assembly
+    └── parquet I/O       — Arrow FFI for zero-copy GeoParquet
 ```
 
 ## Dependency Flow

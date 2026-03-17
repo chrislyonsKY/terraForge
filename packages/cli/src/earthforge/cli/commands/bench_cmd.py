@@ -165,7 +165,11 @@ def vector_query(
         )
 
     result = asyncio.run(_run_bench())
-    render_to_console(result, state.output, no_color=state.no_color)
+    render_to_console(
+        result, state.output,
+        no_color=state.no_color,
+        high_contrast=state.high_contrast,
+    )
 
 
 def raster_info(
@@ -208,7 +212,11 @@ def raster_info(
         )
 
     result = asyncio.run(_run_bench())
-    render_to_console(result, state.output, no_color=state.no_color)
+    render_to_console(
+        result, state.output,
+        no_color=state.no_color,
+        high_contrast=state.high_contrast,
+    )
 
 
 app.command(name="vector-query", help="Benchmark GeoParquet bbox query performance.")(vector_query)
