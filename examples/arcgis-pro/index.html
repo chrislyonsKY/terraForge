@@ -10,9 +10,13 @@
       
       
       
-        <link rel="canonical" href="https://chrislyonsKY.github.io/earthForge/tutorials/arcgis-pro/">
+        <link rel="canonical" href="https://chrislyonsKY.github.io/earthForge/examples/arcgis-pro/">
       
       
+        <link rel="prev" href="../stac-discovery/">
+      
+      
+        <link rel="next" href="../../architecture/">
       
       
         
@@ -23,7 +27,7 @@
     
     
       
-        <title>Tutorial: ArcGIS Pro Integration - EarthForge</title>
+        <title>ArcGIS Pro Integration - EarthForge</title>
       
     
     
@@ -76,7 +80,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#tutorial-arcgis-pro-integration" class="md-skip">
+        <a href="#arcgis-pro-integration" class="md-skip">
           Skip to content
         </a>
       
@@ -110,7 +114,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Tutorial: ArcGIS Pro Integration
+              ArcGIS Pro Integration
             
           </span>
         </div>
@@ -278,11 +282,13 @@
   
   
   
+    
+  
   
     
     
-      <li class="md-tabs__item">
-        <a href="../../examples/" class="md-tabs__link">
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../" class="md-tabs__link">
           
   
   
@@ -481,24 +487,29 @@
       
   
   
+    
   
   
+  
     
     
     
     
-      
-      
-    
-    
-    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
         
           
-          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
             
   
   
@@ -516,7 +527,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_4">
             <span class="md-nav__icon md-icon"></span>
             
@@ -534,7 +545,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../examples/" class="md-nav__link">
+      <a href="../" class="md-nav__link">
         
   
   
@@ -562,7 +573,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../examples/ndvi-analysis/" class="md-nav__link">
+      <a href="../ndvi-analysis/" class="md-nav__link">
         
   
   
@@ -590,7 +601,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../examples/dem-terrain/" class="md-nav__link">
+      <a href="../dem-terrain/" class="md-nav__link">
         
   
   
@@ -618,7 +629,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../examples/stac-discovery/" class="md-nav__link">
+      <a href="../stac-discovery/" class="md-nav__link">
         
   
   
@@ -643,10 +654,37 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../../examples/arcgis-pro/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ArcGIS Pro Integration
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -662,6 +700,136 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#why-use-earthforge-with-arcgis-pro" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why Use EarthForge with ArcGIS Pro?
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#setup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Setup
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#verify-installation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verify Installation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#toolbox-overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Toolbox Overview
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#example-fetch-imagery-and-add-to-map" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Example: Fetch Imagery and Add to Map
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#example-convert-shapefile-to-geoparquet" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Example: Convert Shapefile to GeoParquet
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#example-validate-cogs-before-adding-to-project" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Example: Validate COGs Before Adding to Project
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#example-band-math-ndvi-in-arcgis-pro" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Example: Band Math (NDVI) in ArcGIS Pro
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#arcgis-notebook-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ArcGIS Notebook Integration
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#notes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Notes
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -815,6 +983,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#toolbox-overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Toolbox Overview
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#example-fetch-imagery-and-add-to-map" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -841,6 +1020,17 @@
     <span class="md-ellipsis">
       
         Example: Validate COGs Before Adding to Project
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#example-band-math-ndvi-in-arcgis-pro" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Example: Band Math (NDVI) in ArcGIS Pro
       
     </span>
   </a>
@@ -889,8 +1079,9 @@
   
 
 
-<h1 id="tutorial-arcgis-pro-integration">Tutorial: ArcGIS Pro Integration<a class="headerlink" href="#tutorial-arcgis-pro-integration" title="Permanent link">&para;</a></h1>
+<h1 id="arcgis-pro-integration">ArcGIS Pro Integration<a class="headerlink" href="#arcgis-pro-integration" title="Permanent link">&para;</a></h1>
 <p>EarthForge runs in the ArcGIS Pro Python environment. Use it to fetch cloud-native data, validate COGs, and convert vector formats — then hand the results off to ArcGIS Pro for further analysis or cartography.</p>
+<p>The EarthForge Python Toolbox provides <strong>14 tools</strong> for ArcGIS Pro, covering STAC discovery, raster operations, vector operations, datacube access, and pipeline execution — all accessible from the ArcGIS Pro Geoprocessing pane.</p>
 <h2 id="why-use-earthforge-with-arcgis-pro">Why Use EarthForge with ArcGIS Pro?<a class="headerlink" href="#why-use-earthforge-with-arcgis-pro" title="Permanent link">&para;</a></h2>
 <p>ArcGIS Pro can read COGs and GeoParquet directly, but it doesn't have tooling for:</p>
 <ul>
@@ -898,12 +1089,15 @@
 <li><strong>COG validation</strong> — verifying a file's internal structure before adding it to a project</li>
 <li><strong>Format conversion</strong> — converting Shapefiles to GeoParquet with proper geo metadata</li>
 <li><strong>Predicate pushdown queries</strong> — filtering large GeoParquet files without loading them into memory</li>
+<li><strong>Band math</strong> — computing NDVI and other indices with a safe expression evaluator</li>
+<li><strong>Datacube slicing</strong> — extracting spatiotemporal subsets from Zarr/NetCDF without full download</li>
+<li><strong>Pipeline execution</strong> — running declarative YAML workflows from within ArcGIS Pro</li>
 </ul>
 <p>EarthForge handles these tasks from within the ArcGIS Pro Python environment.</p>
 <h2 id="setup">Setup<a class="headerlink" href="#setup" title="Permanent link">&para;</a></h2>
 <p>ArcGIS Pro ships with a managed <code>conda</code> environment. Install EarthForge into it:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1"># Open ArcGIS Pro Python Command Prompt</span>
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="c1"># (Start → ArcGIS → Python Command Prompt)</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="c1"># (Start &gt; ArcGIS &gt; Python Command Prompt)</span>
 <a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>
 <a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>pip<span class="w"> </span>install<span class="w"> </span>earthforge<span class="o">[</span>stac,raster,vector<span class="o">]</span>
 </code></pre></div>
@@ -919,6 +1113,89 @@
 <a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="kn">from</span><span class="w"> </span><span class="nn">earthforge.stac.search</span><span class="w"> </span><span class="kn">import</span> <span class="n">search_catalog</span>
 <a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;EarthForge ready&quot;</span><span class="p">)</span>
 </code></pre></div>
+<h2 id="toolbox-overview">Toolbox Overview<a class="headerlink" href="#toolbox-overview" title="Permanent link">&para;</a></h2>
+<p>The EarthForge Python Toolbox (<code>.pyt</code>) exposes 14 tools in the ArcGIS Pro Geoprocessing pane:</p>
+<table>
+<thead>
+<tr>
+<th>Category</th>
+<th>Tool</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>STAC</td>
+<td>Search Catalog</td>
+<td>Search STAC APIs with spatial/temporal filters</td>
+</tr>
+<tr>
+<td>STAC</td>
+<td>Fetch Assets</td>
+<td>Download assets with parallel resume</td>
+</tr>
+<tr>
+<td>STAC</td>
+<td>Validate Item</td>
+<td>Validate STAC items against spec</td>
+</tr>
+<tr>
+<td>Raster</td>
+<td>Inspect COG</td>
+<td>Read COG metadata via range requests</td>
+</tr>
+<tr>
+<td>Raster</td>
+<td>Validate COG</td>
+<td>Check COG compliance (tiling, overviews)</td>
+</tr>
+<tr>
+<td>Raster</td>
+<td>Convert to COG</td>
+<td>Convert GeoTIFF to Cloud Optimized GeoTIFF</td>
+</tr>
+<tr>
+<td>Raster</td>
+<td>Compute Statistics</td>
+<td>Min/max/mean/std/histogram for raster bands</td>
+</tr>
+<tr>
+<td>Raster</td>
+<td>Band Math</td>
+<td>Safe expression evaluator for NDVI, ratios</td>
+</tr>
+<tr>
+<td>Vector</td>
+<td>Inspect GeoParquet</td>
+<td>Schema, CRS, feature count, bbox</td>
+</tr>
+<tr>
+<td>Vector</td>
+<td>Convert to GeoParquet</td>
+<td>Shapefile/GeoJSON/GPKG to GeoParquet 1.1.0</td>
+</tr>
+<tr>
+<td>Vector</td>
+<td>Spatial Query</td>
+<td>Predicate pushdown bbox queries</td>
+</tr>
+<tr>
+<td>Vector</td>
+<td>Clip Features</td>
+<td>Clip to bbox or geometry</td>
+</tr>
+<tr>
+<td>Cube</td>
+<td>Inspect Datacube</td>
+<td>Dimensions, variables, chunks, time range</td>
+</tr>
+<tr>
+<td>Pipeline</td>
+<td>Run Pipeline</td>
+<td>Execute declarative YAML workflows</td>
+</tr>
+</tbody>
+</table>
 <h2 id="example-fetch-imagery-and-add-to-map">Example: Fetch Imagery and Add to Map<a class="headerlink" href="#example-fetch-imagery-and-add-to-map" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">arcpy</span>
 <a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
@@ -927,10 +1204,10 @@
 <a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="kn">from</span><span class="w"> </span><span class="nn">earthforge.stac.search</span><span class="w"> </span><span class="kn">import</span> <span class="n">search_catalog</span>
 <a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="kn">from</span><span class="w"> </span><span class="nn">earthforge.stac.fetch</span><span class="w"> </span><span class="kn">import</span> <span class="n">fetch_assets</span>
 <a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>
-<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="c1"># Use KyFromAbove STAC directly (no config file needed)</span>
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="c1"># Use Earth Search STAC directly (no config file needed)</span>
 <a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="n">profile</span> <span class="o">=</span> <span class="n">EarthForgeProfile</span><span class="p">(</span>
-<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;kyfromabove&quot;</span><span class="p">,</span>
-<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>    <span class="n">stac_api</span><span class="o">=</span><span class="s2">&quot;https://spved5ihrl.execute-api.us-west-2.amazonaws.com/&quot;</span><span class="p">,</span>
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;default&quot;</span><span class="p">,</span>
+<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>    <span class="n">stac_api</span><span class="o">=</span><span class="s2">&quot;https://earth-search.aws.element84.com/v1&quot;</span><span class="p">,</span>
 <a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a>    <span class="n">storage_backend</span><span class="o">=</span><span class="s2">&quot;local&quot;</span><span class="p">,</span>
 <a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a><span class="p">)</span>
 <a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a>
@@ -941,7 +1218,7 @@
 <a id="__codelineno-2-19" name="__codelineno-2-19" href="#__codelineno-2-19"></a>
 <a id="__codelineno-2-20" name="__codelineno-2-20" href="#__codelineno-2-20"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">fetch_imagery</span><span class="p">():</span>
 <a id="__codelineno-2-21" name="__codelineno-2-21" href="#__codelineno-2-21"></a>    <span class="n">results</span> <span class="o">=</span> <span class="k">await</span> <span class="n">search_catalog</span><span class="p">(</span>
-<a id="__codelineno-2-22" name="__codelineno-2-22" href="#__codelineno-2-22"></a>        <span class="n">profile</span><span class="p">,</span> <span class="n">collections</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;orthos-phase3&quot;</span><span class="p">],</span> <span class="n">bbox</span><span class="o">=</span><span class="n">bbox</span><span class="p">,</span> <span class="n">max_items</span><span class="o">=</span><span class="mi">3</span>
+<a id="__codelineno-2-22" name="__codelineno-2-22" href="#__codelineno-2-22"></a>        <span class="n">profile</span><span class="p">,</span> <span class="n">collections</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;sentinel-2-l2a&quot;</span><span class="p">],</span> <span class="n">bbox</span><span class="o">=</span><span class="n">bbox</span><span class="p">,</span> <span class="n">max_items</span><span class="o">=</span><span class="mi">3</span>
 <a id="__codelineno-2-23" name="__codelineno-2-23" href="#__codelineno-2-23"></a>    <span class="p">)</span>
 <a id="__codelineno-2-24" name="__codelineno-2-24" href="#__codelineno-2-24"></a>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Found </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="o">.</span><span class="n">items</span><span class="p">)</span><span class="si">}</span><span class="s2"> tiles in current extent&quot;</span><span class="p">)</span>
 <a id="__codelineno-2-25" name="__codelineno-2-25" href="#__codelineno-2-25"></a>
@@ -950,8 +1227,8 @@
 <a id="__codelineno-2-28" name="__codelineno-2-28" href="#__codelineno-2-28"></a>        <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">fetch_assets</span><span class="p">(</span>
 <a id="__codelineno-2-29" name="__codelineno-2-29" href="#__codelineno-2-29"></a>            <span class="n">profile</span><span class="p">,</span>
 <a id="__codelineno-2-30" name="__codelineno-2-30" href="#__codelineno-2-30"></a>            <span class="n">item_url</span><span class="o">=</span><span class="n">item_url</span><span class="p">,</span>
-<a id="__codelineno-2-31" name="__codelineno-2-31" href="#__codelineno-2-31"></a>            <span class="n">output_dir</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">arcpy</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">scratchFolder</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;orthos&quot;</span><span class="p">),</span>
-<a id="__codelineno-2-32" name="__codelineno-2-32" href="#__codelineno-2-32"></a>            <span class="n">assets</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;thumbnail&quot;</span><span class="p">],</span>
+<a id="__codelineno-2-31" name="__codelineno-2-31" href="#__codelineno-2-31"></a>            <span class="n">output_dir</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">arcpy</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">scratchFolder</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;sentinel2&quot;</span><span class="p">),</span>
+<a id="__codelineno-2-32" name="__codelineno-2-32" href="#__codelineno-2-32"></a>            <span class="n">assets</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;red&quot;</span><span class="p">,</span> <span class="s2">&quot;green&quot;</span><span class="p">,</span> <span class="s2">&quot;blue&quot;</span><span class="p">],</span>
 <a id="__codelineno-2-33" name="__codelineno-2-33" href="#__codelineno-2-33"></a>        <span class="p">)</span>
 <a id="__codelineno-2-34" name="__codelineno-2-34" href="#__codelineno-2-34"></a>        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Downloaded: </span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">files</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">local_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 <a id="__codelineno-2-35" name="__codelineno-2-35" href="#__codelineno-2-35"></a>        <span class="k">return</span> <span class="n">result</span><span class="o">.</span><span class="n">files</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">local_path</span>
@@ -969,7 +1246,7 @@
 <a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>
 <a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">convert_and_inspect</span><span class="p">(</span><span class="n">shp_path</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">):</span>
 <a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>    <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">convert_vector</span><span class="p">(</span><span class="n">shp_path</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">output_dir</span><span class="si">}</span><span class="s2">/output.parquet&quot;</span><span class="p">)</span>
-<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Converted </span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">feature_count</span><span class="si">}</span><span class="s2"> features → </span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">output</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Converted </span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">feature_count</span><span class="si">}</span><span class="s2"> features -&gt; </span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">output</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 <a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;CRS: </span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">crs</span><span class="si">}</span><span class="s2">, Bbox: </span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">bbox</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 <a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>
 <a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a>    <span class="c1"># Verify the output</span>
@@ -999,32 +1276,52 @@
 <a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a>        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid COG: </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 <a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a>        <span class="k">for</span> <span class="n">check</span> <span class="ow">in</span> <span class="n">result</span><span class="o">.</span><span class="n">checks</span><span class="p">:</span>
 <a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a>            <span class="k">if</span> <span class="ow">not</span> <span class="n">check</span><span class="o">.</span><span class="n">passed</span><span class="p">:</span>
-<a id="__codelineno-4-13" name="__codelineno-4-13" href="#__codelineno-4-13"></a>                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  FAIL: </span><span class="si">{</span><span class="n">check</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> — </span><span class="si">{</span><span class="n">check</span><span class="o">.</span><span class="n">message</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<a id="__codelineno-4-13" name="__codelineno-4-13" href="#__codelineno-4-13"></a>                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  FAIL: </span><span class="si">{</span><span class="n">check</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> -- </span><span class="si">{</span><span class="n">check</span><span class="o">.</span><span class="n">message</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 <a id="__codelineno-4-14" name="__codelineno-4-14" href="#__codelineno-4-14"></a>        <span class="k">return</span> <span class="kc">False</span>
 <a id="__codelineno-4-15" name="__codelineno-4-15" href="#__codelineno-4-15"></a>
 <a id="__codelineno-4-16" name="__codelineno-4-16" href="#__codelineno-4-16"></a><span class="n">is_valid</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">check_cog</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;C:\data\scene.tif&quot;</span><span class="p">))</span>
 <a id="__codelineno-4-17" name="__codelineno-4-17" href="#__codelineno-4-17"></a><span class="k">if</span> <span class="n">is_valid</span><span class="p">:</span>
 <a id="__codelineno-4-18" name="__codelineno-4-18" href="#__codelineno-4-18"></a>    <span class="n">aprx</span><span class="o">.</span><span class="n">activeMap</span><span class="o">.</span><span class="n">addDataFromPath</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;C:\data\scene.tif&quot;</span><span class="p">)</span>
 </code></pre></div>
+<h2 id="example-band-math-ndvi-in-arcgis-pro">Example: Band Math (NDVI) in ArcGIS Pro<a class="headerlink" href="#example-band-math-ndvi-in-arcgis-pro" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">earthforge.raster.calc</span><span class="w"> </span><span class="kn">import</span> <span class="n">band_calc</span>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">compute_ndvi</span><span class="p">(</span><span class="n">input_path</span><span class="p">,</span> <span class="n">output_path</span><span class="p">):</span>
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>    <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">band_calc</span><span class="p">(</span>
+<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>        <span class="n">input_path</span><span class="p">,</span>
+<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a>        <span class="n">expression</span><span class="o">=</span><span class="s2">&quot;(B08 - B04) / (B08 + B04)&quot;</span><span class="p">,</span>
+<a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a>        <span class="n">output</span><span class="o">=</span><span class="n">output_path</span><span class="p">,</span>
+<a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a>    <span class="p">)</span>
+<a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;NDVI computed: </span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">output</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a>    <span class="k">return</span> <span class="n">result</span><span class="o">.</span><span class="n">output</span>
+<a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a>
+<a id="__codelineno-5-13" name="__codelineno-5-13" href="#__codelineno-5-13"></a><span class="n">ndvi_path</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">compute_ndvi</span><span class="p">(</span>
+<a id="__codelineno-5-14" name="__codelineno-5-14" href="#__codelineno-5-14"></a>    <span class="sa">r</span><span class="s2">&quot;C:\data\sentinel2_scene.tif&quot;</span><span class="p">,</span>
+<a id="__codelineno-5-15" name="__codelineno-5-15" href="#__codelineno-5-15"></a>    <span class="sa">r</span><span class="s2">&quot;C:\data\ndvi_output.tif&quot;</span>
+<a id="__codelineno-5-16" name="__codelineno-5-16" href="#__codelineno-5-16"></a><span class="p">))</span>
+<a id="__codelineno-5-17" name="__codelineno-5-17" href="#__codelineno-5-17"></a>
+<a id="__codelineno-5-18" name="__codelineno-5-18" href="#__codelineno-5-18"></a><span class="n">aprx</span><span class="o">.</span><span class="n">activeMap</span><span class="o">.</span><span class="n">addDataFromPath</span><span class="p">(</span><span class="n">ndvi_path</span><span class="p">)</span>
+</code></pre></div>
 <h2 id="arcgis-notebook-integration">ArcGIS Notebook Integration<a class="headerlink" href="#arcgis-notebook-integration" title="Permanent link">&para;</a></h2>
 <p>EarthForge works naturally in ArcGIS Pro Notebooks. Use <code>await</code> directly in notebook cells (Jupyter supports <code>await</code> at the top level):</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="c1"># ArcGIS Pro Notebook cell — no asyncio.run() needed</span>
-<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">earthforge.core.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">EarthForgeProfile</span>
-<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="kn">from</span><span class="w"> </span><span class="nn">earthforge.stac.search</span><span class="w"> </span><span class="kn">import</span> <span class="n">search_catalog</span>
-<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>
-<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="n">profile</span> <span class="o">=</span> <span class="n">EarthForgeProfile</span><span class="p">(</span>
-<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;default&quot;</span><span class="p">,</span>
-<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a>    <span class="n">stac_api</span><span class="o">=</span><span class="s2">&quot;https://earth-search.aws.element84.com/v1&quot;</span><span class="p">,</span>
-<a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a>    <span class="n">storage_backend</span><span class="o">=</span><span class="s2">&quot;local&quot;</span><span class="p">,</span>
-<a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a><span class="p">)</span>
-<a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a>
-<a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a><span class="n">results</span> <span class="o">=</span> <span class="k">await</span> <span class="n">search_catalog</span><span class="p">(</span>
-<a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a>    <span class="n">profile</span><span class="p">,</span>
-<a id="__codelineno-5-13" name="__codelineno-5-13" href="#__codelineno-5-13"></a>    <span class="n">collections</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;sentinel-2-l2a&quot;</span><span class="p">],</span>
-<a id="__codelineno-5-14" name="__codelineno-5-14" href="#__codelineno-5-14"></a>    <span class="n">bbox</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mf">85.0</span><span class="p">,</span> <span class="mf">37.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">84.0</span><span class="p">,</span> <span class="mf">38.0</span><span class="p">),</span>
-<a id="__codelineno-5-15" name="__codelineno-5-15" href="#__codelineno-5-15"></a>    <span class="n">max_items</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
-<a id="__codelineno-5-16" name="__codelineno-5-16" href="#__codelineno-5-16"></a><span class="p">)</span>
-<a id="__codelineno-5-17" name="__codelineno-5-17" href="#__codelineno-5-17"></a><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Found </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="o">.</span><span class="n">items</span><span class="p">)</span><span class="si">}</span><span class="s2"> Sentinel-2 scenes over Kentucky&quot;</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="c1"># ArcGIS Pro Notebook cell — no asyncio.run() needed</span>
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">earthforge.core.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">EarthForgeProfile</span>
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="kn">from</span><span class="w"> </span><span class="nn">earthforge.stac.search</span><span class="w"> </span><span class="kn">import</span> <span class="n">search_catalog</span>
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>
+<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="n">profile</span> <span class="o">=</span> <span class="n">EarthForgeProfile</span><span class="p">(</span>
+<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;default&quot;</span><span class="p">,</span>
+<a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a>    <span class="n">stac_api</span><span class="o">=</span><span class="s2">&quot;https://earth-search.aws.element84.com/v1&quot;</span><span class="p">,</span>
+<a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a>    <span class="n">storage_backend</span><span class="o">=</span><span class="s2">&quot;local&quot;</span><span class="p">,</span>
+<a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a><span class="p">)</span>
+<a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a>
+<a id="__codelineno-6-11" name="__codelineno-6-11" href="#__codelineno-6-11"></a><span class="n">results</span> <span class="o">=</span> <span class="k">await</span> <span class="n">search_catalog</span><span class="p">(</span>
+<a id="__codelineno-6-12" name="__codelineno-6-12" href="#__codelineno-6-12"></a>    <span class="n">profile</span><span class="p">,</span>
+<a id="__codelineno-6-13" name="__codelineno-6-13" href="#__codelineno-6-13"></a>    <span class="n">collections</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;sentinel-2-l2a&quot;</span><span class="p">],</span>
+<a id="__codelineno-6-14" name="__codelineno-6-14" href="#__codelineno-6-14"></a>    <span class="n">bbox</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mf">85.0</span><span class="p">,</span> <span class="mf">37.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">84.0</span><span class="p">,</span> <span class="mf">38.0</span><span class="p">),</span>
+<a id="__codelineno-6-15" name="__codelineno-6-15" href="#__codelineno-6-15"></a>    <span class="n">max_items</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+<a id="__codelineno-6-16" name="__codelineno-6-16" href="#__codelineno-6-16"></a><span class="p">)</span>
+<a id="__codelineno-6-17" name="__codelineno-6-17" href="#__codelineno-6-17"></a><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Found </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="o">.</span><span class="n">items</span><span class="p">)</span><span class="si">}</span><span class="s2"> Sentinel-2 scenes over Kentucky&quot;</span><span class="p">)</span>
 </code></pre></div>
 <h2 id="notes">Notes<a class="headerlink" href="#notes" title="Permanent link">&para;</a></h2>
 <ul>
@@ -1032,6 +1329,7 @@
 <li>EarthForge's async functions work in ArcGIS Notebooks via Jupyter's built-in event loop</li>
 <li>For scripts run via ArcPy (not notebooks), use <code>asyncio.run()</code> as shown above</li>
 <li>GDAL version in ArcGIS Pro may differ from standalone installations — EarthForge uses GDAL via <code>osgeo</code> which ArcGIS Pro provides</li>
+<li>The Python Toolbox (<code>.pyt</code>) wraps all 14 tools with ArcGIS Pro parameter dialogs, validation, and progress reporting</li>
 </ul>
 
 

@@ -21,11 +21,27 @@
          <lastmod>2026-03-17</lastmod>
     </url>
     <url>
-         <loc>https://chrislyonsKY.github.io/earthForge/stac-collections/</loc>
+         <loc>https://chrislyonsKY.github.io/earthForge/api/reference/</loc>
          <lastmod>2026-03-17</lastmod>
     </url>
     <url>
-         <loc>https://chrislyonsKY.github.io/earthForge/api/reference/</loc>
+         <loc>https://chrislyonsKY.github.io/earthForge/examples/</loc>
+         <lastmod>2026-03-17</lastmod>
+    </url>
+    <url>
+         <loc>https://chrislyonsKY.github.io/earthForge/examples/arcgis-pro/</loc>
+         <lastmod>2026-03-17</lastmod>
+    </url>
+    <url>
+         <loc>https://chrislyonsKY.github.io/earthForge/examples/dem-terrain/</loc>
+         <lastmod>2026-03-17</lastmod>
+    </url>
+    <url>
+         <loc>https://chrislyonsKY.github.io/earthForge/examples/ndvi-analysis/</loc>
+         <lastmod>2026-03-17</lastmod>
+    </url>
+    <url>
+         <loc>https://chrislyonsKY.github.io/earthForge/examples/stac-discovery/</loc>
          <lastmod>2026-03-17</lastmod>
     </url>
     <url>

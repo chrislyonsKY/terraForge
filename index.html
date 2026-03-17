@@ -286,34 +286,15 @@
     
     
       <li class="md-tabs__item">
-        <a href="tutorials/dem-hillshade/" class="md-tabs__link">
+        <a href="examples/" class="md-tabs__link">
           
   
   
-  Tutorials
+  Examples
 
         </a>
       </li>
     
-  
-
-      
-        
-  
-  
-  
-  
-    <li class="md-tabs__item">
-      <a href="stac-collections/" class="md-tabs__link">
-        
-  
-  
-    
-  
-  KyFromAbove Collections
-
-      </a>
-    </li>
   
 
       
@@ -630,7 +611,7 @@
   <span class="md-ellipsis">
     
   
-    Tutorials
+    Examples
   
 
     
@@ -646,7 +627,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Tutorials
+    Examples
   
 
           </label>
@@ -659,14 +640,14 @@
   
   
     <li class="md-nav__item">
-      <a href="tutorials/dem-hillshade/" class="md-nav__link">
+      <a href="examples/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    DEM Hillshade
+    Overview
   
 
     
@@ -687,14 +668,14 @@
   
   
     <li class="md-nav__item">
-      <a href="tutorials/lidar-access/" class="md-nav__link">
+      <a href="examples/ndvi-analysis/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    LiDAR Access (COPC)
+    NDVI Analysis
   
 
     
@@ -715,14 +696,14 @@
   
   
     <li class="md-nav__item">
-      <a href="tutorials/titiler-maps/" class="md-nav__link">
+      <a href="examples/dem-terrain/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Web Maps (TiTiler)
+    DEM & Terrain
   
 
     
@@ -743,14 +724,42 @@
   
   
     <li class="md-nav__item">
-      <a href="tutorials/arcgis-pro/" class="md-nav__link">
+      <a href="examples/stac-discovery/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    ArcGIS Pro
+    STAC Discovery
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="examples/arcgis-pro/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ArcGIS Pro Integration
   
 
     
@@ -767,33 +776,6 @@
           </ul>
         </nav>
       
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="stac-collections/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    KyFromAbove Collections
-  
-
-    
-  </span>
-  
-  
-
-      </a>
     </li>
   
 
@@ -1033,6 +1015,9 @@ and machine-parseable JSON.</p>
 <a id="__codelineno-3-17" name="__codelineno-3-17" href="#__codelineno-3-17"></a>
 <a id="__codelineno-3-18" name="__codelineno-3-18" href="#__codelineno-3-18"></a><span class="c1"># Pipe JSON into other tools</span>
 <a id="__codelineno-3-19" name="__codelineno-3-19" href="#__codelineno-3-19"></a>earthforge<span class="w"> </span>stac<span class="w"> </span>search<span class="w"> </span>sentinel-2-l2a<span class="w"> </span>-o<span class="w"> </span>json<span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span><span class="s1">&#39;.items[].assets.B04.href&#39;</span>
+<a id="__codelineno-3-20" name="__codelineno-3-20" href="#__codelineno-3-20"></a>
+<a id="__codelineno-3-21" name="__codelineno-3-21" href="#__codelineno-3-21"></a><span class="c1"># Accessibility — high-contrast mode</span>
+<a id="__codelineno-3-22" name="__codelineno-3-22" href="#__codelineno-3-22"></a>earthforge<span class="w"> </span>raster<span class="w"> </span>info<span class="w"> </span>scene.tif<span class="w"> </span>--high-contrast
 </code></pre></div>
 <hr />
 <h2 id="supported-formats">Supported Formats<a class="headerlink" href="#supported-formats" title="Permanent link">&para;</a></h2>
@@ -1048,17 +1033,17 @@ and machine-parseable JSON.</p>
 <tr>
 <td>COG (Cloud Optimized GeoTIFF)</td>
 <td>Full</td>
-<td><code>info</code>, <code>validate</code>, <code>convert</code>, <code>preview</code></td>
+<td><code>info</code>, <code>validate</code>, <code>convert</code>, <code>preview</code>, <code>stats</code>, <code>calc</code>, <code>tile</code></td>
 </tr>
 <tr>
 <td>GeoParquet</td>
 <td>Full</td>
-<td><code>info</code>, <code>convert</code>, <code>query</code></td>
+<td><code>info</code>, <code>validate</code>, <code>convert</code>, <code>query</code>, <code>clip</code>, <code>tile</code></td>
 </tr>
 <tr>
 <td>Zarr / NetCDF</td>
 <td>Full</td>
-<td><code>info</code>, <code>slice</code></td>
+<td><code>info</code>, <code>validate</code>, <code>convert</code>, <code>slice</code>, <code>stats</code></td>
 </tr>
 <tr>
 <td>FlatGeobuf</td>
@@ -1068,12 +1053,17 @@ and machine-parseable JSON.</p>
 <tr>
 <td>STAC</td>
 <td>Full</td>
-<td><code>search</code>, <code>info</code>, <code>fetch</code></td>
+<td><code>search</code>, <code>info</code>, <code>validate</code>, <code>fetch</code>, <code>publish</code></td>
 </tr>
 <tr>
 <td>COPC (Cloud Optimized Point Cloud)</td>
 <td>Detection</td>
 <td><code>info</code></td>
+</tr>
+<tr>
+<td>PMTiles</td>
+<td>Write</td>
+<td><code>vector tile</code></td>
 </tr>
 </tbody>
 </table>
@@ -1102,6 +1092,7 @@ EarthForge is the CLI toolkit you reach for <em>alongside</em> those tools.</p>
 <a id="__codelineno-4-13" name="__codelineno-4-13" href="#__codelineno-4-13"></a><span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">main</span><span class="p">())</span>
 </code></pre></div>
 <hr />
+<p><strong>Next:</strong> <a href="examples/">Examples</a> — real-world workflows with Sentinel-2, Copernicus DEM, and more.</p>
 <p><a class="md-button md-button--primary" href="getting-started/">Get started →</a>
 <a class="md-button" href="cli/">CLI Reference →</a></p>
 
