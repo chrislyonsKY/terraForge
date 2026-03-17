@@ -64,6 +64,9 @@ earthforge vector query buildings.parquet --bbox -85,37,-84,38
 
 # Pipe JSON into other tools
 earthforge stac search sentinel-2-l2a -o json | jq '.items[].assets.B04.href'
+
+# Accessibility — high-contrast mode
+earthforge raster info scene.tif --high-contrast
 ```
 
 ---
@@ -72,12 +75,13 @@ earthforge stac search sentinel-2-l2a -o json | jq '.items[].assets.B04.href'
 
 | Format | Support | Commands |
 |--------|---------|----------|
-| COG (Cloud Optimized GeoTIFF) | Full | `info`, `validate`, `convert`, `preview` |
-| GeoParquet | Full | `info`, `convert`, `query` |
-| Zarr / NetCDF | Full | `info`, `slice` |
+| COG (Cloud Optimized GeoTIFF) | Full | `info`, `validate`, `convert`, `preview`, `stats`, `calc`, `tile` |
+| GeoParquet | Full | `info`, `validate`, `convert`, `query`, `clip`, `tile` |
+| Zarr / NetCDF | Full | `info`, `validate`, `convert`, `slice`, `stats` |
 | FlatGeobuf | Read/Write | `info`, `convert` |
-| STAC | Full | `search`, `info`, `fetch` |
+| STAC | Full | `search`, `info`, `validate`, `fetch`, `publish` |
 | COPC (Cloud Optimized Point Cloud) | Detection | `info` |
+| PMTiles | Write | `vector tile` |
 
 ---
 
@@ -113,6 +117,8 @@ asyncio.run(main())
 ```
 
 ---
+
+**Next:** [Examples](examples/index.md) — real-world workflows with Sentinel-2, Copernicus DEM, and more.
 
 [Get started →](getting-started.md){ .md-button .md-button--primary }
 [CLI Reference →](cli.md){ .md-button }

@@ -49,6 +49,8 @@ plugins:
               - packages/vector/src
               - packages/cube/src
               - packages/cli/src
+              - packages/pipeline/src
+              - packages/rs/src
 
 markdown_extensions:
   - admonition
@@ -78,12 +80,12 @@ nav:
   - Home: index.md
   - Getting Started: getting-started.md
   - CLI Reference: cli.md
-  - Tutorials:
-    - DEM Hillshade: tutorials/dem-hillshade.md
-    - LiDAR Access (COPC): tutorials/lidar-access.md
-    - Web Maps (TiTiler): tutorials/titiler-maps.md
-    - ArcGIS Pro: tutorials/arcgis-pro.md
-  - KyFromAbove Collections: stac-collections.md
+  - Examples:
+    - Overview: examples/index.md
+    - NDVI Analysis: examples/ndvi-analysis.md
+    - DEM & Terrain: examples/dem-terrain.md
+    - STAC Discovery: examples/stac-discovery.md
+    - ArcGIS Pro Integration: examples/arcgis-pro.md
   - Architecture: architecture.md
   - API Reference: api/reference.md
   - Release Notes: release-notes.md

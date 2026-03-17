@@ -20,6 +20,14 @@ Full API reference for all EarthForge packages. Auto-generated from docstrings v
 
 ::: earthforge.core.output
 
+### expression
+
+::: earthforge.core.expression
+
+### palettes
+
+::: earthforge.core.palettes
+
 ---
 
 ## earthforge.stac
@@ -35,6 +43,14 @@ Full API reference for all EarthForge packages. Auto-generated from docstrings v
 ### fetch
 
 ::: earthforge.stac.fetch
+
+### validate
+
+::: earthforge.stac.validate
+
+### publish
+
+::: earthforge.stac.publish
 
 ---
 
@@ -56,6 +72,18 @@ Full API reference for all EarthForge packages. Auto-generated from docstrings v
 
 ::: earthforge.raster.preview
 
+### stats
+
+::: earthforge.raster.stats
+
+### calc
+
+::: earthforge.raster.calc
+
+### tile
+
+::: earthforge.raster.tile
+
 ---
 
 ## earthforge.vector
@@ -72,6 +100,18 @@ Full API reference for all EarthForge packages. Auto-generated from docstrings v
 
 ::: earthforge.vector.query
 
+### validate
+
+::: earthforge.vector.validate
+
+### clip
+
+::: earthforge.vector.clip
+
+### tile
+
+::: earthforge.vector.tile
+
 ---
 
 ## earthforge.cube
@@ -83,3 +123,31 @@ Full API reference for all EarthForge packages. Auto-generated from docstrings v
 ### slice
 
 ::: earthforge.cube.slice
+
+### validate
+
+::: earthforge.cube.validate
+
+### convert
+
+::: earthforge.cube.convert
+
+### stats
+
+::: earthforge.cube.stats
+
+---
+
+## earthforge.pipeline
+
+### schema
+
+::: earthforge.pipeline.schema
+
+### steps
+
+::: earthforge.pipeline.steps
+
+### runner
+
+::: earthforge.pipeline.runner

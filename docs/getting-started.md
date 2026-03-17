@@ -152,4 +152,4 @@ asyncio.run(main())
 
 ---
 
-**Next:** [KyFromAbove tutorials](tutorials/dem-hillshade.md) — real Kentucky datasets, end-to-end workflows.
+**Next:** [Examples](examples/index.md) — real-world workflows with Sentinel-2, Copernicus DEM, and more.

@@ -8,6 +8,7 @@ EarthForge is invoked as `earthforge`. All commands support these global flags:
 | `--profile` | `default` | Named config profile from `~/.earthforge/config.toml` |
 | `--verbose`, `-v` | off | Increase verbosity (stackable: `-vvv`) |
 | `--no-color` | off | Disable colored output |
+| `--high-contrast` | off | High-contrast mode (WCAG 2.1 AA compliant) |
 | `--version`, `-V` | — | Print version and exit |
 
 ---
@@ -110,6 +111,36 @@ earthforge stac fetch <item-url> \
 
 Re-running the same command skips already-complete files.
 
+### `stac validate`
+
+Validate STAC items and collections against the STAC specification.
+
+```bash
+earthforge stac validate <item-or-collection-url>
+```
+
+Checks: required fields, link relations, asset roles, datetime formatting, spatial extent validity. Exits `0` on pass, `1` on fail.
+
+### `stac publish`
+
+Publish items to a writable STAC API (Transaction Extension).
+
+```bash
+earthforge stac publish <item.json> --api <stac-api-url>
+
+Options:
+  --api           Target STAC API URL (must support Transaction Extension)
+  --collection    Target collection ID
+  --profile       Named config profile
+```
+
+```bash
+# Publish a local STAC item
+earthforge stac publish item.json \
+  --api https://your-stac-api.example.com/ \
+  --collection my-collection
+```
+
 ---
 
 ## `earthforge raster`
@@ -154,6 +185,73 @@ Options:
   --output        output filename                (default: <input>_cog.tif)
 ```
 
+### `raster stats`
+
+Compute raster statistics: min, max, mean, standard deviation, median, and histogram.
+
+```bash
+earthforge raster stats <path-or-url>
+
+Options:
+  --bands         1,2,3           (default: all bands)
+  --percentiles   5,25,50,75,95   (custom percentile list)
+  --histogram     256             (number of bins, default: 256)
+  --output        table | json    (default: table)
+```
+
+```bash
+# Full statistics for a DEM
+earthforge raster stats elevation.tif
+
+# Histogram with custom bins for band 1 only
+earthforge raster stats scene.tif --bands 1 --histogram 128 -o json
+```
+
+### `raster calc`
+
+Band math with a safe expression evaluator. No `eval()` — expressions are parsed and validated.
+
+```bash
+earthforge raster calc <path-or-url> --expression "<expr>" --output <output.tif>
+
+Options:
+  --expression    Band math expression (e.g., "(B08 - B04) / (B08 + B04)")
+  --output        Output filename (required)
+  --nodata        Nodata value for output (default: NaN)
+```
+
+```bash
+# NDVI from Sentinel-2
+earthforge raster calc scene.tif \
+  --expression "(B08 - B04) / (B08 + B04)" \
+  --output ndvi.tif
+
+# Simple band ratio
+earthforge raster calc scene.tif \
+  --expression "B05 / B04" \
+  --output ratio.tif
+```
+
+### `raster tile`
+
+Generate XYZ/TMS static tile pyramids from a raster file.
+
+```bash
+earthforge raster tile <path-or-url> --output-dir <dir>
+
+Options:
+  --min-zoom      0          (minimum zoom level)
+  --max-zoom      14         (maximum zoom level)
+  --tile-size     256        (tile dimensions in pixels)
+  --format        png | webp (default: png)
+  --output-dir    ./tiles    (output directory)
+```
+
+```bash
+# Generate web map tiles
+earthforge raster tile elevation.tif --output-dir ./tiles --max-zoom 12
+```
+
 ---
 
 ## `earthforge vector`
@@ -195,6 +293,57 @@ earthforge vector query buildings.parquet \
   --output json
 ```
 
+### `vector validate`
+
+Validate GeoParquet compliance (metadata, geometry encoding, CRS, bbox covering).
+
+```bash
+earthforge vector validate <file.parquet>
+```
+
+Checks: GeoParquet metadata version, WKB geometry encoding, PROJJSON CRS, bbox covering column, row group statistics. Exits `0` on pass, `1` on fail.
+
+### `vector clip`
+
+Clip features to a bounding box or geometry file.
+
+```bash
+earthforge vector clip <file.parquet> --bbox west,south,east,north --output <output.parquet>
+
+Options:
+  --bbox          west,south,east,north
+  --geometry      Path to clipping geometry (GeoJSON, Parquet)
+  --output        Output filename (required)
+```
+
+```bash
+# Clip buildings to a city extent
+earthforge vector clip buildings.parquet \
+  --bbox -84.55,38.0,-84.45,38.1 \
+  --output lexington_buildings.parquet
+```
+
+### `vector tile`
+
+Generate PMTiles from vector data.
+
+```bash
+earthforge vector tile <file.parquet> --output <output.pmtiles>
+
+Options:
+  --min-zoom      0          (minimum zoom level)
+  --max-zoom      14         (maximum zoom level)
+  --layer-name    default    (MVT layer name)
+  --output        output.pmtiles (required)
+```
+
+```bash
+# Generate PMTiles for web maps
+earthforge vector tile buildings.parquet \
+  --output buildings.pmtiles \
+  --max-zoom 14
+```
+
 ---
 
 ## `earthforge cube`
@@ -219,6 +368,60 @@ earthforge cube slice era5.zarr \
   --bbox -85,37,-84,38 \
   --variables t2m,u10,v10 \
   --output subset.zarr
+```
+
+### `cube validate`
+
+Validate datacube structure: chunk consistency, dimension ordering, CF attributes, coordinate metadata.
+
+```bash
+earthforge cube validate <path.zarr>
+```
+
+Checks: Zarr v2/v3 structure, dimension coordinates, chunk alignment, CF convention attributes (`units`, `standard_name`, `calendar`). Exits `0` on pass, `1` on fail.
+
+### `cube convert`
+
+Convert between NetCDF and Zarr formats.
+
+```bash
+earthforge cube convert <input> --to zarr|netcdf --output <output>
+
+Options:
+  --to            zarr | netcdf  (target format)
+  --output        Output path (required)
+  --chunks        auto | <dim>=<size>  (rechunk on conversion)
+  --compression   zlib | zstd | blosc  (default: zlib)
+```
+
+```bash
+# NetCDF to Zarr with rechunking
+earthforge cube convert climate.nc --to zarr --output climate.zarr --chunks time=24,lat=180,lon=360
+
+# Zarr to NetCDF
+earthforge cube convert dataset.zarr --to netcdf --output dataset.nc
+```
+
+### `cube stats`
+
+Aggregate statistics along dimensions.
+
+```bash
+earthforge cube stats <path.zarr> --variable <var>
+
+Options:
+  --variable      Variable name (required)
+  --dimension     Dimension to aggregate along (e.g., time)
+  --stat          mean | min | max | std | sum  (default: mean)
+  --output        table | json  (default: table)
+```
+
+```bash
+# Mean temperature over time
+earthforge cube stats era5.zarr --variable t2m --dimension time --stat mean
+
+# JSON output for scripting
+earthforge cube stats era5.zarr --variable t2m --dimension time -o json
 ```
 
 ---
