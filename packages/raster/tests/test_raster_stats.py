@@ -23,8 +23,15 @@ def _create_test_raster(path: Path, *, nodata: float | None = None) -> None:
     data = np.array([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0], [7.0, 8.0, 9.0]], dtype=np.float32)
     transform = from_bounds(0, 0, 3, 3, 3, 3)
     with rasterio.open(
-        str(path), "w", driver="GTiff", height=3, width=3,
-        count=1, dtype="float32", crs="EPSG:4326", transform=transform,
+        str(path),
+        "w",
+        driver="GTiff",
+        height=3,
+        width=3,
+        count=1,
+        dtype="float32",
+        crs="EPSG:4326",
+        transform=transform,
         nodata=nodata,
     ) as dst:
         dst.write(data, 1)
@@ -36,8 +43,15 @@ def _create_multiband_raster(path: Path) -> None:
     data2 = np.ones((3, 3), dtype=np.float32) * 20.0
     transform = from_bounds(0, 0, 3, 3, 3, 3)
     with rasterio.open(
-        str(path), "w", driver="GTiff", height=3, width=3,
-        count=2, dtype="float32", crs="EPSG:4326", transform=transform,
+        str(path),
+        "w",
+        driver="GTiff",
+        height=3,
+        width=3,
+        count=2,
+        dtype="float32",
+        crs="EPSG:4326",
+        transform=transform,
     ) as dst:
         dst.write(data1, 1)
         dst.write(data2, 2)
@@ -105,8 +119,15 @@ class TestNodata:
         )
         transform = from_bounds(0, 0, 3, 3, 3, 3)
         with rasterio.open(
-            str(path), "w", driver="GTiff", height=3, width=3,
-            count=1, dtype="float32", crs="EPSG:4326", transform=transform,
+            str(path),
+            "w",
+            driver="GTiff",
+            height=3,
+            width=3,
+            count=1,
+            dtype="float32",
+            crs="EPSG:4326",
+            transform=transform,
             nodata=-9999.0,
         ) as dst:
             dst.write(data, 1)

@@ -105,13 +105,15 @@ async def main() -> None:
     shade = np.clip(
         np.sin(np.radians(45)) * np.cos(slope)
         + np.cos(np.radians(45)) * np.sin(slope) * np.cos(np.radians(315) - aspect),
-        0, 1,
+        0,
+        1,
     )
 
     # Render
     print("Rendering...")
     try:
         import matplotlib
+
         matplotlib.use("Agg")
         import matplotlib.pyplot as plt
     except ImportError:
@@ -119,7 +121,9 @@ async def main() -> None:
         return
 
     fig, axes = plt.subplots(
-        1, 2, figsize=(14, 7),
+        1,
+        2,
+        figsize=(14, 7),
         gridspec_kw={"width_ratios": [3, 1]},
     )
 
@@ -132,16 +136,20 @@ async def main() -> None:
     im = ax_map.imshow(
         elevation,
         extent=[lons.min(), lons.max(), lats.min(), lats.max()],
-        cmap="viridis", aspect="auto",
+        cmap="viridis",
+        aspect="auto",
     )
     ax_map.imshow(
-        shade, extent=[lons.min(), lons.max(), lats.min(), lats.max()],
-        cmap="gray", alpha=0.35, aspect="auto",
+        shade,
+        extent=[lons.min(), lons.max(), lats.min(), lats.max()],
+        cmap="gray",
+        alpha=0.35,
+        aspect="auto",
     )
     ax_map.set_title(
-        "Copernicus DEM 30m -- Denali / Alaska Range\n"
-        f"Tile: {item.id}",
-        fontsize=13, fontweight="bold",
+        f"Copernicus DEM 30m -- Denali / Alaska Range\nTile: {item.id}",
+        fontsize=13,
+        fontweight="bold",
     )
     ax_map.set_xlabel("Longitude", fontsize=10)
     ax_map.set_ylabel("Latitude", fontsize=10)
@@ -152,8 +160,12 @@ async def main() -> None:
     # Histogram panel
     valid_elev = elevation[np.isfinite(elevation)]
     ax_hist.hist(
-        valid_elev.ravel(), bins=60, color="#1f9e89", edgecolor="#31688e",
-        alpha=0.85, orientation="horizontal",
+        valid_elev.ravel(),
+        bins=60,
+        color="#1f9e89",
+        edgecolor="#31688e",
+        alpha=0.85,
+        orientation="horizontal",
     )
     ax_hist.set_ylabel("Elevation (m)", fontsize=10)
     ax_hist.set_xlabel("Pixel Count", fontsize=10)
@@ -169,19 +181,26 @@ async def main() -> None:
         f"Grid: {elevation.shape[1]}x{elevation.shape[0]}"
     )
     ax_hist.text(
-        0.95, 0.95, stats_text,
+        0.95,
+        0.95,
+        stats_text,
         transform=ax_hist.transAxes,
-        fontsize=9, fontfamily="monospace",
-        verticalalignment="top", horizontalalignment="right",
+        fontsize=9,
+        fontfamily="monospace",
+        verticalalignment="top",
+        horizontalalignment="right",
         bbox={"boxstyle": "round,pad=0.4", "facecolor": "white", "alpha": 0.9},
     )
 
     fig.text(
-        0.5, 0.01,
+        0.5,
+        0.01,
         f"Data: Copernicus DEM GLO-30 via Earth Search | "
         f"Palette: viridis (colorblind-safe) | "
         f"EarthForge v1.0.0 | {datetime.now(UTC).strftime('%Y-%m-%d')}",
-        ha="center", fontsize=7, color="gray",
+        ha="center",
+        fontsize=7,
+        color="gray",
     )
 
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)

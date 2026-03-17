@@ -30,7 +30,8 @@ def info(
     result = run_command(ctx, inspect_raster(source))
     if isinstance(result, BaseModel):
         render_to_console(
-            result, state.output,
+            result,
+            state.output,
             no_color=state.no_color,
             high_contrast=state.high_contrast,
         )
@@ -48,7 +49,8 @@ def validate(
     result = run_command(ctx, validate_cog(source))
     if isinstance(result, BaseModel):
         render_to_console(
-            result, state.output,
+            result,
+            state.output,
             no_color=state.no_color,
             high_contrast=state.high_contrast,
         )
@@ -77,7 +79,8 @@ def preview(
     result = run_command(ctx, generate_preview(source, output_path=output, max_size=max_size))
     if isinstance(result, BaseModel):
         render_to_console(
-            result, state.output,
+            result,
+            state.output,
             no_color=state.no_color,
             high_contrast=state.high_contrast,
         )
@@ -125,7 +128,8 @@ def convert(
     )
     if isinstance(result, BaseModel):
         render_to_console(
-            result, state.output,
+            result,
+            state.output,
             no_color=state.no_color,
             high_contrast=state.high_contrast,
         )
@@ -164,13 +168,16 @@ def stats(
     result = run_command(
         ctx,
         compute_stats(
-            source, bands=band_list,
-            geometry_wkt=geometry, histogram_bins=histogram_bins,
+            source,
+            bands=band_list,
+            geometry_wkt=geometry,
+            histogram_bins=histogram_bins,
         ),
     )
     if isinstance(result, BaseModel):
         render_to_console(
-            result, state.output,
+            result,
+            state.output,
             no_color=state.no_color,
             high_contrast=state.high_contrast,
         )
@@ -219,7 +226,8 @@ def calc(
     )
     if isinstance(result, BaseModel):
         render_to_console(
-            result, state.output,
+            result,
+            state.output,
             no_color=state.no_color,
             high_contrast=state.high_contrast,
         )
@@ -264,7 +272,8 @@ def tile(
     )
     if isinstance(result, BaseModel):
         render_to_console(
-            result, state.output,
+            result,
+            state.output,
             no_color=state.no_color,
             high_contrast=state.high_contrast,
         )

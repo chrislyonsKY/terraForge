@@ -29,7 +29,9 @@ OUTPUT_PNG = OUTPUT_DIR / "cube_stats_era5_mean_temp.png"
 OUTPUT_TXT = OUTPUT_DIR / "cube_stats_era5_mean_temp.txt"
 
 # ERA5 Zarr store on Planetary Computer (public access)
-ERA5_ZARR_URL = "https://era5pds.s3.amazonaws.com/zarr/2025/01/data/air_temperature_at_2_metres.zarr"
+ERA5_ZARR_URL = (
+    "https://era5pds.s3.amazonaws.com/zarr/2025/01/data/air_temperature_at_2_metres.zarr"
+)
 
 KY_LAT_RANGE = (37.0, 38.5)
 KY_LON_RANGE = (-85.5, -84.0)
@@ -42,6 +44,7 @@ def main() -> None:
 
     try:
         import matplotlib
+
         matplotlib.use("Agg")
         import matplotlib.pyplot as plt
         import xarray as xr
@@ -58,6 +61,7 @@ def main() -> None:
         print("Direct Zarr access failed. Trying Planetary Computer STAC...")
         try:
             import pystac_client
+
             catalog = pystac_client.Client.open(
                 "https://planetarycomputer.microsoft.com/api/stac/v1"
             )
@@ -99,9 +103,7 @@ def main() -> None:
     lat_dim = "latitude" if "latitude" in ds.dims else "lat"
     lon_dim = "longitude" if "longitude" in ds.dims else "lon"
 
-    subset = ds[temp_var].sel(
-        {lat_dim: slice(*KY_LAT_RANGE), lon_dim: slice(*KY_LON_RANGE)}
-    )
+    subset = ds[temp_var].sel({lat_dim: slice(*KY_LAT_RANGE), lon_dim: slice(*KY_LON_RANGE)})
 
     # Compute temporal mean
     print("Computing temporal mean...")
@@ -120,7 +122,9 @@ def main() -> None:
     # Render
     print("Rendering map...")
     fig, (ax_map, ax_stats) = plt.subplots(
-        1, 2, figsize=(13, 7),
+        1,
+        2,
+        figsize=(13, 7),
         gridspec_kw={"width_ratios": [3, 1]},
     )
 
@@ -132,9 +136,9 @@ def main() -> None:
         aspect="auto",
     )
     ax_map.set_title(
-        "ERA5 Mean 2m Temperature\n"
-        "Central Kentucky | Temporal Mean",
-        fontsize=13, fontweight="bold",
+        "ERA5 Mean 2m Temperature\nCentral Kentucky | Temporal Mean",
+        fontsize=13,
+        fontweight="bold",
     )
     ax_map.set_xlabel("Longitude", fontsize=10)
     ax_map.set_ylabel("Latitude", fontsize=10)
@@ -168,18 +172,24 @@ def main() -> None:
         f"CRS:    EPSG:4326\n"
     )
     ax_stats.text(
-        0.05, 0.95, stats_text,
+        0.05,
+        0.95,
+        stats_text,
         transform=ax_stats.transAxes,
-        fontsize=10, fontfamily="monospace",
+        fontsize=10,
+        fontfamily="monospace",
         verticalalignment="top",
     )
 
     fig.text(
-        0.5, 0.01,
+        0.5,
+        0.01,
         f"Data: ECMWF ERA5 via Planetary Computer | "
         f"Palette: viridis (colorblind-safe) | "
         f"EarthForge v1.0.0 | {datetime.now(UTC).strftime('%Y-%m-%d')}",
-        ha="center", fontsize=7, color="gray",
+        ha="center",
+        fontsize=7,
+        color="gray",
     )
 
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)

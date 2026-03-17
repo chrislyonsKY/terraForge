@@ -83,6 +83,7 @@ async def main() -> None:
     print("Generating histogram...")
     try:
         import matplotlib
+
         matplotlib.use("Agg")
         import matplotlib.pyplot as plt
     except ImportError:
@@ -90,7 +91,9 @@ async def main() -> None:
         return
 
     fig, (ax_hist, ax_stats) = plt.subplots(
-        1, 2, figsize=(12, 6),
+        1,
+        2,
+        figsize=(12, 6),
         gridspec_kw={"width_ratios": [3, 1]},
     )
 
@@ -112,7 +115,8 @@ async def main() -> None:
     ax_hist.set_title(
         f"Copernicus DEM 30m — Elevation Distribution\n"
         f"Central Kentucky ({KY_BBOX[0]}W, {KY_BBOX[1]}S, {KY_BBOX[2]}E, {KY_BBOX[3]}N)",
-        fontsize=12, fontweight="bold",
+        fontsize=12,
+        fontweight="bold",
     )
     ax_hist.tick_params(labelsize=10)
 
@@ -133,18 +137,24 @@ async def main() -> None:
         f"CRS:      {stats_result.crs or 'N/A'}\n"
     )
     ax_stats.text(
-        0.1, 0.95, stats_text,
+        0.1,
+        0.95,
+        stats_text,
         transform=ax_stats.transAxes,
-        fontsize=10, fontfamily="monospace",
+        fontsize=10,
+        fontfamily="monospace",
         verticalalignment="top",
     )
 
     # Attribution
     fig.text(
-        0.5, 0.01,
+        0.5,
+        0.01,
         f"Data: Copernicus DEM GLO-30 via Earth Search | "
         f"EarthForge v1.0.0 | {datetime.now(UTC).strftime('%Y-%m-%d')}",
-        ha="center", fontsize=8, color="gray",
+        ha="center",
+        fontsize=8,
+        color="gray",
     )
 
     plt.tight_layout(rect=[0, 0.03, 1, 1])

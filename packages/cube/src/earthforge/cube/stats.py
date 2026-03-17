@@ -73,8 +73,12 @@ async def cube_stats(
     return await loop.run_in_executor(
         None,
         partial(
-            _stats_sync, source, variable,
-            reduce_dims=reduce_dims, operation=operation, output=output,
+            _stats_sync,
+            source,
+            variable,
+            reduce_dims=reduce_dims,
+            operation=operation,
+            output=output,
         ),
     )
 
@@ -95,15 +99,11 @@ def _stats_sync(
         import numpy as np
         import xarray as xr
     except ImportError as exc:
-        raise CubeError(
-            "xarray is required for cube stats: pip install earthforge[cube]"
-        ) from exc
+        raise CubeError("xarray is required for cube stats: pip install earthforge[cube]") from exc
 
     if operation not in _OPERATIONS:
-        supported = ', '.join(sorted(_OPERATIONS))
-        raise CubeError(
-            f"Unknown operation '{operation}'. Supported: {supported}"
-        )
+        supported = ", ".join(sorted(_OPERATIONS))
+        raise CubeError(f"Unknown operation '{operation}'. Supported: {supported}")
 
     try:
         if source.lower().endswith(".zarr") or __import__("pathlib").Path(source).is_dir():
@@ -147,6 +147,7 @@ def _stats_sync(
     output_path: str | None = None
     if output:
         from pathlib import Path
+
         out_p = Path(output)
         out_p.parent.mkdir(parents=True, exist_ok=True)
         try:

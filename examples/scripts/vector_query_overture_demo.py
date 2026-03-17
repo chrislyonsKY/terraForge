@@ -60,6 +60,7 @@ async def main() -> None:
     try:
         import geopandas as gpd
         import matplotlib
+
         matplotlib.use("Agg")
         import matplotlib.pyplot as plt
         from shapely.geometry import box
@@ -75,14 +76,16 @@ async def main() -> None:
         w, s, e, n = item.bbox
         cc = item.properties.get("eo:cloud_cover", 50)
         month = (item.datetime or "unknown")[:7]
-        features.append({
-            "geometry": box(w, s, e, n),
-            "id": item.id,
-            "cloud_cover": cc,
-            "datetime": item.datetime or "",
-            "month": month,
-            "platform": item.properties.get("platform", ""),
-        })
+        features.append(
+            {
+                "geometry": box(w, s, e, n),
+                "id": item.id,
+                "cloud_cover": cc,
+                "datetime": item.datetime or "",
+                "month": month,
+                "platform": item.properties.get("platform", ""),
+            }
+        )
 
     gdf = gpd.GeoDataFrame(features, crs="EPSG:4326")
     print(f"Built GeoDataFrame: {len(gdf)} footprints")
@@ -97,10 +100,7 @@ async def main() -> None:
     print("Rendering map...")
     fig, ax = plt.subplots(figsize=(10, 8))
 
-    set2_rgb = [
-        tuple(int(h[i:i+2], 16) / 255 for i in (1, 3, 5))
-        for h in SET2[:4]
-    ]
+    set2_rgb = [tuple(int(h[i : i + 2], 16) / 255 for i in (1, 3, 5)) for h in SET2[:4]]
     class_colors = {
         "clear": set2_rgb[0],
         "partly cloudy": set2_rgb[1],
@@ -112,31 +112,37 @@ async def main() -> None:
         subset = gdf[gdf["cc_class"] == cls]
         if len(subset) > 0:
             subset.plot(
-                ax=ax, color=color, edgecolor="gray",
-                linewidth=0.5, alpha=0.5, label=f"{cls} ({len(subset)})",
+                ax=ax,
+                color=color,
+                edgecolor="gray",
+                linewidth=0.5,
+                alpha=0.5,
+                label=f"{cls} ({len(subset)})",
             )
 
     # Draw study area bbox
-    study = gpd.GeoDataFrame(
-        [{"geometry": box(*KY_BBOX)}], crs="EPSG:4326"
-    )
+    study = gpd.GeoDataFrame([{"geometry": box(*KY_BBOX)}], crs="EPSG:4326")
     study.boundary.plot(ax=ax, color="black", linewidth=2, linestyle="--")
 
     ax.legend(loc="upper right", fontsize=9, title="Cloud Cover Class")
     ax.set_title(
         f"Sentinel-2 Scene Footprints — Central Kentucky\n"
         f"Jun-Sep 2025 | {len(gdf)} scenes from Earth Search",
-        fontsize=13, fontweight="bold",
+        fontsize=13,
+        fontweight="bold",
     )
     ax.set_xlabel("Longitude", fontsize=10)
     ax.set_ylabel("Latitude", fontsize=10)
 
     fig.text(
-        0.5, 0.01,
+        0.5,
+        0.01,
         f"Data: Copernicus Sentinel-2 via Earth Search (real API query) | "
         f"Palette: Set2 (colorblind-safe) | EarthForge v1.0.0 | "
         f"{datetime.now(UTC).strftime('%Y-%m-%d')}",
-        ha="center", fontsize=7, color="gray",
+        ha="center",
+        fontsize=7,
+        color="gray",
     )
 
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)

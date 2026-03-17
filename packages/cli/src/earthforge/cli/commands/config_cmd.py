@@ -63,7 +63,8 @@ def show(
             storage_options=result.storage_options,
         )
         render_to_console(
-            view, state.output,
+            view,
+            state.output,
             no_color=state.no_color,
             high_contrast=state.high_contrast,
         )

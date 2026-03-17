@@ -79,10 +79,7 @@ def _check_transaction_sync(api_url: str) -> bool:
         return False
 
     conforms_to = data.get("conformsTo", [])
-    return any(
-        conf in conforms_to
-        for conf in _TRANSACTION_CONFORMANCE
-    )
+    return any(conf in conforms_to for conf in _TRANSACTION_CONFORMANCE)
 
 
 async def publish_item(
@@ -112,8 +109,12 @@ async def publish_item(
     return await loop.run_in_executor(
         None,
         partial(
-            _publish_sync, profile, item,
-            collection_id=collection_id, api_url=api_url, upsert=upsert,
+            _publish_sync,
+            profile,
+            item,
+            collection_id=collection_id,
+            api_url=api_url,
+            upsert=upsert,
         ),
     )
 
@@ -136,9 +137,7 @@ def _publish_sync(
     base_url = base_url.rstrip("/")
     coll_id = collection_id or item.get("collection")
     if not coll_id:
-        raise StacPublishError(
-            "No collection_id specified and item has no 'collection' field"
-        )
+        raise StacPublishError("No collection_id specified and item has no 'collection' field")
 
     item_id = item.get("id")
     if not item_id:
@@ -169,9 +168,7 @@ def _publish_sync(
                         f"PUT failed with status {resp.status_code}: {resp.text}"
                     )
             else:
-                raise StacPublishError(
-                    f"POST failed with status {resp.status_code}: {resp.text}"
-                )
+                raise StacPublishError(f"POST failed with status {resp.status_code}: {resp.text}")
     except StacPublishError:
         raise
     except Exception as exc:

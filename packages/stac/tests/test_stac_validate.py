@@ -29,19 +29,18 @@ def _valid_item_dict() -> dict:
         "geometry": {
             "type": "Polygon",
             "coordinates": [
-                [[-85.5, 37.0], [-84.0, 37.0], [-84.0, 38.5],
-                 [-85.5, 38.5], [-85.5, 37.0]]
+                [[-85.5, 37.0], [-84.0, 37.0], [-84.0, 38.5], [-85.5, 38.5], [-85.5, 37.0]]
             ],
         },
         "bbox": [-85.5, 37.0, -84.0, 38.5],
         "properties": {"datetime": "2025-06-15T00:00:00Z"},
         "links": [
-            {"rel": "self",
-             "href": "https://example.com/items/test-item-001",
-             "type": "application/json"},
-            {"rel": "root",
-             "href": "https://example.com",
-             "type": "application/json"},
+            {
+                "rel": "self",
+                "href": "https://example.com/items/test-item-001",
+                "type": "application/json",
+            },
+            {"rel": "root", "href": "https://example.com", "type": "application/json"},
         ],
         "assets": {
             "B04": {
@@ -62,9 +61,11 @@ def _valid_collection_dict() -> dict:
         "description": "A test collection",
         "license": "proprietary",
         "links": [
-            {"rel": "self",
-             "href": "https://example.com/collections/test",
-             "type": "application/json"},
+            {
+                "rel": "self",
+                "href": "https://example.com/collections/test",
+                "type": "application/json",
+            },
         ],
         "extent": {
             "spatial": {"bbox": [[-180, -90, 180, 90]]},
@@ -123,9 +124,7 @@ class TestValidateStacItem:
 
     def test_item_with_extensions(self, tmp_path: Path) -> None:
         item_dict = _valid_item_dict()
-        item_dict["stac_extensions"] = [
-            "https://stac-extensions.github.io/eo/v1.1.0/schema.json"
-        ]
+        item_dict["stac_extensions"] = ["https://stac-extensions.github.io/eo/v1.1.0/schema.json"]
         item_dict["properties"]["eo:cloud_cover"] = 15.0
 
         item_path = tmp_path / "eo_item.json"

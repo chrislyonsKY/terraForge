@@ -55,8 +55,7 @@ async def main() -> None:
     )
 
     candidates = [
-        item for item in result.items
-        if (item.properties.get("eo:cloud_cover") or 100) < 15
+        item for item in result.items if (item.properties.get("eo:cloud_cover") or 100) < 15
     ]
     if not candidates:
         print("No clear scenes found.")
@@ -106,10 +105,13 @@ async def main() -> None:
     print("Step 3: Computing NDVI...")
     from earthforge.core.expression import safe_eval
 
-    ndvi = safe_eval("(B08 - B04) / (B08 + B04)", {
-        "B08": np.where(nir + red > 0, nir, 0.0),
-        "B04": np.where(nir + red > 0, red, 0.0),
-    })
+    ndvi = safe_eval(
+        "(B08 - B04) / (B08 + B04)",
+        {
+            "B08": np.where(nir + red > 0, nir, 0.0),
+            "B04": np.where(nir + red > 0, red, 0.0),
+        },
+    )
     # Handle division-by-zero
     ndvi = np.where(np.isfinite(ndvi), ndvi, 0)
     ndvi = np.clip(ndvi, -1, 1)
@@ -120,6 +122,7 @@ async def main() -> None:
     print("Step 4: Rendering output...")
     try:
         import matplotlib
+
         matplotlib.use("Agg")
         import matplotlib.pyplot as plt
         from matplotlib.colors import LinearSegmentedColormap
@@ -127,22 +130,21 @@ async def main() -> None:
         print("matplotlib required")
         return
 
-    brbg_colors = [
-        tuple(int(h[i:i+2], 16) / 255 for i in (1, 3, 5))
-        for h in DIVERGING_BRBG
-    ]
+    brbg_colors = [tuple(int(h[i : i + 2], 16) / 255 for i in (1, 3, 5)) for h in DIVERGING_BRBG]
     cmap = LinearSegmentedColormap.from_list("brbg", brbg_colors, N=256)
 
     fig, (ax_ndvi, ax_summary) = plt.subplots(
-        1, 2, figsize=(13, 7),
+        1,
+        2,
+        figsize=(13, 7),
         gridspec_kw={"width_ratios": [3, 1]},
     )
 
     im = ax_ndvi.imshow(ndvi, cmap=cmap, vmin=-0.5, vmax=1.0, aspect="auto")
     ax_ndvi.set_title(
-        f"NDVI — Pipeline Output\n"
-        f"{(item.datetime or 'Unknown')[:10]} | {crs_str}",
-        fontsize=13, fontweight="bold",
+        f"NDVI — Pipeline Output\n{(item.datetime or 'Unknown')[:10]} | {crs_str}",
+        fontsize=13,
+        fontweight="bold",
     )
     cbar = fig.colorbar(im, ax=ax_ndvi, shrink=0.8)
     cbar.set_label("NDVI", fontsize=11)
@@ -170,18 +172,24 @@ async def main() -> None:
         f"  Size: {ndvi.shape[1]}x{ndvi.shape[0]}\n"
     )
     ax_summary.text(
-        0.05, 0.95, summary,
+        0.05,
+        0.95,
+        summary,
         transform=ax_summary.transAxes,
-        fontsize=9, fontfamily="monospace",
+        fontsize=9,
+        fontfamily="monospace",
         verticalalignment="top",
     )
 
     fig.text(
-        0.5, 0.01,
+        0.5,
+        0.01,
         f"Data: Copernicus Sentinel-2 via Earth Search | "
         f"Palette: BrBG (colorblind-safe) | "
         f"EarthForge v1.0.0 | {datetime.now(UTC).strftime('%Y-%m-%d')}",
-        ha="center", fontsize=7, color="gray",
+        ha="center",
+        fontsize=7,
+        color="gray",
     )
 
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)

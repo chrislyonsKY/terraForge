@@ -76,8 +76,12 @@ async def generate_vector_tiles(
     return await loop.run_in_executor(
         None,
         partial(
-            _generate_sync, source, output,
-            min_zoom=min_zoom, max_zoom=max_zoom, layer_name=layer_name,
+            _generate_sync,
+            source,
+            output,
+            min_zoom=min_zoom,
+            max_zoom=max_zoom,
+            layer_name=layer_name,
         ),
     )
 
@@ -107,9 +111,7 @@ def _generate_sync(
     try:
         import geopandas as gpd
     except ImportError as exc:
-        raise VectorError(
-            "geopandas is required: pip install earthforge[vector]"
-        ) from exc
+        raise VectorError("geopandas is required: pip install earthforge[vector]") from exc
 
     try:
         if source.endswith((".parquet", ".geoparquet")):
@@ -160,10 +162,14 @@ def _generate_tippecanoe(
     try:
         cmd = [
             "tippecanoe",
-            "-o", str(output),
-            "-z", str(max_zoom),
-            "-Z", str(min_zoom),
-            "-l", layer,
+            "-o",
+            str(output),
+            "-z",
+            str(max_zoom),
+            "-Z",
+            str(min_zoom),
+            "-l",
+            layer,
             "--force",
             "--no-feature-limit",
             "--no-tile-size-limit",
@@ -196,24 +202,27 @@ def _generate_builtin(
         _generate_minimal_pmtiles(gdf, output, layer)
         return
 
-
     features_geojson = json.loads(gdf.to_json())
     mvt_features = []
     for feature in features_geojson.get("features", []):
-        mvt_features.append({
-            "geometry": feature["geometry"],
-            "properties": {
-                k: str(v) if not isinstance(v, (int, float, str, bool)) else v
-                for k, v in (feature.get("properties") or {}).items()
-            },
-        })
+        mvt_features.append(
+            {
+                "geometry": feature["geometry"],
+                "properties": {
+                    k: str(v) if not isinstance(v, (int, float, str, bool)) else v
+                    for k, v in (feature.get("properties") or {}).items()
+                },
+            }
+        )
 
     # Encode as a single tile
     tile_data = mapbox_vector_tile.encode(
-        [{
-            "name": layer,
-            "features": mvt_features[:10000],  # Limit for single tile
-        }],
+        [
+            {
+                "name": layer,
+                "features": mvt_features[:10000],  # Limit for single tile
+            }
+        ],
         quantize_bounds=(-180, -85.0511, 180, 85.0511),
     )
 
@@ -224,12 +233,16 @@ def _generate_builtin(
 def _generate_minimal_pmtiles(gdf: Any, output: Path, layer: str) -> None:
     """Generate a minimal binary file as a placeholder when MVT libs are unavailable."""
     features_geojson = json.loads(gdf.to_json())
-    output.write_text(json.dumps({
-        "type": "PMTiles-placeholder",
-        "layer": layer,
-        "feature_count": len(features_geojson.get("features", [])),
-        "note": "Install mapbox-vector-tile for proper MVT encoding",
-    }))
+    output.write_text(
+        json.dumps(
+            {
+                "type": "PMTiles-placeholder",
+                "layer": layer,
+                "feature_count": len(features_geojson.get("features", [])),
+                "note": "Install mapbox-vector-tile for proper MVT encoding",
+            }
+        )
+    )
 
 
 def _write_simple_pmtiles(output: Path, tiles: dict[tuple[int, int, int], bytes]) -> None:

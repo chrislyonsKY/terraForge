@@ -53,6 +53,7 @@ async def main() -> None:
 
     try:
         import matplotlib
+
         matplotlib.use("Agg")
         import matplotlib.pyplot as plt
         from matplotlib.cm import ScalarMappable
@@ -67,11 +68,19 @@ async def main() -> None:
     # Draw the search bbox
     bbox_w = KY_BBOX[2] - KY_BBOX[0]
     bbox_h = KY_BBOX[3] - KY_BBOX[1]
-    ax.add_patch(Rectangle(
-        (KY_BBOX[0], KY_BBOX[1]), bbox_w, bbox_h,
-        linewidth=2, edgecolor="black", facecolor="lightgray",
-        alpha=0.3, linestyle="--", label="Search bbox",
-    ))
+    ax.add_patch(
+        Rectangle(
+            (KY_BBOX[0], KY_BBOX[1]),
+            bbox_w,
+            bbox_h,
+            linewidth=2,
+            edgecolor="black",
+            facecolor="lightgray",
+            alpha=0.3,
+            linestyle="--",
+            label="Search bbox",
+        )
+    )
 
     # Plot item footprints colored by cloud cover
     cmap = plt.cm.viridis_r  # reversed so low cloud = bright
@@ -83,18 +92,30 @@ async def main() -> None:
 
         # Use item bbox as rectangle
         if hasattr(item, "bbox") and item.bbox:
-            parts = item.bbox if isinstance(item.bbox, list) else [
-                item.bbox.get("west", 0), item.bbox.get("south", 0),
-                item.bbox.get("east", 0), item.bbox.get("north", 0),
-            ]
+            parts = (
+                item.bbox
+                if isinstance(item.bbox, list)
+                else [
+                    item.bbox.get("west", 0),
+                    item.bbox.get("south", 0),
+                    item.bbox.get("east", 0),
+                    item.bbox.get("north", 0),
+                ]
+            )
             if len(parts) >= 4:
                 w = parts[2] - parts[0]
                 h = parts[3] - parts[1]
-                ax.add_patch(Rectangle(
-                    (parts[0], parts[1]), w, h,
-                    linewidth=0.8, edgecolor=color,
-                    facecolor=color, alpha=0.4,
-                ))
+                ax.add_patch(
+                    Rectangle(
+                        (parts[0], parts[1]),
+                        w,
+                        h,
+                        linewidth=0.8,
+                        edgecolor=color,
+                        facecolor=color,
+                        alpha=0.4,
+                    )
+                )
 
     ax.set_xlim(KY_BBOX[0] - 0.5, KY_BBOX[2] + 0.5)
     ax.set_ylim(KY_BBOX[1] - 0.3, KY_BBOX[3] + 0.3)
@@ -103,7 +124,8 @@ async def main() -> None:
     ax.set_title(
         f"STAC Search Results — Sentinel-2 L2A\n"
         f"Kentucky | Jun-Aug 2025 | {len(result.items)} scenes",
-        fontsize=13, fontweight="bold",
+        fontsize=13,
+        fontweight="bold",
     )
     ax.set_xlabel("Longitude", fontsize=10)
     ax.set_ylabel("Latitude", fontsize=10)
@@ -115,10 +137,13 @@ async def main() -> None:
     cbar.set_label("Cloud Cover (%)", fontsize=11)
 
     fig.text(
-        0.5, 0.01,
+        0.5,
+        0.01,
         f"Data: Copernicus Sentinel-2 via Earth Search | "
         f"EarthForge v1.0.0 | {datetime.now(UTC).strftime('%Y-%m-%d')}",
-        ha="center", fontsize=7, color="gray",
+        ha="center",
+        fontsize=7,
+        color="gray",
     )
 
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)

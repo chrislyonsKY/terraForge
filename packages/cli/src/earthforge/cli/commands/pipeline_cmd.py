@@ -70,7 +70,8 @@ def run(
     )
     if isinstance(result, BaseModel):
         render_to_console(
-            result, state.output,
+            result,
+            state.output,
             no_color=state.no_color,
             high_contrast=state.high_contrast,
         )

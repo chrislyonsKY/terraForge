@@ -58,9 +58,8 @@ def compute_hillshade(
     slope = np.arctan(np.sqrt(dx**2 + dy**2))
     aspect = np.arctan2(-dy, dx)
 
-    shade = (
-        np.sin(alt_rad) * np.cos(slope)
-        + np.cos(alt_rad) * np.sin(slope) * np.cos(az_rad - aspect)
+    shade = np.sin(alt_rad) * np.cos(slope) + np.cos(alt_rad) * np.sin(slope) * np.cos(
+        az_rad - aspect
     )
     shade = np.clip(shade, 0, 1)
     return (shade * 255).astype(np.uint8)
@@ -111,6 +110,7 @@ async def main() -> None:
     print("Rendering...")
     try:
         import matplotlib
+
         matplotlib.use("Agg")
         import matplotlib.pyplot as plt
     except ImportError:
@@ -126,9 +126,9 @@ async def main() -> None:
     ax.imshow(shade, cmap="gray", alpha=0.35, aspect="auto")
 
     ax.set_title(
-        "Copernicus DEM 30m — Eastern Kentucky\n"
-        "Elevation with Hillshade Overlay",
-        fontsize=13, fontweight="bold",
+        "Copernicus DEM 30m — Eastern Kentucky\nElevation with Hillshade Overlay",
+        fontsize=13,
+        fontweight="bold",
     )
     ax.set_xlabel(f"Pixels (CRS: {crs_str})", fontsize=10)
     ax.set_ylabel("Pixels", fontsize=10)
@@ -137,11 +137,14 @@ async def main() -> None:
     cbar.set_label("Elevation (meters)", fontsize=11)
 
     fig.text(
-        0.5, 0.01,
+        0.5,
+        0.01,
         f"Data: Copernicus DEM GLO-30 via Earth Search | "
         f"Palette: viridis (colorblind-safe) | "
         f"EarthForge v1.0.0 | {datetime.now(UTC).strftime('%Y-%m-%d')}",
-        ha="center", fontsize=7, color="gray",
+        ha="center",
+        fontsize=7,
+        color="gray",
     )
 
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)

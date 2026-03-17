@@ -172,7 +172,7 @@ def safe_eval(expr_str: str, env: dict[str, Any]) -> Any:
                 raise ValueError(msg)
             func_name = node.func.id
             if func_name not in _SAFE_FUNCTIONS:
-                allowed = ', '.join(sorted(_SAFE_FUNCTIONS))
+                allowed = ", ".join(sorted(_SAFE_FUNCTIONS))
                 msg = f"Unknown function '{func_name}'. Allowed: {allowed}"
                 raise ValueError(msg)
             args = [_eval(arg) for arg in node.args]

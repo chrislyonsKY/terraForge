@@ -48,6 +48,7 @@ def main() -> None:
 
     try:
         import matplotlib
+
         matplotlib.use("Agg")
         import matplotlib.pyplot as plt
     except ImportError:
@@ -81,6 +82,7 @@ def main() -> None:
 
     # Clean up
     import shutil
+
     shutil.rmtree(tmp_dir, ignore_errors=True)
 
     # Render matrix
@@ -98,18 +100,19 @@ def main() -> None:
     y = 0.95
     for i, header in enumerate(headers):
         ax.text(
-            col_x[i], y, header,
-            fontsize=11, fontweight="bold",
-            transform=ax.transAxes, verticalalignment="top",
+            col_x[i],
+            y,
+            header,
+            fontsize=11,
+            fontweight="bold",
+            transform=ax.transAxes,
+            verticalalignment="top",
         )
     y -= 0.04
     ax.axhline(y=y * ax.get_position().height, color="gray", linewidth=0.5)
 
     # Data rows
-    set2_rgb = [
-        tuple(int(h[i:i+2], 16) / 255 for i in (1, 3, 5))
-        for h in SET2
-    ]
+    set2_rgb = [tuple(int(h[i : i + 2], 16) / 255 for i in (1, 3, 5)) for h in SET2]
     pass_color = set2_rgb[0]  # teal
     miss_color = set2_rgb[1]  # orange
 
@@ -120,27 +123,35 @@ def main() -> None:
         row = [desc, ext, detected, method, status]
         for i, val in enumerate(row):
             ax.text(
-                col_x[i], y, val,
-                fontsize=9, color="black" if i < 4 else color,
+                col_x[i],
+                y,
+                val,
+                fontsize=9,
+                color="black" if i < 4 else color,
                 fontweight="bold" if i == 4 else "normal",
-                transform=ax.transAxes, verticalalignment="top",
+                transform=ax.transAxes,
+                verticalalignment="top",
             )
 
     ax.set_title(
-        "EarthForge Format Detection Matrix\n"
-        "Magic Bytes + Extension Detection Chain",
-        fontsize=14, fontweight="bold", pad=20,
+        "EarthForge Format Detection Matrix\nMagic Bytes + Extension Detection Chain",
+        fontsize=14,
+        fontweight="bold",
+        pad=20,
     )
 
     pass_count = sum(1 for *_, m in results if m)
     total = len(results)
     fig.text(
-        0.5, 0.01,
+        0.5,
+        0.01,
         f"{pass_count}/{total} formats detected | "
         f"Palette: ColorBrewer Set2 | "
         f"EarthForge v1.0.0 | "
         f"{datetime.now(UTC).strftime('%Y-%m-%d')}",
-        ha="center", fontsize=8, color="gray",
+        ha="center",
+        fontsize=8,
+        color="gray",
     )
 
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)

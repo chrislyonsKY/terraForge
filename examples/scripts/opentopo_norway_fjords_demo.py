@@ -105,13 +105,15 @@ async def main() -> None:
     shade = np.clip(
         np.sin(alt_rad) * np.cos(slope)
         + np.cos(alt_rad) * np.sin(slope) * np.cos(az_rad - aspect),
-        0, 1,
+        0,
+        1,
     )
 
     # Render
     print("Rendering...")
     try:
         import matplotlib
+
         matplotlib.use("Agg")
         import matplotlib.pyplot as plt
     except ImportError:
@@ -128,16 +130,20 @@ async def main() -> None:
     im = ax_map.imshow(
         elevation,
         extent=[lons.min(), lons.max(), lats.min(), lats.max()],
-        cmap="cividis", aspect="auto",
+        cmap="cividis",
+        aspect="auto",
     )
     ax_map.imshow(
-        shade, extent=[lons.min(), lons.max(), lats.min(), lats.max()],
-        cmap="gray", alpha=0.45, aspect="auto",
+        shade,
+        extent=[lons.min(), lons.max(), lats.min(), lats.max()],
+        cmap="gray",
+        alpha=0.45,
+        aspect="auto",
     )
     ax_map.set_title(
-        "Copernicus DEM 30m — Geirangerfjord, Norway\n"
-        "UNESCO World Heritage Fjord Terrain",
-        fontsize=14, fontweight="bold",
+        "Copernicus DEM 30m — Geirangerfjord, Norway\nUNESCO World Heritage Fjord Terrain",
+        fontsize=14,
+        fontweight="bold",
     )
     ax_map.set_xlabel("Longitude", fontsize=10)
     ax_map.set_ylabel("Latitude", fontsize=10)
@@ -145,14 +151,26 @@ async def main() -> None:
     # Draw cross-section line across the fjord
     mid_row = elevation.shape[0] // 2
     ax_map.axhline(
-        y=lats[mid_row], color="black", linewidth=3, linestyle="-", alpha=0.8,
+        y=lats[mid_row],
+        color="black",
+        linewidth=3,
+        linestyle="-",
+        alpha=0.8,
     )
     ax_map.axhline(
-        y=lats[mid_row], color="#ff6600", linewidth=1.5, linestyle="--", alpha=1.0,
+        y=lats[mid_row],
+        color="#ff6600",
+        linewidth=1.5,
+        linestyle="--",
+        alpha=1.0,
     )
     ax_map.text(
-        lons.min() + 0.005, lats[mid_row] + 0.003,
-        "Cross-section", color="white", fontsize=9, fontweight="bold",
+        lons.min() + 0.005,
+        lats[mid_row] + 0.003,
+        "Cross-section",
+        color="white",
+        fontsize=9,
+        fontweight="bold",
         bbox={"boxstyle": "round,pad=0.2", "facecolor": "black", "alpha": 0.7},
     )
 
@@ -171,11 +189,14 @@ async def main() -> None:
     ax_profile.grid(True, alpha=0.3)
 
     fig.text(
-        0.5, 0.01,
+        0.5,
+        0.01,
         f"Data: Copernicus DEM GLO-30 via OpenTopography API | "
         f"Palette: cividis (colorblind-safe) | "
         f"EarthForge v1.0.0 | {datetime.now(UTC).strftime('%Y-%m-%d')}",
-        ha="center", fontsize=7, color="gray",
+        ha="center",
+        fontsize=7,
+        color="gray",
     )
 
     plt.tight_layout(rect=[0, 0.03, 1, 1])

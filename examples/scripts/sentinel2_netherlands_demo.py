@@ -56,8 +56,7 @@ async def main() -> None:
     )
 
     candidates = [
-        item for item in result.items
-        if (item.properties.get("eo:cloud_cover") or 100) < 20
+        item for item in result.items if (item.properties.get("eo:cloud_cover") or 100) < 20
     ]
     if not candidates:
         print("No clear scenes found. Cloud cover is frequent in NL.")
@@ -118,6 +117,7 @@ async def main() -> None:
     # Render
     try:
         import matplotlib
+
         matplotlib.use("Agg")
         import matplotlib.pyplot as plt
         from matplotlib.colors import LinearSegmentedColormap
@@ -125,14 +125,13 @@ async def main() -> None:
         print("matplotlib required: pip install matplotlib")
         return
 
-    brbg_colors = [
-        tuple(int(h[i:i+2], 16) / 255 for i in (1, 3, 5))
-        for h in DIVERGING_BRBG
-    ]
+    brbg_colors = [tuple(int(h[i : i + 2], 16) / 255 for i in (1, 3, 5)) for h in DIVERGING_BRBG]
     cmap = LinearSegmentedColormap.from_list("brbg", brbg_colors, N=256)
 
     fig, (ax_map, ax_bar) = plt.subplots(
-        1, 2, figsize=(13, 7),
+        1,
+        2,
+        figsize=(13, 7),
         gridspec_kw={"width_ratios": [3, 1]},
     )
 
@@ -141,7 +140,8 @@ async def main() -> None:
     ax_map.set_title(
         f"NDVI -- Rotterdam / Delft, Netherlands\n"
         f"Sentinel-2 | {(item.datetime or 'Unknown')[:10]} | {crs_str}",
-        fontsize=13, fontweight="bold",
+        fontsize=13,
+        fontweight="bold",
     )
     ax_map.set_xlabel("Pixels (east-west)", fontsize=10)
     ax_map.set_ylabel("Pixels (north-south)", fontsize=10)
@@ -162,16 +162,22 @@ async def main() -> None:
 
     for bar, val in zip(bars, values, strict=False):
         ax_bar.text(
-            bar.get_width() + 0.5, bar.get_y() + bar.get_height() / 2,
-            f"{val:.1f}%", va="center", fontsize=9,
+            bar.get_width() + 0.5,
+            bar.get_y() + bar.get_height() / 2,
+            f"{val:.1f}%",
+            va="center",
+            fontsize=9,
         )
 
     fig.text(
-        0.5, 0.01,
+        0.5,
+        0.01,
         f"Data: Copernicus Sentinel-2 via Earth Search | "
         f"Palette: BrBG (colorblind-safe) | Rotterdam/Delft, NL | "
         f"EarthForge v1.0.0 | {datetime.now(UTC).strftime('%Y-%m-%d')}",
-        ha="center", fontsize=7, color="gray",
+        ha="center",
+        fontsize=7,
+        color="gray",
     )
 
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)

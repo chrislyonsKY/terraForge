@@ -93,7 +93,9 @@ async def main() -> None:
                     str(src.crs)
                     if src.crs and str(src.crs) != "EPSG:4326":
                         native_bounds = transform_bounds(
-                            "EPSG:4326", src.crs, *YOS_BBOX,
+                            "EPSG:4326",
+                            src.crs,
+                            *YOS_BBOX,
                         )
                     else:
                         native_bounds = YOS_BBOX
@@ -105,8 +107,10 @@ async def main() -> None:
                     dem_elevation[dem_elevation == nodata] = np.nan
 
                 print(f"  Shape: {dem_elevation.shape}")
-                print(f"  Elevation: {np.nanmin(dem_elevation):.0f}m -- "
-                      f"{np.nanmax(dem_elevation):.0f}m")
+                print(
+                    f"  Elevation: {np.nanmin(dem_elevation):.0f}m -- "
+                    f"{np.nanmax(dem_elevation):.0f}m"
+                )
             except Exception as exc:
                 print(f"  Could not read DEM: {exc}")
                 dem_elevation = None
@@ -114,6 +118,7 @@ async def main() -> None:
     # Render two-panel figure
     try:
         import matplotlib
+
         matplotlib.use("Agg")
         import matplotlib.pyplot as plt
         from matplotlib.cm import ScalarMappable
@@ -128,11 +133,19 @@ async def main() -> None:
     # ---- Left panel: Sentinel-2 footprints ----
     bbox_w = YOS_BBOX[2] - YOS_BBOX[0]
     bbox_h = YOS_BBOX[3] - YOS_BBOX[1]
-    ax_s2.add_patch(Rectangle(
-        (YOS_BBOX[0], YOS_BBOX[1]), bbox_w, bbox_h,
-        linewidth=2, edgecolor="black", facecolor="lightgray",
-        alpha=0.3, linestyle="--", label="Search bbox",
-    ))
+    ax_s2.add_patch(
+        Rectangle(
+            (YOS_BBOX[0], YOS_BBOX[1]),
+            bbox_w,
+            bbox_h,
+            linewidth=2,
+            edgecolor="black",
+            facecolor="lightgray",
+            alpha=0.3,
+            linestyle="--",
+            label="Search bbox",
+        )
+    )
 
     cmap_s2 = plt.cm.viridis_r
     norm_s2 = Normalize(vmin=0, vmax=100)
@@ -145,19 +158,25 @@ async def main() -> None:
         if item.bbox and len(item.bbox) >= 4:
             w = item.bbox[2] - item.bbox[0]
             h = item.bbox[3] - item.bbox[1]
-            ax_s2.add_patch(Rectangle(
-                (item.bbox[0], item.bbox[1]), w, h,
-                linewidth=0.8, edgecolor=color,
-                facecolor=color, alpha=0.35,
-            ))
+            ax_s2.add_patch(
+                Rectangle(
+                    (item.bbox[0], item.bbox[1]),
+                    w,
+                    h,
+                    linewidth=0.8,
+                    edgecolor=color,
+                    facecolor=color,
+                    alpha=0.35,
+                )
+            )
 
     ax_s2.set_xlim(YOS_BBOX[0] - 0.3, YOS_BBOX[2] + 0.3)
     ax_s2.set_ylim(YOS_BBOX[1] - 0.2, YOS_BBOX[3] + 0.2)
     ax_s2.set_aspect("equal")
     ax_s2.set_title(
-        f"Sentinel-2 Scene Footprints\n"
-        f"{len(s2_result.items)} scenes | Jun-Sep 2025",
-        fontsize=12, fontweight="bold",
+        f"Sentinel-2 Scene Footprints\n{len(s2_result.items)} scenes | Jun-Sep 2025",
+        fontsize=12,
+        fontweight="bold",
     )
     ax_s2.set_xlabel("Longitude", fontsize=10)
     ax_s2.set_ylabel("Latitude", fontsize=10)
@@ -175,9 +194,9 @@ async def main() -> None:
         aspect = np.arctan2(-dy, dx)
         shade = np.clip(
             np.sin(np.radians(45)) * np.cos(slope)
-            + np.cos(np.radians(45)) * np.sin(slope)
-            * np.cos(np.radians(315) - aspect),
-            0, 1,
+            + np.cos(np.radians(45)) * np.sin(slope) * np.cos(np.radians(315) - aspect),
+            0,
+            1,
         )
 
         lons = np.linspace(YOS_BBOX[0], YOS_BBOX[2], dem_elevation.shape[1])
@@ -186,16 +205,20 @@ async def main() -> None:
         im = ax_dem.imshow(
             dem_elevation,
             extent=[lons.min(), lons.max(), lats.min(), lats.max()],
-            cmap="cividis", aspect="auto",
+            cmap="cividis",
+            aspect="auto",
         )
         ax_dem.imshow(
-            shade, extent=[lons.min(), lons.max(), lats.min(), lats.max()],
-            cmap="gray", alpha=0.35, aspect="auto",
+            shade,
+            extent=[lons.min(), lons.max(), lats.min(), lats.max()],
+            cmap="gray",
+            alpha=0.35,
+            aspect="auto",
         )
         ax_dem.set_title(
-            f"Copernicus DEM 30m\n"
-            f"Tile: {dem_tile_id}",
-            fontsize=12, fontweight="bold",
+            f"Copernicus DEM 30m\nTile: {dem_tile_id}",
+            fontsize=12,
+            fontweight="bold",
         )
         ax_dem.set_xlabel("Longitude", fontsize=10)
         ax_dem.set_ylabel("Latitude", fontsize=10)
@@ -214,29 +237,43 @@ async def main() -> None:
             f"Relief: {elev_max - elev_min:.0f}m"
         )
         ax_dem.text(
-            0.02, 0.02, stats_text,
-            transform=ax_dem.transAxes, fontsize=9, fontfamily="monospace",
+            0.02,
+            0.02,
+            stats_text,
+            transform=ax_dem.transAxes,
+            fontsize=9,
+            fontfamily="monospace",
             bbox={"boxstyle": "round,pad=0.3", "facecolor": "white", "alpha": 0.85},
         )
     else:
         ax_dem.text(
-            0.5, 0.5, "DEM tile could not be loaded",
-            transform=ax_dem.transAxes, ha="center", va="center", fontsize=12,
+            0.5,
+            0.5,
+            "DEM tile could not be loaded",
+            transform=ax_dem.transAxes,
+            ha="center",
+            va="center",
+            fontsize=12,
         )
         ax_dem.set_title("Copernicus DEM 30m\n(not available)", fontsize=12)
         elev_min = elev_max = elev_mean = 0.0
 
     fig.suptitle(
         "Multi-Collection STAC Search -- Yosemite National Park",
-        fontsize=15, fontweight="bold", y=0.98,
+        fontsize=15,
+        fontweight="bold",
+        y=0.98,
     )
 
     fig.text(
-        0.5, 0.01,
+        0.5,
+        0.01,
         f"Data: Copernicus Sentinel-2 + DEM GLO-30 via Earth Search | "
         f"Palettes: viridis, cividis (colorblind-safe) | "
         f"EarthForge v1.0.0 | {datetime.now(UTC).strftime('%Y-%m-%d')}",
-        ha="center", fontsize=7, color="gray",
+        ha="center",
+        fontsize=7,
+        color="gray",
     )
 
     plt.tight_layout(rect=[0, 0.03, 1, 0.95])

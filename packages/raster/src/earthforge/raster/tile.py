@@ -75,8 +75,11 @@ async def generate_tiles(
     return await loop.run_in_executor(
         None,
         partial(
-            _generate_tiles_sync, source, output_dir,
-            zoom_range=zoom_range, tile_size=tile_size,
+            _generate_tiles_sync,
+            source,
+            output_dir,
+            zoom_range=zoom_range,
+            tile_size=tile_size,
         ),
     )
 
@@ -97,7 +100,7 @@ def _lng_lat_to_tile(lng: float, lat: float, zoom: int) -> tuple[int, int]:
     Returns:
         Tuple of (tile_x, tile_y).
     """
-    n = 2 ** zoom
+    n = 2**zoom
     x = int((lng + 180.0) / 360.0 * n)
     lat_rad = math.radians(lat)
     y = int((1.0 - math.log(math.tan(lat_rad) + 1.0 / math.cos(lat_rad)) / math.pi) / 2.0 * n)
@@ -117,7 +120,7 @@ def _tile_bounds(x: int, y: int, zoom: int) -> tuple[float, float, float, float]
     Returns:
         Tuple of (west, south, east, north) in degrees.
     """
-    n = 2 ** zoom
+    n = 2**zoom
     west = x / n * 360.0 - 180.0
     east = (x + 1) / n * 360.0 - 180.0
     north_rad = math.atan(math.sinh(math.pi * (1 - 2 * y / n)))
@@ -145,11 +148,10 @@ def _generate_tiles_sync(
 
     try:
         import PIL
+
         del PIL
     except ImportError as exc:
-        raise RasterError(
-            "Pillow is required for tile generation: pip install Pillow"
-        ) from exc
+        raise RasterError("Pillow is required for tile generation: pip install Pillow") from exc
 
     out_path = Path(output_dir)
     out_path.mkdir(parents=True, exist_ok=True)
@@ -183,7 +185,9 @@ def _generate_tiles_sync(
                         except Exception:
                             logger.debug(
                                 "Skipping tile z=%d x=%d y=%d (outside data)",
-                                zoom, tx, ty,
+                                zoom,
+                                tx,
+                                ty,
                             )
                             continue
 
@@ -229,9 +233,14 @@ def _render_tile(
     # Reproject tile bounds to dataset CRS
     if src.crs and str(src.crs) != "EPSG:4326":
         from rasterio.warp import transform_bounds
+
         tile_bounds = transform_bounds(
-            "EPSG:4326", src.crs,
-            tile_west, tile_south, tile_east, tile_north,
+            "EPSG:4326",
+            src.crs,
+            tile_west,
+            tile_south,
+            tile_east,
+            tile_north,
         )
     else:
         tile_bounds = (tile_west, tile_south, tile_east, tile_north)

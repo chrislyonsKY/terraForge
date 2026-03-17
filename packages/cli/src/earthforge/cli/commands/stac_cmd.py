@@ -79,7 +79,8 @@ def search(
     result = run_command(ctx, _run())
     if isinstance(result, BaseModel):
         render_to_console(
-            result, state.output,
+            result,
+            state.output,
             no_color=state.no_color,
             high_contrast=state.high_contrast,
         )
@@ -109,7 +110,8 @@ def info(
     result = run_command(ctx, _run())
     if isinstance(result, BaseModel):
         render_to_console(
-            result, state.output,
+            result,
+            state.output,
             no_color=state.no_color,
             high_contrast=state.high_contrast,
         )
@@ -164,7 +166,8 @@ def fetch(
     result = run_command(ctx, _run())
     if isinstance(result, BaseModel):
         render_to_console(
-            result, state.output,
+            result,
+            state.output,
             no_color=state.no_color,
             high_contrast=state.high_contrast,
         )
@@ -189,7 +192,8 @@ def validate(
     result = run_command(ctx, _run())
     if isinstance(result, BaseModel):
         render_to_console(
-            result, state.output,
+            result,
+            state.output,
             no_color=state.no_color,
             high_contrast=state.high_contrast,
         )
@@ -244,7 +248,8 @@ def publish(
     result = run_command(ctx, _run())
     if isinstance(result, BaseModel):
         render_to_console(
-            result, state.output,
+            result,
+            state.output,
             no_color=state.no_color,
             high_contrast=state.high_contrast,
         )

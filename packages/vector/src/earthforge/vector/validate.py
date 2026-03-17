@@ -111,20 +111,24 @@ def _validate_sync(source: str) -> VectorValidationResult:
     except Exception as exc:
         raise VectorValidationError(f"Cannot read Parquet file {source}: {exc}") from exc
 
-    checks.append(VectorValidationCheck(
-        check="parquet_readable",
-        status=format_status(StatusMarker.PASS),
-        message="File is valid Parquet",
-    ))
+    checks.append(
+        VectorValidationCheck(
+            check="parquet_readable",
+            status=format_status(StatusMarker.PASS),
+            message="File is valid Parquet",
+        )
+    )
 
     # --- Check for geo metadata ---
     geo_bytes = metadata.get(b"geo")
     if geo_bytes is None:
-        checks.append(VectorValidationCheck(
-            check="geo_metadata",
-            status=format_status(StatusMarker.FAIL),
-            message="Missing 'geo' metadata key — not a GeoParquet file",
-        ))
+        checks.append(
+            VectorValidationCheck(
+                check="geo_metadata",
+                status=format_status(StatusMarker.FAIL),
+                message="Missing 'geo' metadata key — not a GeoParquet file",
+            )
+        )
         return VectorValidationResult(
             source=source,
             is_valid=False,
@@ -138,11 +142,13 @@ def _validate_sync(source: str) -> VectorValidationResult:
     try:
         geo_meta: dict[str, Any] = json.loads(geo_bytes)
     except json.JSONDecodeError as exc:
-        checks.append(VectorValidationCheck(
-            check="geo_metadata",
-            status=format_status(StatusMarker.FAIL),
-            message=f"Invalid JSON in 'geo' metadata: {exc}",
-        ))
+        checks.append(
+            VectorValidationCheck(
+                check="geo_metadata",
+                status=format_status(StatusMarker.FAIL),
+                message=f"Invalid JSON in 'geo' metadata: {exc}",
+            )
+        )
         return VectorValidationResult(
             source=source,
             is_valid=False,
@@ -150,26 +156,32 @@ def _validate_sync(source: str) -> VectorValidationResult:
             summary=format_status(StatusMarker.FAIL, "Invalid 'geo' metadata JSON"),
         )
 
-    checks.append(VectorValidationCheck(
-        check="geo_metadata",
-        status=format_status(StatusMarker.PASS),
-        message="'geo' metadata key present and valid JSON",
-    ))
+    checks.append(
+        VectorValidationCheck(
+            check="geo_metadata",
+            status=format_status(StatusMarker.PASS),
+            message="'geo' metadata key present and valid JSON",
+        )
+    )
 
     # --- GeoParquet version ---
     format_version = geo_meta.get("version")
     if format_version:
-        checks.append(VectorValidationCheck(
-            check="geoparquet_version",
-            status=format_status(StatusMarker.PASS),
-            message=f"GeoParquet version: {format_version}",
-        ))
+        checks.append(
+            VectorValidationCheck(
+                check="geoparquet_version",
+                status=format_status(StatusMarker.PASS),
+                message=f"GeoParquet version: {format_version}",
+            )
+        )
     else:
-        checks.append(VectorValidationCheck(
-            check="geoparquet_version",
-            status=format_status(StatusMarker.WARN),
-            message="No version field in geo metadata",
-        ))
+        checks.append(
+            VectorValidationCheck(
+                check="geoparquet_version",
+                status=format_status(StatusMarker.WARN),
+                message="No version field in geo metadata",
+            )
+        )
 
     # --- Primary geometry column ---
     primary_column = geo_meta.get("primary_column")
@@ -177,50 +189,62 @@ def _validate_sync(source: str) -> VectorValidationResult:
 
     if primary_column:
         geometry_column = primary_column
-        checks.append(VectorValidationCheck(
-            check="primary_column",
-            status=format_status(StatusMarker.PASS),
-            message=f"Primary geometry column: '{primary_column}'",
-        ))
+        checks.append(
+            VectorValidationCheck(
+                check="primary_column",
+                status=format_status(StatusMarker.PASS),
+                message=f"Primary geometry column: '{primary_column}'",
+            )
+        )
     elif columns_meta:
         geometry_column = next(iter(columns_meta))
-        checks.append(VectorValidationCheck(
-            check="primary_column",
-            status=format_status(StatusMarker.WARN),
-            message=f"No primary_column declared; using first column: '{geometry_column}'",
-        ))
+        checks.append(
+            VectorValidationCheck(
+                check="primary_column",
+                status=format_status(StatusMarker.WARN),
+                message=f"No primary_column declared; using first column: '{geometry_column}'",
+            )
+        )
     else:
-        checks.append(VectorValidationCheck(
-            check="primary_column",
-            status=format_status(StatusMarker.FAIL),
-            message="No geometry columns defined in geo metadata",
-        ))
+        checks.append(
+            VectorValidationCheck(
+                check="primary_column",
+                status=format_status(StatusMarker.FAIL),
+                message="No geometry columns defined in geo metadata",
+            )
+        )
 
     # --- Geometry column exists in schema ---
     schema_names = [field.name for field in pf.schema_arrow]
     if geometry_column and geometry_column in schema_names:
-        checks.append(VectorValidationCheck(
-            check="column_in_schema",
-            status=format_status(StatusMarker.PASS),
-            message=f"Geometry column '{geometry_column}' exists in Parquet schema",
-        ))
+        checks.append(
+            VectorValidationCheck(
+                check="column_in_schema",
+                status=format_status(StatusMarker.PASS),
+                message=f"Geometry column '{geometry_column}' exists in Parquet schema",
+            )
+        )
     elif geometry_column:
-        checks.append(VectorValidationCheck(
-            check="column_in_schema",
-            status=format_status(StatusMarker.FAIL),
-            message=f"Geometry column '{geometry_column}' not found in schema",
-        ))
+        checks.append(
+            VectorValidationCheck(
+                check="column_in_schema",
+                status=format_status(StatusMarker.FAIL),
+                message=f"Geometry column '{geometry_column}' not found in schema",
+            )
+        )
 
     # --- CRS check ---
     if geometry_column and geometry_column in columns_meta:
         col_meta = columns_meta[geometry_column]
         crs_data = col_meta.get("crs")
         if crs_data is None:
-            checks.append(VectorValidationCheck(
-                check="crs",
-                status=format_status(StatusMarker.WARN),
-                message="No CRS specified (defaults to OGC:CRS84 / WGS84)",
-            ))
+            checks.append(
+                VectorValidationCheck(
+                    check="crs",
+                    status=format_status(StatusMarker.WARN),
+                    message="No CRS specified (defaults to OGC:CRS84 / WGS84)",
+                )
+            )
             crs_id = "OGC:CRS84"
         elif isinstance(crs_data, dict):
             # PROJJSON format
@@ -232,61 +256,80 @@ def _validate_sync(source: str) -> VectorValidationResult:
                 crs_id = f"{authority}:{code}" if authority and code else crs_name
             else:
                 crs_id = crs_name
-            checks.append(VectorValidationCheck(
-                check="crs",
-                status=format_status(StatusMarker.PASS),
-                message=f"CRS in PROJJSON format: {crs_id}",
-            ))
+            checks.append(
+                VectorValidationCheck(
+                    check="crs",
+                    status=format_status(StatusMarker.PASS),
+                    message=f"CRS in PROJJSON format: {crs_id}",
+                )
+            )
         else:
-            checks.append(VectorValidationCheck(
-                check="crs",
-                status=format_status(StatusMarker.WARN),
-                message=f"CRS format not PROJJSON: {type(crs_data).__name__}",
-            ))
+            checks.append(
+                VectorValidationCheck(
+                    check="crs",
+                    status=format_status(StatusMarker.WARN),
+                    message=f"CRS format not PROJJSON: {type(crs_data).__name__}",
+                )
+            )
 
         # --- Encoding check ---
         enc = col_meta.get("encoding", "WKB")
         encoding = enc
         valid_encodings = (
-            "WKB", "POINT", "LINESTRING", "POLYGON",
-            "MULTIPOINT", "MULTILINESTRING", "MULTIPOLYGON",
+            "WKB",
+            "POINT",
+            "LINESTRING",
+            "POLYGON",
+            "MULTIPOINT",
+            "MULTILINESTRING",
+            "MULTIPOLYGON",
         )
         if enc.upper() in valid_encodings:
-            checks.append(VectorValidationCheck(
-                check="encoding",
-                status=format_status(StatusMarker.PASS),
-                message=f"Geometry encoding: {enc}",
-            ))
+            checks.append(
+                VectorValidationCheck(
+                    check="encoding",
+                    status=format_status(StatusMarker.PASS),
+                    message=f"Geometry encoding: {enc}",
+                )
+            )
         else:
-            checks.append(VectorValidationCheck(
-                check="encoding",
-                status=format_status(StatusMarker.WARN),
-                message=f"Unusual geometry encoding: {enc}",
-            ))
+            checks.append(
+                VectorValidationCheck(
+                    check="encoding",
+                    status=format_status(StatusMarker.WARN),
+                    message=f"Unusual geometry encoding: {enc}",
+                )
+            )
 
         # --- Bbox check ---
         bbox = col_meta.get("bbox")
         if bbox and isinstance(bbox, list) and len(bbox) >= 4:
-            checks.append(VectorValidationCheck(
-                check="bbox",
-                status=format_status(StatusMarker.PASS),
-                message=f"Bounding box: [{', '.join(str(v) for v in bbox)}]",
-            ))
+            checks.append(
+                VectorValidationCheck(
+                    check="bbox",
+                    status=format_status(StatusMarker.PASS),
+                    message=f"Bounding box: [{', '.join(str(v) for v in bbox)}]",
+                )
+            )
         elif bbox:
-            checks.append(VectorValidationCheck(
-                check="bbox",
-                status=format_status(StatusMarker.WARN),
-                message=f"Invalid bbox format: {bbox}",
-            ))
+            checks.append(
+                VectorValidationCheck(
+                    check="bbox",
+                    status=format_status(StatusMarker.WARN),
+                    message=f"Invalid bbox format: {bbox}",
+                )
+            )
 
         # --- Geometry types ---
         geom_types = col_meta.get("geometry_types", [])
         if geom_types:
-            checks.append(VectorValidationCheck(
-                check="geometry_types",
-                status=format_status(StatusMarker.PASS),
-                message=f"Geometry types: {', '.join(geom_types)}",
-            ))
+            checks.append(
+                VectorValidationCheck(
+                    check="geometry_types",
+                    status=format_status(StatusMarker.PASS),
+                    message=f"Geometry types: {', '.join(geom_types)}",
+                )
+            )
 
     # --- Summary ---
     fail_count = sum(1 for c in checks if StatusMarker.FAIL.value in c.status)

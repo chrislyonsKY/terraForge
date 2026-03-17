@@ -31,7 +31,8 @@ def info(
     result = run_command(ctx, inspect_vector(source))
     if isinstance(result, BaseModel):
         render_to_console(
-            result, state.output,
+            result,
+            state.output,
             no_color=state.no_color,
             high_contrast=state.high_contrast,
         )
@@ -95,7 +96,8 @@ def query(
     )
     if isinstance(result, BaseModel):
         render_to_console(
-            result, state.output,
+            result,
+            state.output,
             no_color=state.no_color,
             high_contrast=state.high_contrast,
         )
@@ -127,7 +129,8 @@ def convert(
     )
     if isinstance(result, BaseModel):
         render_to_console(
-            result, state.output,
+            result,
+            state.output,
             no_color=state.no_color,
             high_contrast=state.high_contrast,
         )
@@ -145,7 +148,8 @@ def validate(
     result = run_command(ctx, validate_geoparquet(source))
     if isinstance(result, BaseModel):
         render_to_console(
-            result, state.output,
+            result,
+            state.output,
             no_color=state.no_color,
             high_contrast=state.high_contrast,
         )
@@ -158,7 +162,9 @@ def tile(
     min_zoom: int = typer.Option(0, "--min-zoom", help="Minimum zoom level."),
     max_zoom: int = typer.Option(14, "--max-zoom", help="Maximum zoom level."),
     layer_name: str | None = typer.Option(
-        None, "--layer", help="Layer name. Default: input filename.",
+        None,
+        "--layer",
+        help="Layer name. Default: input filename.",
     ),
 ) -> None:
     """Generate vector tiles (PMTiles or MBTiles) from a vector file."""
@@ -178,7 +184,8 @@ def tile(
     )
     if isinstance(result, BaseModel):
         render_to_console(
-            result, state.output,
+            result,
+            state.output,
             no_color=state.no_color,
             high_contrast=state.high_contrast,
         )
@@ -225,7 +232,8 @@ def clip(
     )
     if isinstance(result, BaseModel):
         render_to_console(
-            result, state.output,
+            result,
+            state.output,
             no_color=state.no_color,
             high_contrast=state.high_contrast,
         )

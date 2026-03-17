@@ -103,13 +103,15 @@ async def main() -> None:
     shade = np.clip(
         np.sin(alt_rad) * np.cos(slope)
         + np.cos(alt_rad) * np.sin(slope) * np.cos(az_rad - aspect),
-        0, 1,
+        0,
+        1,
     )
 
     # Render
     print("Rendering...")
     try:
         import matplotlib
+
         matplotlib.use("Agg")
         import matplotlib.pyplot as plt
     except ImportError:
@@ -117,7 +119,9 @@ async def main() -> None:
         return
 
     fig, ((ax_map, ax_stats_panel), (ax_hist, ax_blank)) = plt.subplots(
-        2, 2, figsize=(14, 10),
+        2,
+        2,
+        figsize=(14, 10),
         gridspec_kw={"width_ratios": [3, 1], "height_ratios": [3, 2]},
     )
 
@@ -128,17 +132,20 @@ async def main() -> None:
     im = ax_map.imshow(
         elevation,
         extent=[bounds.left, bounds.right, bounds.bottom, bounds.top],
-        cmap="viridis", aspect="auto",
+        cmap="viridis",
+        aspect="auto",
     )
     ax_map.imshow(
         shade,
         extent=[bounds.left, bounds.right, bounds.bottom, bounds.top],
-        cmap="gray", alpha=0.35, aspect="auto",
+        cmap="gray",
+        alpha=0.35,
+        aspect="auto",
     )
     ax_map.set_title(
-        "Copernicus DEM 30m — Mount Everest Region\n"
-        "Khumbu Himal, Nepal/Tibet",
-        fontsize=13, fontweight="bold",
+        "Copernicus DEM 30m — Mount Everest Region\nKhumbu Himal, Nepal/Tibet",
+        fontsize=13,
+        fontweight="bold",
     )
     ax_map.set_xlabel("Longitude", fontsize=10)
     ax_map.set_ylabel("Latitude", fontsize=10)
@@ -166,9 +173,12 @@ async def main() -> None:
         f"Size:   {stats_result.width}x{stats_result.height}\n"
     )
     ax_stats_panel.text(
-        0.05, 0.95, stats_text,
+        0.05,
+        0.95,
+        stats_text,
         transform=ax_stats_panel.transAxes,
-        fontsize=10, fontfamily="monospace",
+        fontsize=10,
+        fontfamily="monospace",
         verticalalignment="top",
     )
 
@@ -179,8 +189,7 @@ async def main() -> None:
     widths = [edges[i + 1] - edges[i] for i in range(len(counts))]
 
     norm_vals = [
-        (c - band.min) / (band.max - band.min) if band.max > band.min else 0.5
-        for c in centers
+        (c - band.min) / (band.max - band.min) if band.max > band.min else 0.5 for c in centers
     ]
     bar_cmap = plt.cm.viridis
     colors = [bar_cmap(v) for v in norm_vals]
@@ -195,11 +204,14 @@ async def main() -> None:
     ax_blank.axis("off")
 
     fig.text(
-        0.5, 0.01,
+        0.5,
+        0.01,
         f"Data: Copernicus DEM GLO-30 via Earth Search | "
         f"Palette: viridis (colorblind-safe) | "
         f"EarthForge v1.0.0 | {datetime.now(UTC).strftime('%Y-%m-%d')}",
-        ha="center", fontsize=7, color="gray",
+        ha="center",
+        fontsize=7,
+        color="gray",
     )
 
     plt.tight_layout(rect=[0, 0.03, 1, 1])

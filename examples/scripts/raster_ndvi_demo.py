@@ -56,8 +56,7 @@ async def main() -> None:
 
     # Pick clearest scene
     candidates = [
-        item for item in result.items
-        if (item.properties.get("eo:cloud_cover") or 100) < 15
+        item for item in result.items if (item.properties.get("eo:cloud_cover") or 100) < 15
     ]
     if not candidates:
         print("No clear scenes found. Try a wider date range.")
@@ -120,6 +119,7 @@ async def main() -> None:
     print("Rendering map...")
     try:
         import matplotlib
+
         matplotlib.use("Agg")
         import matplotlib.pyplot as plt
         from matplotlib.colors import LinearSegmentedColormap
@@ -128,19 +128,16 @@ async def main() -> None:
         return
 
     # Create colormap from BrBG palette
-    brbg_colors = [
-        tuple(int(h[i:i+2], 16) / 255 for i in (1, 3, 5))
-        for h in DIVERGING_BRBG
-    ]
+    brbg_colors = [tuple(int(h[i : i + 2], 16) / 255 for i in (1, 3, 5)) for h in DIVERGING_BRBG]
     cmap = LinearSegmentedColormap.from_list("brbg", brbg_colors, N=256)
 
     fig, ax = plt.subplots(figsize=(10, 8))
     im = ax.imshow(ndvi, cmap=cmap, vmin=-0.5, vmax=1.0, aspect="auto")
 
     ax.set_title(
-        f"NDVI — Sentinel-2 L2A\n"
-        f"Central Kentucky | {(item.datetime or 'Unknown')[:10]}",
-        fontsize=13, fontweight="bold",
+        f"NDVI — Sentinel-2 L2A\nCentral Kentucky | {(item.datetime or 'Unknown')[:10]}",
+        fontsize=13,
+        fontweight="bold",
     )
     ax.set_xlabel(f"Pixels (CRS: {crs_str})", fontsize=10)
     ax.set_ylabel("Pixels", fontsize=10)
@@ -152,11 +149,14 @@ async def main() -> None:
 
     # Attribution
     fig.text(
-        0.5, 0.01,
+        0.5,
+        0.01,
         f"Data: Copernicus Sentinel-2 via Earth Search | "
         f"Palette: BrBG (colorblind-safe) | "
         f"EarthForge v1.0.0 | {datetime.now(UTC).strftime('%Y-%m-%d')}",
-        ha="center", fontsize=7, color="gray",
+        ha="center",
+        fontsize=7,
+        color="gray",
     )
 
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)

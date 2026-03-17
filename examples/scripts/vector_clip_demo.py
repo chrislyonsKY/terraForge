@@ -60,6 +60,7 @@ async def main() -> None:
     try:
         import geopandas as gpd
         import matplotlib
+
         matplotlib.use("Agg")
         import matplotlib.pyplot as plt
         from shapely.geometry import box
@@ -73,11 +74,13 @@ async def main() -> None:
         if not item.bbox:
             continue
         w, s, e, n = item.bbox
-        features.append({
-            "geometry": box(w, s, e, n),
-            "id": item.id,
-            "cloud_cover": item.properties.get("eo:cloud_cover", 0),
-        })
+        features.append(
+            {
+                "geometry": box(w, s, e, n),
+                "id": item.id,
+                "cloud_cover": item.properties.get("eo:cloud_cover", 0),
+            }
+        )
 
     gdf = gpd.GeoDataFrame(features, crs="EPSG:4326")
     print(f"Original: {len(gdf)} footprints")
@@ -90,14 +93,10 @@ async def main() -> None:
     # Render side-by-side
     fig, (ax_full, ax_clip) = plt.subplots(1, 2, figsize=(14, 6))
 
-    set2_rgb = [
-        tuple(int(h[i:i+2], 16) / 255 for i in (1, 3, 5))
-        for h in SET2
-    ]
+    set2_rgb = [tuple(int(h[i : i + 2], 16) / 255 for i in (1, 3, 5)) for h in SET2]
 
     # Left: full extent
-    gdf.plot(ax=ax_full, color=set2_rgb[0], edgecolor="gray",
-             linewidth=0.5, alpha=0.4)
+    gdf.plot(ax=ax_full, color=set2_rgb[0], edgecolor="gray", linewidth=0.5, alpha=0.4)
     gpd.GeoDataFrame([{"geometry": clip_geom}], crs="EPSG:4326").boundary.plot(
         ax=ax_full, color="red", linewidth=2, linestyle="--"
     )
@@ -107,28 +106,29 @@ async def main() -> None:
 
     # Right: clipped
     if len(clipped) > 0:
-        clipped.plot(ax=ax_clip, color=set2_rgb[1], edgecolor="gray",
-                     linewidth=0.5, alpha=0.6)
+        clipped.plot(ax=ax_clip, color=set2_rgb[1], edgecolor="gray", linewidth=0.5, alpha=0.6)
     gpd.GeoDataFrame([{"geometry": clip_geom}], crs="EPSG:4326").boundary.plot(
         ax=ax_clip, color="red", linewidth=2
     )
-    ax_clip.set_title(
-        f"Clipped to Lexington ({len(clipped)})", fontsize=12, fontweight="bold"
-    )
+    ax_clip.set_title(f"Clipped to Lexington ({len(clipped)})", fontsize=12, fontweight="bold")
     ax_clip.set_xlabel("Longitude", fontsize=9)
     ax_clip.set_xlim(CLIP_BBOX[0] - 0.05, CLIP_BBOX[2] + 0.05)
     ax_clip.set_ylim(CLIP_BBOX[1] - 0.05, CLIP_BBOX[3] + 0.05)
 
     fig.suptitle(
         "Vector Clip — Sentinel-2 Footprints\nJuly 2025",
-        fontsize=14, fontweight="bold",
+        fontsize=14,
+        fontweight="bold",
     )
     fig.text(
-        0.5, 0.01,
+        0.5,
+        0.01,
         f"Data: Copernicus Sentinel-2 via Earth Search | "
         f"Palette: Set2 | EarthForge v1.0.0 | "
         f"{datetime.now(UTC).strftime('%Y-%m-%d')}",
-        ha="center", fontsize=7, color="gray",
+        ha="center",
+        fontsize=7,
+        color="gray",
     )
 
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)

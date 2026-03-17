@@ -21,13 +21,23 @@ def _run(coro):
 def _create_band(path: Path, values: np.ndarray) -> None:
     """Create a single-band GeoTIFF with the given values."""
     transform = from_bounds(
-        0, 0, values.shape[1], values.shape[0],
-        values.shape[1], values.shape[0],
+        0,
+        0,
+        values.shape[1],
+        values.shape[0],
+        values.shape[1],
+        values.shape[0],
     )
     with rasterio.open(
-        str(path), "w", driver="GTiff",
-        height=values.shape[0], width=values.shape[1],
-        count=1, dtype="float32", crs="EPSG:4326", transform=transform,
+        str(path),
+        "w",
+        driver="GTiff",
+        height=values.shape[0],
+        width=values.shape[1],
+        count=1,
+        dtype="float32",
+        crs="EPSG:4326",
+        transform=transform,
     ) as dst:
         dst.write(values.astype(np.float32), 1)
 
@@ -39,11 +49,13 @@ class TestRasterCalc:
         _create_band(tmp_path / "a.tif", a)
         _create_band(tmp_path / "b.tif", b)
 
-        result = _run(raster_calc(
-            "A + B",
-            {"A": str(tmp_path / "a.tif"), "B": str(tmp_path / "b.tif")},
-            str(tmp_path / "out.tif"),
-        ))
+        result = _run(
+            raster_calc(
+                "A + B",
+                {"A": str(tmp_path / "a.tif"), "B": str(tmp_path / "b.tif")},
+                str(tmp_path / "out.tif"),
+            )
+        )
 
         assert isinstance(result, RasterCalcResult)
         assert result.expression == "A + B"
@@ -59,11 +71,13 @@ class TestRasterCalc:
         _create_band(tmp_path / "nir.tif", nir)
         _create_band(tmp_path / "red.tif", red)
 
-        result = _run(raster_calc(
-            "(B08 - B04) / (B08 + B04)",
-            {"B08": str(tmp_path / "nir.tif"), "B04": str(tmp_path / "red.tif")},
-            str(tmp_path / "ndvi.tif"),
-        ))
+        result = _run(
+            raster_calc(
+                "(B08 - B04) / (B08 + B04)",
+                {"B08": str(tmp_path / "nir.tif"), "B04": str(tmp_path / "red.tif")},
+                str(tmp_path / "ndvi.tif"),
+            )
+        )
 
         with rasterio.open(result.output) as src:
             data = src.read(1)
@@ -73,11 +87,13 @@ class TestRasterCalc:
         a = np.ones((3, 3), dtype=np.float32)
         _create_band(tmp_path / "a.tif", a)
 
-        result = _run(raster_calc(
-            "A * 2",
-            {"A": str(tmp_path / "a.tif")},
-            str(tmp_path / "out.tif"),
-        ))
+        result = _run(
+            raster_calc(
+                "A * 2",
+                {"A": str(tmp_path / "a.tif")},
+                str(tmp_path / "out.tif"),
+            )
+        )
 
         assert result.width == 3
         assert result.height == 3

@@ -102,13 +102,15 @@ async def main() -> None:
     shade = np.clip(
         np.sin(np.radians(45)) * np.cos(slope)
         + np.cos(np.radians(45)) * np.sin(slope) * np.cos(np.radians(315) - aspect),
-        0, 1,
+        0,
+        1,
     )
 
     # Render
     print("Rendering...")
     try:
         import matplotlib
+
         matplotlib.use("Agg")
         import matplotlib.pyplot as plt
     except ImportError:
@@ -116,7 +118,9 @@ async def main() -> None:
         return
 
     fig, axes = plt.subplots(
-        2, 1, figsize=(12, 10),
+        2,
+        1,
+        figsize=(12, 10),
         gridspec_kw={"height_ratios": [3, 1]},
     )
 
@@ -128,16 +132,20 @@ async def main() -> None:
     im = ax_map.imshow(
         elevation,
         extent=[lons.min(), lons.max(), lats.min(), lats.max()],
-        cmap="cividis", aspect="auto",
+        cmap="cividis",
+        aspect="auto",
     )
     ax_map.imshow(
-        shade, extent=[lons.min(), lons.max(), lats.min(), lats.max()],
-        cmap="gray", alpha=0.4, aspect="auto",
+        shade,
+        extent=[lons.min(), lons.max(), lats.min(), lats.max()],
+        cmap="gray",
+        alpha=0.4,
+        aspect="auto",
     )
     ax_map.set_title(
-        "Mt. Rainier -- SRTM 30m DEM\n"
-        "Cascade Range, Washington",
-        fontsize=14, fontweight="bold",
+        "Mt. Rainier -- SRTM 30m DEM\nCascade Range, Washington",
+        fontsize=14,
+        fontweight="bold",
     )
     ax_map.set_xlabel("Longitude", fontsize=10)
     ax_map.set_ylabel("Latitude", fontsize=10)
@@ -145,14 +153,26 @@ async def main() -> None:
     # Cross-section line through the peak (find row of max elevation)
     peak_row = np.unravel_index(np.nanargmax(elevation), elevation.shape)[0]
     ax_map.axhline(
-        y=lats[peak_row], color="black", linewidth=3, linestyle="-", alpha=0.8,
+        y=lats[peak_row],
+        color="black",
+        linewidth=3,
+        linestyle="-",
+        alpha=0.8,
     )
     ax_map.axhline(
-        y=lats[peak_row], color="#ff6600", linewidth=1.5, linestyle="--", alpha=1.0,
+        y=lats[peak_row],
+        color="#ff6600",
+        linewidth=1.5,
+        linestyle="--",
+        alpha=1.0,
     )
     ax_map.text(
-        lons.min() + 0.005, lats[peak_row] + 0.005,
-        "Summit cross-section", color="white", fontsize=9, fontweight="bold",
+        lons.min() + 0.005,
+        lats[peak_row] + 0.005,
+        "Summit cross-section",
+        color="white",
+        fontsize=9,
+        fontweight="bold",
         bbox={"boxstyle": "round,pad=0.2", "facecolor": "black", "alpha": 0.7},
     )
 
@@ -176,11 +196,14 @@ async def main() -> None:
     ax_profile.grid(True, alpha=0.3)
 
     fig.text(
-        0.5, 0.01,
+        0.5,
+        0.01,
         f"Data: SRTM GL1 30m via OpenTopography API | "
         f"Palette: cividis (colorblind-safe) | "
         f"EarthForge v1.0.0 | {datetime.now(UTC).strftime('%Y-%m-%d')}",
-        ha="center", fontsize=7, color="gray",
+        ha="center",
+        fontsize=7,
+        color="gray",
     )
 
     plt.tight_layout(rect=[0, 0.03, 1, 1])

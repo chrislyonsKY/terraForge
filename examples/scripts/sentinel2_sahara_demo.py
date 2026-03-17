@@ -56,8 +56,7 @@ async def main() -> None:
 
     # Desert has reliably low cloud cover
     candidates = [
-        item for item in result.items
-        if (item.properties.get("eo:cloud_cover") or 100) < 10
+        item for item in result.items if (item.properties.get("eo:cloud_cover") or 100) < 10
     ]
     if not candidates:
         print("No clear scenes found.")
@@ -110,6 +109,7 @@ async def main() -> None:
     # Render
     try:
         import matplotlib
+
         matplotlib.use("Agg")
         import matplotlib.pyplot as plt
         from matplotlib.colors import LinearSegmentedColormap
@@ -117,14 +117,13 @@ async def main() -> None:
         print("matplotlib required: pip install matplotlib")
         return
 
-    brbg_colors = [
-        tuple(int(h[i:i+2], 16) / 255 for i in (1, 3, 5))
-        for h in DIVERGING_BRBG
-    ]
+    brbg_colors = [tuple(int(h[i : i + 2], 16) / 255 for i in (1, 3, 5)) for h in DIVERGING_BRBG]
     cmap = LinearSegmentedColormap.from_list("brbg", brbg_colors, N=256)
 
     fig, (ax_map, ax_hist) = plt.subplots(
-        1, 2, figsize=(13, 7),
+        1,
+        2,
+        figsize=(13, 7),
         gridspec_kw={"width_ratios": [3, 1]},
     )
 
@@ -133,7 +132,8 @@ async def main() -> None:
     ax_map.set_title(
         f"NDVI -- Sahara Desert (Algeria)\n"
         f"Sentinel-2 | {(item.datetime or 'Unknown')[:10]} | {crs_str}",
-        fontsize=13, fontweight="bold",
+        fontsize=13,
+        fontweight="bold",
     )
     ax_map.set_xlabel("Pixels (east-west)", fontsize=10)
     ax_map.set_ylabel("Pixels (north-south)", fontsize=10)
@@ -144,8 +144,12 @@ async def main() -> None:
     # NDVI histogram showing desert distribution
     valid_ndvi = ndvi[np.isfinite(ndvi)]
     ax_hist.hist(
-        valid_ndvi.ravel(), bins=60, color="#bf812d", edgecolor="#8c510a",
-        alpha=0.8, orientation="horizontal",
+        valid_ndvi.ravel(),
+        bins=60,
+        color="#bf812d",
+        edgecolor="#8c510a",
+        alpha=0.8,
+        orientation="horizontal",
     )
     ax_hist.set_ylabel("NDVI", fontsize=10)
     ax_hist.set_xlabel("Pixel Count", fontsize=10)
@@ -153,18 +157,25 @@ async def main() -> None:
     ax_hist.set_ylim(-0.3, 0.9)
     ax_hist.axhline(y=0.1, color="gray", linestyle="--", alpha=0.5, linewidth=0.8)
     ax_hist.text(
-        0.95, 0.12, "Vegetation threshold",
+        0.95,
+        0.12,
+        "Vegetation threshold",
         transform=ax_hist.get_yaxis_transform(),
-        fontsize=8, color="gray", ha="right",
+        fontsize=8,
+        color="gray",
+        ha="right",
     )
     ax_hist.grid(True, alpha=0.3, axis="x")
 
     fig.text(
-        0.5, 0.01,
+        0.5,
+        0.01,
         f"Data: Copernicus Sentinel-2 via Earth Search | "
         f"Palette: BrBG (colorblind-safe) | Sahara, Algeria | "
         f"EarthForge v1.0.0 | {datetime.now(UTC).strftime('%Y-%m-%d')}",
-        ha="center", fontsize=7, color="gray",
+        ha="center",
+        fontsize=7,
+        color="gray",
     )
 
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)

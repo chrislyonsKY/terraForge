@@ -34,7 +34,8 @@ def info(
     result = run_command(ctx, inspect_cube(source))
     if isinstance(result, BaseModel):
         render_to_console(
-            result, state.output,
+            result,
+            state.output,
             no_color=state.no_color,
             high_contrast=state.high_contrast,
         )
@@ -102,7 +103,8 @@ def slice_cmd(
     )
     if isinstance(result, BaseModel):
         render_to_console(
-            result, state.output,
+            result,
+            state.output,
             no_color=state.no_color,
             high_contrast=state.high_contrast,
         )
@@ -122,7 +124,8 @@ def validate(
     result = run_command(ctx, validate_cube(source))
     if isinstance(result, BaseModel):
         render_to_console(
-            result, state.output,
+            result,
+            state.output,
             no_color=state.no_color,
             high_contrast=state.high_contrast,
         )
@@ -159,7 +162,8 @@ def convert(
     result = run_command(ctx, convert_cube(source, output, chunks=chunk_dict))
     if isinstance(result, BaseModel):
         render_to_console(
-            result, state.output,
+            result,
+            state.output,
             no_color=state.no_color,
             high_contrast=state.high_contrast,
         )
@@ -206,7 +210,8 @@ def stats(
     )
     if isinstance(result, BaseModel):
         render_to_console(
-            result, state.output,
+            result,
+            state.output,
             no_color=state.no_color,
             high_contrast=state.high_contrast,
         )

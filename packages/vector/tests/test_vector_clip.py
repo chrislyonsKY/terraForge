@@ -34,11 +34,13 @@ class TestClipByBbox:
         src = tmp_path / "points.parquet"
         _create_test_geoparquet(src)
 
-        result = _run(clip_features(
-            str(src),
-            str(tmp_path / "clipped.parquet"),
-            bbox=(-86, 34, -84, 36),
-        ))
+        result = _run(
+            clip_features(
+                str(src),
+                str(tmp_path / "clipped.parquet"),
+                bbox=(-86, 34, -84, 36),
+            )
+        )
 
         assert isinstance(result, ClipResult)
         assert result.features_output < result.features_input
@@ -49,11 +51,13 @@ class TestClipByBbox:
         src = tmp_path / "points.parquet"
         _create_test_geoparquet(src)
 
-        result = _run(clip_features(
-            str(src),
-            str(tmp_path / "clipped.parquet"),
-            bbox=(-100, 20, -70, 50),
-        ))
+        result = _run(
+            clip_features(
+                str(src),
+                str(tmp_path / "clipped.parquet"),
+                bbox=(-100, 20, -70, 50),
+            )
+        )
 
         assert result.features_output == result.features_input
 
@@ -61,11 +65,13 @@ class TestClipByBbox:
         src = tmp_path / "points.parquet"
         _create_test_geoparquet(src)
 
-        result = _run(clip_features(
-            str(src),
-            str(tmp_path / "clipped.parquet"),
-            bbox=(0, 0, 1, 1),
-        ))
+        result = _run(
+            clip_features(
+                str(src),
+                str(tmp_path / "clipped.parquet"),
+                bbox=(0, 0, 1, 1),
+            )
+        )
 
         assert result.features_output == 0
 
@@ -76,11 +82,13 @@ class TestClipByGeometry:
         _create_test_geoparquet(src)
 
         wkt = "POLYGON((-86 34, -84 34, -84 36, -86 36, -86 34))"
-        result = _run(clip_features(
-            str(src),
-            str(tmp_path / "clipped.parquet"),
-            geometry_wkt=wkt,
-        ))
+        result = _run(
+            clip_features(
+                str(src),
+                str(tmp_path / "clipped.parquet"),
+                geometry_wkt=wkt,
+            )
+        )
 
         assert result.clip_method == "geometry"
         assert result.features_output < result.features_input
@@ -106,8 +114,10 @@ class TestErrors:
 
     def test_nonexistent_source(self, tmp_path: Path) -> None:
         with pytest.raises(VectorError, match="Failed to read"):
-            _run(clip_features(
-                "/nonexistent.parquet",
-                str(tmp_path / "out.parquet"),
-                bbox=(0, 0, 1, 1),
-            ))
+            _run(
+                clip_features(
+                    "/nonexistent.parquet",
+                    str(tmp_path / "out.parquet"),
+                    bbox=(0, 0, 1, 1),
+                )
+            )

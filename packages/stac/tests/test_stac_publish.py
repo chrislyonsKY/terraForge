@@ -44,7 +44,9 @@ class TestPublishItem:
                 201,
                 json={
                     "id": "test-item-001",
-                    "links": [{"rel": "self", "href": "https://example.com/stac/items/test-item-001"}],
+                    "links": [
+                        {"rel": "self", "href": "https://example.com/stac/items/test-item-001"}
+                    ],
                 },
             )
         )

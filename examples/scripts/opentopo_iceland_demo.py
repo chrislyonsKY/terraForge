@@ -103,9 +103,8 @@ async def main() -> None:
     az_rad = np.radians(315)
     alt_rad = np.radians(45)
     aspect = np.arctan2(-dy, dx)
-    shade = (
-        np.sin(alt_rad) * np.cos(slope)
-        + np.cos(alt_rad) * np.sin(slope) * np.cos(az_rad - aspect)
+    shade = np.sin(alt_rad) * np.cos(slope) + np.cos(alt_rad) * np.sin(slope) * np.cos(
+        az_rad - aspect
     )
     shade = np.clip(shade, 0, 1)
 
@@ -113,6 +112,7 @@ async def main() -> None:
     print("Rendering...")
     try:
         import matplotlib
+
         matplotlib.use("Agg")
         import matplotlib.pyplot as plt
     except ImportError:
@@ -120,7 +120,9 @@ async def main() -> None:
         return
 
     fig, (ax_map, ax_stats) = plt.subplots(
-        1, 2, figsize=(13, 7),
+        1,
+        2,
+        figsize=(13, 7),
         gridspec_kw={"width_ratios": [3, 1]},
     )
 
@@ -130,16 +132,20 @@ async def main() -> None:
     im = ax_map.imshow(
         elevation,
         extent=[lons.min(), lons.max(), lats.min(), lats.max()],
-        cmap="cividis", aspect="auto",
+        cmap="cividis",
+        aspect="auto",
     )
     ax_map.imshow(
-        shade, extent=[lons.min(), lons.max(), lats.min(), lats.max()],
-        cmap="gray", alpha=0.35, aspect="auto",
+        shade,
+        extent=[lons.min(), lons.max(), lats.min(), lats.max()],
+        cmap="gray",
+        alpha=0.35,
+        aspect="auto",
     )
     ax_map.set_title(
-        "Copernicus DEM 30m -- Iceland\n"
-        "Vatnajokull Glacier Region",
-        fontsize=13, fontweight="bold",
+        "Copernicus DEM 30m -- Iceland\nVatnajokull Glacier Region",
+        fontsize=13,
+        fontweight="bold",
     )
     ax_map.set_xlabel("Longitude", fontsize=10)
     ax_map.set_ylabel("Latitude", fontsize=10)
@@ -168,18 +174,24 @@ async def main() -> None:
         f"Grid:   {elevation.shape[1]}x{elevation.shape[0]}\n"
     )
     ax_stats.text(
-        0.05, 0.95, stats_text,
+        0.05,
+        0.95,
+        stats_text,
         transform=ax_stats.transAxes,
-        fontsize=10, fontfamily="monospace",
+        fontsize=10,
+        fontfamily="monospace",
         verticalalignment="top",
     )
 
     fig.text(
-        0.5, 0.01,
+        0.5,
+        0.01,
         f"Data: Copernicus DEM GLO-30 via OpenTopography API | "
         f"Palette: cividis (colorblind-safe) | "
         f"EarthForge v1.0.0 | {datetime.now(UTC).strftime('%Y-%m-%d')}",
-        ha="center", fontsize=7, color="gray",
+        ha="center",
+        fontsize=7,
+        color="gray",
     )
 
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)

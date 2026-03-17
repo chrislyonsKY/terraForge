@@ -60,6 +60,7 @@ async def main() -> None:
     # Render
     try:
         import matplotlib
+
         matplotlib.use("Agg")
         import matplotlib.pyplot as plt
         from matplotlib.cm import ScalarMappable
@@ -74,11 +75,19 @@ async def main() -> None:
     # Draw search bbox
     bbox_w = YS_BBOX[2] - YS_BBOX[0]
     bbox_h = YS_BBOX[3] - YS_BBOX[1]
-    ax.add_patch(Rectangle(
-        (YS_BBOX[0], YS_BBOX[1]), bbox_w, bbox_h,
-        linewidth=2, edgecolor="black", facecolor="lightgray",
-        alpha=0.3, linestyle="--", label="Search bbox",
-    ))
+    ax.add_patch(
+        Rectangle(
+            (YS_BBOX[0], YS_BBOX[1]),
+            bbox_w,
+            bbox_h,
+            linewidth=2,
+            edgecolor="black",
+            facecolor="lightgray",
+            alpha=0.3,
+            linestyle="--",
+            label="Search bbox",
+        )
+    )
 
     # Color footprints by cloud cover
     cmap = plt.cm.viridis_r
@@ -93,11 +102,17 @@ async def main() -> None:
         if item.bbox and len(item.bbox) >= 4:
             w = item.bbox[2] - item.bbox[0]
             h = item.bbox[3] - item.bbox[1]
-            ax.add_patch(Rectangle(
-                (item.bbox[0], item.bbox[1]), w, h,
-                linewidth=0.8, edgecolor=color,
-                facecolor=color, alpha=0.35,
-            ))
+            ax.add_patch(
+                Rectangle(
+                    (item.bbox[0], item.bbox[1]),
+                    w,
+                    h,
+                    linewidth=0.8,
+                    edgecolor=color,
+                    facecolor=color,
+                    alpha=0.35,
+                )
+            )
 
     ax.set_xlim(YS_BBOX[0] - 0.5, YS_BBOX[2] + 0.5)
     ax.set_ylim(YS_BBOX[1] - 0.3, YS_BBOX[3] + 0.3)
@@ -106,7 +121,8 @@ async def main() -> None:
     ax.set_title(
         f"STAC Search Results -- Landsat C2-L2\n"
         f"Yellowstone NP | Jun-Sep 2025 | {len(result.items)} scenes",
-        fontsize=13, fontweight="bold",
+        fontsize=13,
+        fontweight="bold",
     )
     ax.set_xlabel("Longitude", fontsize=10)
     ax.set_ylabel("Latitude", fontsize=10)
@@ -120,18 +136,23 @@ async def main() -> None:
     # Stats annotation
     mean_cc = np.mean(cloud_values) if cloud_values else 0
     ax.text(
-        0.02, 0.02,
+        0.02,
+        0.02,
         f"Mean cloud: {mean_cc:.1f}%  |  Scenes: {len(result.items)}",
-        transform=ax.transAxes, fontsize=9,
+        transform=ax.transAxes,
+        fontsize=9,
         bbox={"boxstyle": "round,pad=0.3", "facecolor": "white", "alpha": 0.8},
     )
 
     fig.text(
-        0.5, 0.01,
+        0.5,
+        0.01,
         f"Data: USGS Landsat C2-L2 via Earth Search | "
         f"Palette: viridis (colorblind-safe) | "
         f"EarthForge v1.0.0 | {datetime.now(UTC).strftime('%Y-%m-%d')}",
-        ha="center", fontsize=7, color="gray",
+        ha="center",
+        fontsize=7,
+        color="gray",
     )
 
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)

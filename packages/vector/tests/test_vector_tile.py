@@ -34,12 +34,14 @@ class TestGenerateVectorTiles:
         src = tmp_path / "points.parquet"
         _create_test_geoparquet(src)
 
-        result = _run(generate_vector_tiles(
-            str(src),
-            str(tmp_path / "tiles.pmtiles"),
-            min_zoom=0,
-            max_zoom=2,
-        ))
+        result = _run(
+            generate_vector_tiles(
+                str(src),
+                str(tmp_path / "tiles.pmtiles"),
+                min_zoom=0,
+                max_zoom=2,
+            )
+        )
 
         assert isinstance(result, VectorTileResult)
         assert result.feature_count == 20
@@ -51,13 +53,15 @@ class TestGenerateVectorTiles:
         src = tmp_path / "points.parquet"
         _create_test_geoparquet(src)
 
-        result = _run(generate_vector_tiles(
-            str(src),
-            str(tmp_path / "tiles.pmtiles"),
-            layer_name="buildings",
-            min_zoom=0,
-            max_zoom=1,
-        ))
+        result = _run(
+            generate_vector_tiles(
+                str(src),
+                str(tmp_path / "tiles.pmtiles"),
+                layer_name="buildings",
+                min_zoom=0,
+                max_zoom=1,
+            )
+        )
 
         assert result.feature_count == 20
 
@@ -65,12 +69,14 @@ class TestGenerateVectorTiles:
         src = tmp_path / "points.parquet"
         _create_test_geoparquet(src)
 
-        result = _run(generate_vector_tiles(
-            str(src),
-            str(tmp_path / "tiles.pmtiles"),
-            min_zoom=2,
-            max_zoom=8,
-        ))
+        result = _run(
+            generate_vector_tiles(
+                str(src),
+                str(tmp_path / "tiles.pmtiles"),
+                min_zoom=2,
+                max_zoom=8,
+            )
+        )
 
         assert result.zoom_range == "2-8"
 
@@ -78,7 +84,9 @@ class TestGenerateVectorTiles:
 class TestErrors:
     def test_nonexistent_source(self, tmp_path: Path) -> None:
         with pytest.raises(VectorError, match="Failed to read"):
-            _run(generate_vector_tiles(
-                "/nonexistent.parquet",
-                str(tmp_path / "tiles.pmtiles"),
-            ))
+            _run(
+                generate_vector_tiles(
+                    "/nonexistent.parquet",
+                    str(tmp_path / "tiles.pmtiles"),
+                )
+            )

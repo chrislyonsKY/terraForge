@@ -116,19 +116,27 @@ def _validate_sync(
     stac_type = stac_dict.get("type", "Unknown")
     stac_version = stac_dict.get("stac_version", "Unknown")
 
-    checks.append(StacValidationCheck(
-        check="stac_version",
-        status=format_status(
-            StatusMarker.PASS if stac_version != "Unknown" else StatusMarker.FAIL
-        ),
-        message=f"STAC version: {stac_version}",
-    ))
+    checks.append(
+        StacValidationCheck(
+            check="stac_version",
+            status=format_status(
+                StatusMarker.PASS if stac_version != "Unknown" else StatusMarker.FAIL
+            ),
+            message=f"STAC version: {stac_version}",
+        )
+    )
 
     # --- Required fields ---
     if stac_type == "Feature":
         required = [
-            "type", "stac_version", "id", "geometry",
-            "bbox", "properties", "links", "assets",
+            "type",
+            "stac_version",
+            "id",
+            "geometry",
+            "bbox",
+            "properties",
+            "links",
+            "assets",
         ]
         display_type = "Item"
     elif stac_type == "Collection":
@@ -138,11 +146,13 @@ def _validate_sync(
         required = ["type", "stac_version", "id", "description", "links"]
         display_type = "Catalog"
     else:
-        checks.append(StacValidationCheck(
-            check="type_detection",
-            status=format_status(StatusMarker.FAIL),
-            message=f"Unrecognized STAC type: '{stac_type}'",
-        ))
+        checks.append(
+            StacValidationCheck(
+                check="type_detection",
+                status=format_status(StatusMarker.FAIL),
+                message=f"Unrecognized STAC type: '{stac_type}'",
+            )
+        )
         return StacValidationResult(
             source=source,
             stac_type="Unknown",
@@ -152,37 +162,45 @@ def _validate_sync(
             summary=format_status(StatusMarker.FAIL, "Not a valid STAC document"),
         )
 
-    checks.append(StacValidationCheck(
-        check="type_detection",
-        status=format_status(StatusMarker.PASS),
-        message=f"Document type: {display_type}",
-    ))
+    checks.append(
+        StacValidationCheck(
+            check="type_detection",
+            status=format_status(StatusMarker.PASS),
+            message=f"Document type: {display_type}",
+        )
+    )
 
     # Check required fields
     missing = [f for f in required if f not in stac_dict]
     if missing:
-        checks.append(StacValidationCheck(
-            check="required_fields",
-            status=format_status(StatusMarker.FAIL),
-            message=f"Missing required fields: {', '.join(missing)}",
-        ))
+        checks.append(
+            StacValidationCheck(
+                check="required_fields",
+                status=format_status(StatusMarker.FAIL),
+                message=f"Missing required fields: {', '.join(missing)}",
+            )
+        )
     else:
-        checks.append(StacValidationCheck(
-            check="required_fields",
-            status=format_status(StatusMarker.PASS),
-            message="All required fields present",
-        ))
+        checks.append(
+            StacValidationCheck(
+                check="required_fields",
+                status=format_status(StatusMarker.PASS),
+                message="All required fields present",
+            )
+        )
 
     # --- Extension validation ---
     extensions = stac_dict.get("stac_extensions", [])
     extensions_validated: list[str] = []
 
     if extensions:
-        checks.append(StacValidationCheck(
-            check="extensions_declared",
-            status=format_status(StatusMarker.INFO),
-            message=f"{len(extensions)} extension(s) declared",
-        ))
+        checks.append(
+            StacValidationCheck(
+                check="extensions_declared",
+                status=format_status(StatusMarker.INFO),
+                message=f"{len(extensions)} extension(s) declared",
+            )
+        )
         extensions_validated = list(extensions)
 
     # --- pystac validation ---
@@ -198,44 +216,54 @@ def _validate_sync(
             catalog = pystac.Catalog.from_dict(stac_dict)
             catalog.validate()
 
-        checks.append(StacValidationCheck(
-            check="pystac_validation",
-            status=format_status(StatusMarker.PASS),
-            message="pystac schema validation passed",
-        ))
+        checks.append(
+            StacValidationCheck(
+                check="pystac_validation",
+                status=format_status(StatusMarker.PASS),
+                message="pystac schema validation passed",
+            )
+        )
     except pystac.STACValidationError as exc:
         pystac_valid = False
-        checks.append(StacValidationCheck(
-            check="pystac_validation",
-            status=format_status(StatusMarker.FAIL),
-            message=f"pystac validation failed: {exc}",
-        ))
+        checks.append(
+            StacValidationCheck(
+                check="pystac_validation",
+                status=format_status(StatusMarker.FAIL),
+                message=f"pystac validation failed: {exc}",
+            )
+        )
     except Exception as exc:
         # Non-schema errors (link resolution, network) are warnings, not failures.
         # The document's schema validity is independent of whether external
         # links are reachable.
-        checks.append(StacValidationCheck(
-            check="pystac_validation",
-            status=format_status(StatusMarker.WARN),
-            message=f"Validation warning: {exc}",
-        ))
+        checks.append(
+            StacValidationCheck(
+                check="pystac_validation",
+                status=format_status(StatusMarker.WARN),
+                message=f"Validation warning: {exc}",
+            )
+        )
 
     # --- Links check ---
     links = stac_dict.get("links", [])
     has_self = any(lnk.get("rel") == "self" for lnk in links if isinstance(lnk, dict))
 
     if has_self:
-        checks.append(StacValidationCheck(
-            check="link_self",
-            status=format_status(StatusMarker.PASS),
-            message="Self link present",
-        ))
+        checks.append(
+            StacValidationCheck(
+                check="link_self",
+                status=format_status(StatusMarker.PASS),
+                message="Self link present",
+            )
+        )
     else:
-        checks.append(StacValidationCheck(
-            check="link_self",
-            status=format_status(StatusMarker.WARN),
-            message="No self link found (recommended)",
-        ))
+        checks.append(
+            StacValidationCheck(
+                check="link_self",
+                status=format_status(StatusMarker.WARN),
+                message="No self link found (recommended)",
+            )
+        )
 
     # --- Summary ---
     is_valid = pystac_valid and not missing

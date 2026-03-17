@@ -23,7 +23,8 @@ def _create_cube(path: Path) -> None:
     ds = xr.Dataset(
         data_vars={
             "temperature": (
-                ["time", "lat", "lon"], data,
+                ["time", "lat", "lon"],
+                data,
                 {"units": "K", "long_name": "Temperature"},
             ),
         },
@@ -75,11 +76,14 @@ class TestCubeStats:
         path = tmp_path / "cube.nc"
         _create_cube(path)
 
-        result = _run(cube_stats(
-            str(path), "temperature",
-            reduce_dims=["time"],
-            output=str(tmp_path / "mean.nc"),
-        ))
+        result = _run(
+            cube_stats(
+                str(path),
+                "temperature",
+                reduce_dims=["time"],
+                output=str(tmp_path / "mean.nc"),
+            )
+        )
 
         assert result.output is not None
         assert Path(result.output).exists()

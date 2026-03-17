@@ -112,6 +112,7 @@ def _clip_sync(
         clip_method = "bbox"
     else:
         from shapely import wkt
+
         clip_geom = wkt.loads(geometry_wkt)
         clip_method = "geometry"
 

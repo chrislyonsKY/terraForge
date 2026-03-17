@@ -55,8 +55,7 @@ async def main() -> None:
     )
 
     candidates = [
-        item for item in result.items
-        if (item.properties.get("eo:cloud_cover") or 100) < 15
+        item for item in result.items if (item.properties.get("eo:cloud_cover") or 100) < 15
     ]
     if not candidates:
         print("No clear scenes found. Try expanding the date range.")
@@ -108,6 +107,7 @@ async def main() -> None:
     # Render
     try:
         import matplotlib
+
         matplotlib.use("Agg")
         import matplotlib.pyplot as plt
         from matplotlib.colors import LinearSegmentedColormap
@@ -115,10 +115,7 @@ async def main() -> None:
         print("matplotlib required: pip install matplotlib")
         return
 
-    brbg_colors = [
-        tuple(int(h[i:i+2], 16) / 255 for i in (1, 3, 5))
-        for h in DIVERGING_BRBG
-    ]
+    brbg_colors = [tuple(int(h[i : i + 2], 16) / 255 for i in (1, 3, 5)) for h in DIVERGING_BRBG]
     cmap = LinearSegmentedColormap.from_list("brbg", brbg_colors, N=256)
 
     fig, ax = plt.subplots(figsize=(10, 8))
@@ -127,7 +124,8 @@ async def main() -> None:
     ax.set_title(
         f"NDVI — Punjab Agricultural Region, India\n"
         f"Sentinel-2 | {(item.datetime or 'Unknown')[:10]} | {crs_str}",
-        fontsize=13, fontweight="bold",
+        fontsize=13,
+        fontweight="bold",
     )
     ax.set_xlabel("Pixels (east-west)", fontsize=10)
     ax.set_ylabel("Pixels (north-south)", fontsize=10)
@@ -136,11 +134,14 @@ async def main() -> None:
     cbar.set_label("NDVI", fontsize=11)
 
     fig.text(
-        0.5, 0.01,
+        0.5,
+        0.01,
         f"Data: Copernicus Sentinel-2 via Earth Search | "
         f"Palette: BrBG (colorblind-safe) | Punjab, India | "
         f"EarthForge v1.0.0 | {datetime.now(UTC).strftime('%Y-%m-%d')}",
-        ha="center", fontsize=7, color="gray",
+        ha="center",
+        fontsize=7,
+        color="gray",
     )
 
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)

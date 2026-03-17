@@ -23,8 +23,15 @@ def _create_test_raster(path: Path) -> None:
     data = np.random.randint(0, 1000, (64, 128), dtype=np.int16).astype(np.float32)
     transform = from_bounds(-180, -85, 180, 85, 128, 64)
     with rasterio.open(
-        str(path), "w", driver="GTiff", height=64, width=128,
-        count=1, dtype="float32", crs="EPSG:4326", transform=transform,
+        str(path),
+        "w",
+        driver="GTiff",
+        height=64,
+        width=128,
+        count=1,
+        dtype="float32",
+        crs="EPSG:4326",
+        transform=transform,
     ) as dst:
         dst.write(data, 1)
 
@@ -52,7 +59,7 @@ class TestTileMath:
 
     def test_zoom_2_quadrants(self) -> None:
         """At zoom 2, there should be 4x4 = 16 tiles."""
-        n = 2 ** 2
+        n = 2**2
         for x in range(n):
             for y in range(n):
                 w, s, e, nn = _tile_bounds(x, y, 2)
@@ -67,12 +74,14 @@ class TestGenerateTiles:
         raster_path = tmp_path / "global.tif"
         _create_test_raster(raster_path)
 
-        result = _run(generate_tiles(
-            str(raster_path),
-            str(tmp_path / "tiles"),
-            zoom_range=(0, 1),
-            tile_size=64,
-        ))
+        result = _run(
+            generate_tiles(
+                str(raster_path),
+                str(tmp_path / "tiles"),
+                zoom_range=(0, 1),
+                tile_size=64,
+            )
+        )
 
         assert isinstance(result, TileResult)
         assert result.tile_count > 0
@@ -84,12 +93,14 @@ class TestGenerateTiles:
         raster_path = tmp_path / "global.tif"
         _create_test_raster(raster_path)
 
-        _run(generate_tiles(
-            str(raster_path),
-            str(tmp_path / "tiles"),
-            zoom_range=(0, 0),
-            tile_size=64,
-        ))
+        _run(
+            generate_tiles(
+                str(raster_path),
+                str(tmp_path / "tiles"),
+                zoom_range=(0, 0),
+                tile_size=64,
+            )
+        )
 
         # Check z/x/y.png structure
         tile_file = tmp_path / "tiles" / "0" / "0" / "0.png"
@@ -104,12 +115,14 @@ class TestGenerateTiles:
         _create_test_raster(raster_path)
 
         out = tmp_path / "nested" / "tiles"
-        _run(generate_tiles(
-            str(raster_path),
-            str(out),
-            zoom_range=(0, 0),
-            tile_size=64,
-        ))
+        _run(
+            generate_tiles(
+                str(raster_path),
+                str(out),
+                zoom_range=(0, 0),
+                tile_size=64,
+            )
+        )
 
         assert out.exists()
 

@@ -60,14 +60,14 @@ OUTPUT_PATH = OUTPUT_DIR / "vegetation_change.gif"
 # Derived from earthforge.core.palettes.DIVERGING_BRBG
 # Each entry is (ndvi_threshold, R, G, B)
 NDVI_COLORMAP = [
-    (-1.0, 20, 20, 80),    # water / shadow — dark blue
-    (-0.1, 140, 81, 10),   # bare soil — brown (#8c510a)
-    (0.0, 191, 129, 45),   # sparse — tan (#bf812d)
+    (-1.0, 20, 20, 80),  # water / shadow — dark blue
+    (-0.1, 140, 81, 10),  # bare soil — brown (#8c510a)
+    (0.0, 191, 129, 45),  # sparse — tan (#bf812d)
     (0.15, 223, 194, 125),  # transition — light brown (#dfc27d)
     (0.3, 245, 245, 245),  # midpoint — near white (#f5f5f5)
     (0.5, 128, 205, 193),  # moderate vegetation — light teal (#80cdc1)
-    (0.7, 53, 151, 143),   # dense vegetation — teal (#35978f)
-    (1.0, 1, 102, 94),     # very dense — dark teal (#01665e)
+    (0.7, 53, 151, 143),  # dense vegetation — teal (#35978f)
+    (1.0, 1, 102, 94),  # very dense — dark teal (#01665e)
 ]
 
 

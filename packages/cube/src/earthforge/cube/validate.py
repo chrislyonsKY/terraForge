@@ -112,42 +112,52 @@ def _validate_sync(source: str) -> CubeValidationResult:
         except Exception as exc2:
             raise CubeError(f"Cannot open datacube at {source}: {exc2}") from exc2
 
-    checks.append(CubeValidationCheck(
-        check="readable",
-        status=format_status(StatusMarker.PASS),
-        message=f"Opened as {fmt.upper()}",
-    ))
+    checks.append(
+        CubeValidationCheck(
+            check="readable",
+            status=format_status(StatusMarker.PASS),
+            message=f"Opened as {fmt.upper()}",
+        )
+    )
 
     dims = list(ds.dims)
     variables = list(ds.data_vars)
 
     # --- Dimensions check ---
     if dims:
-        checks.append(CubeValidationCheck(
-            check="dimensions",
-            status=format_status(StatusMarker.PASS),
-            message=f"Dimensions: {', '.join(dims)} ({len(dims)} total)",
-        ))
+        checks.append(
+            CubeValidationCheck(
+                check="dimensions",
+                status=format_status(StatusMarker.PASS),
+                message=f"Dimensions: {', '.join(dims)} ({len(dims)} total)",
+            )
+        )
     else:
-        checks.append(CubeValidationCheck(
-            check="dimensions",
-            status=format_status(StatusMarker.FAIL),
-            message="No dimensions found",
-        ))
+        checks.append(
+            CubeValidationCheck(
+                check="dimensions",
+                status=format_status(StatusMarker.FAIL),
+                message="No dimensions found",
+            )
+        )
 
     # --- Variables check ---
     if variables:
-        checks.append(CubeValidationCheck(
-            check="variables",
-            status=format_status(StatusMarker.PASS),
-            message=f"Data variables: {len(variables)}",
-        ))
+        checks.append(
+            CubeValidationCheck(
+                check="variables",
+                status=format_status(StatusMarker.PASS),
+                message=f"Data variables: {len(variables)}",
+            )
+        )
     else:
-        checks.append(CubeValidationCheck(
-            check="variables",
-            status=format_status(StatusMarker.WARN),
-            message="No data variables found",
-        ))
+        checks.append(
+            CubeValidationCheck(
+                check="variables",
+                status=format_status(StatusMarker.WARN),
+                message="No data variables found",
+            )
+        )
 
     # --- Coordinate arrays check ---
     coords = list(ds.coords)
@@ -157,30 +167,38 @@ def _validate_sync(source: str) -> CubeValidationResult:
     has_time = bool(time_coords & set(c.lower() for c in coords))
 
     if has_spatial:
-        checks.append(CubeValidationCheck(
-            check="spatial_coords",
-            status=format_status(StatusMarker.PASS),
-            message="Spatial coordinate arrays found",
-        ))
+        checks.append(
+            CubeValidationCheck(
+                check="spatial_coords",
+                status=format_status(StatusMarker.PASS),
+                message="Spatial coordinate arrays found",
+            )
+        )
     else:
-        checks.append(CubeValidationCheck(
-            check="spatial_coords",
-            status=format_status(StatusMarker.WARN),
-            message="No recognized spatial coordinates (lat/lon, x/y)",
-        ))
+        checks.append(
+            CubeValidationCheck(
+                check="spatial_coords",
+                status=format_status(StatusMarker.WARN),
+                message="No recognized spatial coordinates (lat/lon, x/y)",
+            )
+        )
 
     if has_time:
-        checks.append(CubeValidationCheck(
-            check="time_coord",
-            status=format_status(StatusMarker.PASS),
-            message="Time coordinate found",
-        ))
+        checks.append(
+            CubeValidationCheck(
+                check="time_coord",
+                status=format_status(StatusMarker.PASS),
+                message="Time coordinate found",
+            )
+        )
     else:
-        checks.append(CubeValidationCheck(
-            check="time_coord",
-            status=format_status(StatusMarker.INFO),
-            message="No time coordinate (may be a static dataset)",
-        ))
+        checks.append(
+            CubeValidationCheck(
+                check="time_coord",
+                status=format_status(StatusMarker.INFO),
+                message="No time coordinate (may be a static dataset)",
+            )
+        )
 
     # --- Chunk structure ---
     chunked_vars = []
@@ -193,23 +211,29 @@ def _validate_sync(source: str) -> CubeValidationResult:
             unchunked_vars.append(var_name)
 
     if chunked_vars:
-        checks.append(CubeValidationCheck(
-            check="chunks",
-            status=format_status(StatusMarker.PASS),
-            message=f"{len(chunked_vars)} variable(s) are chunked",
-        ))
+        checks.append(
+            CubeValidationCheck(
+                check="chunks",
+                status=format_status(StatusMarker.PASS),
+                message=f"{len(chunked_vars)} variable(s) are chunked",
+            )
+        )
     elif fmt == "zarr":
-        checks.append(CubeValidationCheck(
-            check="chunks",
-            status=format_status(StatusMarker.WARN),
-            message="Zarr store has no chunked variables",
-        ))
+        checks.append(
+            CubeValidationCheck(
+                check="chunks",
+                status=format_status(StatusMarker.WARN),
+                message="Zarr store has no chunked variables",
+            )
+        )
     else:
-        checks.append(CubeValidationCheck(
-            check="chunks",
-            status=format_status(StatusMarker.INFO),
-            message="NetCDF file (chunking optional)",
-        ))
+        checks.append(
+            CubeValidationCheck(
+                check="chunks",
+                status=format_status(StatusMarker.INFO),
+                message="NetCDF file (chunking optional)",
+            )
+        )
 
     # --- CF-convention checks ---
     cf_pass = 0
@@ -226,24 +250,30 @@ def _validate_sync(source: str) -> CubeValidationResult:
             cf_warn += 1
 
     if cf_pass == len(variables) and variables:
-        checks.append(CubeValidationCheck(
-            check="cf_convention",
-            status=format_status(StatusMarker.PASS),
-            message="All variables have CF-convention attributes (units + name)",
-        ))
+        checks.append(
+            CubeValidationCheck(
+                check="cf_convention",
+                status=format_status(StatusMarker.PASS),
+                message="All variables have CF-convention attributes (units + name)",
+            )
+        )
     elif cf_pass + cf_warn > 0:
-        checks.append(CubeValidationCheck(
-            check="cf_convention",
-            status=format_status(StatusMarker.WARN),
-            message=f"Partial CF-convention compliance: {cf_pass} full, {cf_warn} partial, "
-                    f"{len(variables) - cf_pass - cf_warn} missing",
-        ))
+        checks.append(
+            CubeValidationCheck(
+                check="cf_convention",
+                status=format_status(StatusMarker.WARN),
+                message=f"Partial CF-convention compliance: {cf_pass} full, {cf_warn} partial, "
+                f"{len(variables) - cf_pass - cf_warn} missing",
+            )
+        )
     elif variables:
-        checks.append(CubeValidationCheck(
-            check="cf_convention",
-            status=format_status(StatusMarker.WARN),
-            message="No CF-convention attributes found on variables",
-        ))
+        checks.append(
+            CubeValidationCheck(
+                check="cf_convention",
+                status=format_status(StatusMarker.WARN),
+                message="No CF-convention attributes found on variables",
+            )
+        )
 
     # --- CRS check ---
     has_crs = False
@@ -275,17 +305,21 @@ def _validate_sync(source: str) -> CubeValidationResult:
                 break
 
     if has_crs:
-        checks.append(CubeValidationCheck(
-            check="crs",
-            status=format_status(StatusMarker.PASS),
-            message=f"CRS found via {crs_source}",
-        ))
+        checks.append(
+            CubeValidationCheck(
+                check="crs",
+                status=format_status(StatusMarker.PASS),
+                message=f"CRS found via {crs_source}",
+            )
+        )
     else:
-        checks.append(CubeValidationCheck(
-            check="crs",
-            status=format_status(StatusMarker.WARN),
-            message="No CRS found (check grid_mapping or crs_wkt attributes)",
-        ))
+        checks.append(
+            CubeValidationCheck(
+                check="crs",
+                status=format_status(StatusMarker.WARN),
+                message="No CRS found (check grid_mapping or crs_wkt attributes)",
+            )
+        )
 
     ds.close()
 
@@ -335,6 +369,7 @@ def _detect_format(source: str) -> str:
         return "netcdf"
     # Default: try zarr first (directory-based)
     from pathlib import Path as PathLib
+
     p = PathLib(source)
     if p.is_dir():
         return "zarr"

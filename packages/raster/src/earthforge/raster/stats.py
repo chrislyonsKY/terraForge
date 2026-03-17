@@ -97,8 +97,10 @@ async def compute_stats(
     return await loop.run_in_executor(
         None,
         partial(
-            _compute_stats_sync, source,
-            bands=bands, geometry_wkt=geometry_wkt,
+            _compute_stats_sync,
+            source,
+            bands=bands,
+            geometry_wkt=geometry_wkt,
             histogram_bins=histogram_bins,
         ),
     )
@@ -133,9 +135,11 @@ def _compute_stats_sync(
 
             if geometry_wkt:
                 from shapely import wkt
+
                 geom = wkt.loads(geometry_wkt)
                 geom_geojson = geom.__geo_interface__
                 from rasterio.mask import mask
+
                 masked_data, _ = mask(src, [geom_geojson], crop=True, nodata=nodata)
             else:
                 masked_data = None
@@ -160,26 +164,35 @@ def _compute_stats_sync(
                 nodata_count = int(arr.size - valid_count)
 
                 if valid_count == 0:
-                    band_stats.append(BandStatistics(
-                        band=band_idx,
-                        min=0.0, max=0.0, mean=0.0, std=0.0, median=0.0,
-                        valid_pixels=0, nodata_pixels=nodata_count,
-                    ))
+                    band_stats.append(
+                        BandStatistics(
+                            band=band_idx,
+                            min=0.0,
+                            max=0.0,
+                            mean=0.0,
+                            std=0.0,
+                            median=0.0,
+                            valid_pixels=0,
+                            nodata_pixels=nodata_count,
+                        )
+                    )
                     continue
 
                 counts, edges = np.histogram(valid, bins=histogram_bins)
-                band_stats.append(BandStatistics(
-                    band=band_idx,
-                    min=float(np.min(valid)),
-                    max=float(np.max(valid)),
-                    mean=float(np.mean(valid)),
-                    std=float(np.std(valid)),
-                    median=float(np.median(valid)),
-                    valid_pixels=valid_count,
-                    nodata_pixels=nodata_count,
-                    histogram_counts=[int(c) for c in counts],
-                    histogram_edges=[float(e) for e in edges],
-                ))
+                band_stats.append(
+                    BandStatistics(
+                        band=band_idx,
+                        min=float(np.min(valid)),
+                        max=float(np.max(valid)),
+                        mean=float(np.mean(valid)),
+                        std=float(np.std(valid)),
+                        median=float(np.median(valid)),
+                        valid_pixels=valid_count,
+                        nodata_pixels=nodata_count,
+                        histogram_counts=[int(c) for c in counts],
+                        histogram_edges=[float(e) for e in edges],
+                    )
+                )
 
     except RasterError:
         raise
