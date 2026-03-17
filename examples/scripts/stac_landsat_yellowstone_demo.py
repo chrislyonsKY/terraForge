@@ -17,7 +17,7 @@ from __future__ import annotations
 
 import asyncio
 import sys
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 import numpy as np
@@ -26,7 +26,6 @@ sys.path.insert(0, "packages/core/src")
 sys.path.insert(0, "packages/stac/src")
 
 from earthforge.core.config import EarthForgeProfile
-from earthforge.core.palettes import VIRIDIS
 from earthforge.stac.search import search_catalog
 
 STAC_API = "https://earth-search.aws.element84.com/v1"
@@ -63,9 +62,9 @@ async def main() -> None:
         import matplotlib
         matplotlib.use("Agg")
         import matplotlib.pyplot as plt
-        from matplotlib.patches import Rectangle
-        from matplotlib.colors import Normalize
         from matplotlib.cm import ScalarMappable
+        from matplotlib.colors import Normalize
+        from matplotlib.patches import Rectangle
     except ImportError:
         print("matplotlib required: pip install matplotlib")
         return
@@ -131,7 +130,7 @@ async def main() -> None:
         0.5, 0.01,
         f"Data: USGS Landsat C2-L2 via Earth Search | "
         f"Palette: viridis (colorblind-safe) | "
-        f"EarthForge v1.0.0 | {datetime.now(timezone.utc).strftime('%Y-%m-%d')}",
+        f"EarthForge v1.0.0 | {datetime.now(UTC).strftime('%Y-%m-%d')}",
         ha="center", fontsize=7, color="gray",
     )
 
@@ -149,7 +148,7 @@ async def main() -> None:
         f"{mean_cc:.1f}%. A dashed rectangle marks the search bounding box.\n\n"
         f"Data Source: USGS, Landsat Collection 2 Level-2\n"
         f"URL: {STAC_API}\n"
-        f"Access Date: {datetime.now(timezone.utc).strftime('%Y-%m-%d')}\n"
+        f"Access Date: {datetime.now(UTC).strftime('%Y-%m-%d')}\n"
         f"License: USGS Landsat Data Policy (public domain)\n"
         f"Spatial Extent: {YS_BBOX}\n"
         f"Temporal Extent: 2025-06-01 / 2025-09-30\n\n"
@@ -157,7 +156,7 @@ async def main() -> None:
         f"Script: examples/scripts/stac_landsat_yellowstone_demo.py\n"
         f"Parameters: collection=landsat-c2-l2, bbox={YS_BBOX}, "
         f"datetime=2025-06-01/2025-09-30, max_items=40\n"
-        f"Generated: {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M UTC')}\n"
+        f"Generated: {datetime.now(UTC).strftime('%Y-%m-%d %H:%M UTC')}\n"
     )
     OUTPUT_TXT.write_text(sidecar, encoding="utf-8")
     print(f"Saved: {OUTPUT_TXT}")

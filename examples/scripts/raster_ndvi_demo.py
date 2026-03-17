@@ -17,7 +17,7 @@ from __future__ import annotations
 
 import asyncio
 import sys
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 import numpy as np
@@ -155,7 +155,7 @@ async def main() -> None:
         0.5, 0.01,
         f"Data: Copernicus Sentinel-2 via Earth Search | "
         f"Palette: BrBG (colorblind-safe) | "
-        f"EarthForge v1.0.0 | {datetime.now(timezone.utc).strftime('%Y-%m-%d')}",
+        f"EarthForge v1.0.0 | {datetime.now(UTC).strftime('%Y-%m-%d')}",
         ha="center", fontsize=7, color="gray",
     )
 
@@ -173,7 +173,7 @@ async def main() -> None:
         f"dense vegetation (NDVI > 0.5). Mean NDVI: {ndvi.mean():.3f}.\n\n"
         f"Data Source: Copernicus, Sentinel-2 Level-2A\n"
         f"URL: {red_asset.href}\n"
-        f"Access Date: {datetime.now(timezone.utc).strftime('%Y-%m-%d')}\n"
+        f"Access Date: {datetime.now(UTC).strftime('%Y-%m-%d')}\n"
         f"License: Copernicus Sentinel Data Terms\n"
         f"Spatial Extent: {KY_BBOX}\n"
         f"Temporal Extent: {(item.datetime or 'Unknown')[:10]}\n\n"
@@ -181,7 +181,7 @@ async def main() -> None:
         f"Script: examples/scripts/raster_ndvi_demo.py\n"
         f"Parameters: collection=sentinel-2-l2a, bbox={KY_BBOX}, "
         f"cloud_cover<15%, palette=BrBG\n"
-        f"Generated: {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M UTC')}\n"
+        f"Generated: {datetime.now(UTC).strftime('%Y-%m-%d %H:%M UTC')}\n"
     )
     OUTPUT_TXT.write_text(sidecar, encoding="utf-8")
     print(f"Saved: {OUTPUT_TXT}")

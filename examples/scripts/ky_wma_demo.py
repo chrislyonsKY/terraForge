@@ -153,7 +153,7 @@ async def main() -> None:
         crs_str = str(gdf.crs) if gdf.crs else "N/A"
         bbox_vals = list(gdf.total_bounds)
 
-        print(f"  Format:     GeoJSON -> GeoParquet")
+        print("  Format:     GeoJSON -> GeoParquet")
         print(f"  Features:   {len(gdf)}")
         print(f"  Geometry:   {', '.join(geom_types)}")
         print(f"  CRS:        {crs_str}")

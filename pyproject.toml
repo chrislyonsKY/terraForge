@@ -126,6 +126,9 @@ module = [
     "pandas.*",
     "jsonschema.*",
     "yaml.*",
+    "PIL.*",
+    "mapbox_vector_tile.*",
+    "pmtiles.*",
 ]
 ignore_missing_imports = true
 

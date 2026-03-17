@@ -17,16 +17,13 @@ from __future__ import annotations
 
 import asyncio
 import sys
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
-
-import numpy as np
 
 sys.path.insert(0, "packages/core/src")
 sys.path.insert(0, "packages/stac/src")
 
 from earthforge.core.config import EarthForgeProfile
-from earthforge.core.palettes import VIRIDIS
 from earthforge.stac.search import search_catalog
 
 STAC_API = "https://earth-search.aws.element84.com/v1"
@@ -58,9 +55,9 @@ async def main() -> None:
         import matplotlib
         matplotlib.use("Agg")
         import matplotlib.pyplot as plt
-        from matplotlib.patches import Rectangle
-        from matplotlib.colors import Normalize
         from matplotlib.cm import ScalarMappable
+        from matplotlib.colors import Normalize
+        from matplotlib.patches import Rectangle
     except ImportError:
         print("matplotlib required: pip install matplotlib")
         return
@@ -105,7 +102,7 @@ async def main() -> None:
 
     ax.set_title(
         f"STAC Search Results — Sentinel-2 L2A\n"
-        f"Kentucky | Jun–Aug 2025 | {len(result.items)} scenes",
+        f"Kentucky | Jun-Aug 2025 | {len(result.items)} scenes",
         fontsize=13, fontweight="bold",
     )
     ax.set_xlabel("Longitude", fontsize=10)
@@ -120,7 +117,7 @@ async def main() -> None:
     fig.text(
         0.5, 0.01,
         f"Data: Copernicus Sentinel-2 via Earth Search | "
-        f"EarthForge v1.0.0 | {datetime.now(timezone.utc).strftime('%Y-%m-%d')}",
+        f"EarthForge v1.0.0 | {datetime.now(UTC).strftime('%Y-%m-%d')}",
         ha="center", fontsize=7, color="gray",
     )
 
@@ -137,7 +134,7 @@ async def main() -> None:
         f"cloud, dark = high cloud). A dashed rectangle shows the search bounding box.\n\n"
         f"Data Source: Copernicus, Sentinel-2 Level-2A\n"
         f"URL: {STAC_API}\n"
-        f"Access Date: {datetime.now(timezone.utc).strftime('%Y-%m-%d')}\n"
+        f"Access Date: {datetime.now(UTC).strftime('%Y-%m-%d')}\n"
         f"License: Copernicus Sentinel Data Terms\n"
         f"Spatial Extent: {KY_BBOX}\n"
         f"Temporal Extent: 2025-06-01 / 2025-08-31\n\n"
@@ -145,7 +142,7 @@ async def main() -> None:
         f"Script: examples/scripts/stac_search_map_demo.py\n"
         f"Parameters: collection=sentinel-2-l2a, bbox={KY_BBOX}, "
         f"datetime=2025-06-01/2025-08-31, max_items=30\n"
-        f"Generated: {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M UTC')}\n"
+        f"Generated: {datetime.now(UTC).strftime('%Y-%m-%d %H:%M UTC')}\n"
     )
     OUTPUT_TXT.write_text(sidecar, encoding="utf-8")
     print(f"Saved: {OUTPUT_TXT}")

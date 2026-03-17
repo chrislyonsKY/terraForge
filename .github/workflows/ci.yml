@@ -139,6 +139,7 @@ jobs:
             "jsonschema>=4.21" \
             "pyyaml>=6.0" \
             "textual>=0.52" \
+            "Pillow>=9.0" \
             "respx>=0.21" \
             "pytest>=8.0" \
             "pytest-asyncio>=0.23" \
