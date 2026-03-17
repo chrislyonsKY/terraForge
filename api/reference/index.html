@@ -1098,6 +1098,28 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#earthforge.core.output.StatusMarker" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        StatusMarker
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#earthforge.core.output.format_status" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        format_status
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#earthforge.core.output.render" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2285,6 +2307,28 @@
     <span class="md-ellipsis">
       
         OutputFormat
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#earthforge.core.output.StatusMarker" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        StatusMarker
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#earthforge.core.output.format_status" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        format_status
       
     </span>
   </a>
@@ -4771,6 +4815,16 @@ packages never call <code>print()</code> or <code>rich</code> directly.</p>
 </ul>
 <p>The contract is simple: if <code>--output json</code> produces valid JSON for one command,
 it produces valid JSON for every command. The schema is the Pydantic model itself.</p>
+<p>Accessibility (WCAG 2.1 AA):</p>
+<ul>
+<li><code>NO_COLOR</code> disables all color (https://no-color.org/).</li>
+<li><code>FORCE_COLOR</code> forces color even in non-interactive contexts
+  (https://force-color.org/).  <code>NO_COLOR</code> takes precedence.</li>
+<li>Status indicators always include text markers (<code>[PASS]</code>, <code>[FAIL]</code>,
+  <code>[WARN]</code>) so information is never conveyed by color alone.</li>
+<li>High-contrast mode selects styles that meet WCAG 4.5:1 contrast ratios
+  on both dark and light terminal backgrounds.</li>
+</ul>
 <p>Usage in CLI commands::</p>
 <div class="highlight"><pre><span></span><code>from earthforge.core.output import OutputFormat, render_to_console
 
@@ -4853,12 +4907,161 @@ QUIET: No output.</p>
 
 </div>
 
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="earthforge.core.output.StatusMarker" class="doc doc-heading">
+            <code>StatusMarker</code>
+
+
+<a href="#earthforge.core.output.StatusMarker" class="headerlink" title="Permanent link">&para;</a></h3>
+
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><span title="enum.StrEnum">StrEnum</span></code></p>
+
+
+
+        <p>Text markers for pass/fail/warn status.</p>
+<p>These ensure information is never conveyed by color alone (WCAG 1.4.1
+Use of Color). Every status indicator in table output includes both a
+colored token and a text marker.</p>
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="earthforge.core.output.format_status" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">format_status</span><span class="p">(</span><span class="n">marker</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span></code>
+
+<a href="#earthforge.core.output.format_status" class="headerlink" title="Permanent link">&para;</a></h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Format a status marker with an optional message.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>marker</code>
+            </td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="StatusMarker (earthforge.core.output.StatusMarker)" href="#earthforge.core.output.StatusMarker">StatusMarker</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The status marker to display.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>message</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Optional text to append after the marker.</p>
+              </div>
+            </td>
+            <td>
+                  <code>&#39;&#39;</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>A string like <code>"[PASS] All checks passed"</code> suitable for both</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>colored and plain-text rendering.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
 
 <div class="doc doc-object doc-function">
 
 
 <h3 id="earthforge.core.output.render" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">render</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">fmt</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">render</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">fmt</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">high_contrast</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></code>
 
 <a href="#earthforge.core.output.render" class="headerlink" title="Permanent link">&para;</a></h3>
 
@@ -4909,6 +5112,22 @@ QUIET: No output.</p>
             </td>
             <td>
                 <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>high_contrast</code>
+            </td>
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If True, use high-contrast styling (WCAG 4.5:1).</p>
+              </div>
+            </td>
+            <td>
+                  <code>False</code>
             </td>
           </tr>
       </tbody>
@@ -4969,7 +5188,7 @@ QUIET: No output.</p>
 
 
 <h3 id="earthforge.core.output.render_to_console" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">render_to_console</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">fmt</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">no_color</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">render_to_console</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">fmt</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">no_color</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">high_contrast</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></code>
 
 <a href="#earthforge.core.output.render_to_console" class="headerlink" title="Permanent link">&para;</a></h3>
 
@@ -5033,6 +5252,22 @@ QUIET: No output.</p>
             <td>
               <div class="doc-md-description">
                 <p>If <code>True</code>, disable colored output regardless of <code>NO_COLOR</code>.</p>
+              </div>
+            </td>
+            <td>
+                  <code>False</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>high_contrast</code>
+            </td>
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If <code>True</code>, use high-contrast styling (WCAG 4.5:1).</p>
               </div>
             </td>
             <td>
