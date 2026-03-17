@@ -102,7 +102,7 @@ jobs:
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           packages-dir: dist_all/
-          password: ${{ secrets.PYPI_API_TOKEN }}
+          password: ${{ secrets.PIPY_API_TOKEN }}
           skip-existing: true
           verbose: true
 
